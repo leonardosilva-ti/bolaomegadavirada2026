@@ -1,53 +1,76 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Mega da Virada 2026</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>Mega da Virada 2026</h1>
+  <main class="container">
+    <h1>Mega da Virada 2026</h1>
 
-  <div class="observacao">
-    <label>"OBSERVAÇÃO"</label>
-    <textarea id="obs" rows="3" placeholder="Informações sobre o bolão..."></textarea>
-  </div>
+    <form id="formAposta" onsubmit="return false;">
+      <div class="row">
+        <label>Nome completo:</label>
+        <input id="nome" required>
+      </div>
 
-  <div class="dados">
-    <label>Nome completo:</label>
-    <input type="text" id="nome" required>
+      <div class="row">
+        <label>Telefone:</label>
+        <input id="telefone" placeholder="Ex: 19 988887777" required>
+        <span class="help">Esse número é sua chave pix em caso de premiação?</span>
+        <label><input type="radio" name="pix" value="Sim"> Sim</label>
+        <label><input type="radio" name="pix" value="Não" checked> Não</label>
+      </div>
 
-    <label>Telefone:</label>
-    <input type="tel" id="telefone" required>
+      <hr>
 
-    <label>Esse número é sua chave pix em caso de premiação?</label><br>
-    <label><input type="radio" name="pix" value="Sim"> Sim</label>
-    <label><input type="radio" name="pix" value="Não"> Não</label>
-  </div>
+      <h2 id="titulo-jogo">Jogo 1 de 5</h2>
 
-  <div id="jogos-container">
-    <h2 id="titulo-jogo">Jogo 1 de 5</h2>
-    <div id="numeros"></div>
-    <button id="btn-proximo">Próximo →</button>
-  </div>
+      <!-- area jogos: cada jogo tem 6 inputs; usuário pode preencher parcial e clicar Aleatório -->
+      <div id="jogos-area">
+        <!-- Será preenchido por JS -->
+      </div>
 
-  <hr>
-  <h2>Consultar Jogos Registrados</h2>
-  <p>Informe seus dados para visualizar todos os jogos do bolão:</p>
+      <div class="controles">
+        <button id="btnAnterior" type="button" class="muted" disabled>← Anterior</button>
+        <button id="btnAleatorioJogo" type="button">Aleatoriamente (preencher este jogo)</button>
+        <button id="btnProximo" type="button" class="primary">Próximo →</button>
+      </div>
 
-  <label>Primeiro nome:</label>
-  <input type="text" id="verNome" placeholder="Ex: Leonardo">
+      <hr>
 
-  <label>Últimos 4 dígitos do telefone:</label>
-  <input type="text" id="verTelefone" maxlength="4" placeholder="Ex: 1234">
+      <section class="observacao-box">
+        <h3>INFORMAÇÃO IMPORTANTE</h3>
+        <div class="observacao-text" id="obs-static">
+          <!-- texto fixo -->
+          <p>ATENÇÃO: Este bolão NÃO é realizado pela CAIXA como um bolão oficial. Estamos organizando de forma independente — em caso de premiação o valor será rateado entre os participantes e repassado por uma pessoa responsável (organizador). O site registra todos os jogos, quantidade e participantes para validação pública. Após o sorteio será divulgado o número sorteado e se houve ou não jogo ganhador. Cada participante pode inserir até 5 jogos; ao fechar o bolão haverá também um jogo de 9 números feito pelo organizador; jogos restantes poderão ser preenchidos aleatoriamente conforme regras do fechamento.</p>
+        </div>
+      </section>
 
-  <button id="btnVerJogos">Ver Jogos</button>
+      <hr>
 
-  <div id="lista-jogos"></div>
+      <section class="consultar">
+        <h3>Consultar Jogos Registrados</h3>
+        <p>Informe seus dados para visualizar todos os jogos do bolão:</p>
+        <label>Primeiro nome:</label>
+        <input id="verNome" placeholder="Ex: Leonardo">
+        <label>Últimos 4 dígitos do telefone:</label>
+        <input id="verTelefone" maxlength="4" placeholder="Ex: 1234">
+        <button id="btnVerJogos" type="button">Ver Jogos</button>
+        <div id="lista-jogos"></div>
+        <div id="consulta-stats"></div>
+      </section>
 
-  
+      <hr>
+
+      <div class="submit-area">
+        <button id="btnEnviar" class="primary" type="button">Concluir e Enviar</button>
+      </div>
+    </form>
+  </main>
+
   <script src="js/script.js"></script>
 </body>
 </html>
-
