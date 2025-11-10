@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmação - Mega da Virada 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <h1>Confirmação de Aposta</h1>
+  <div id="dados"></div>
+  <div id="jogos"></div>
+
+  <div class="confirmacao">
+    <p>
+      Declaro que li e confirmo todas as informações acima e estou ciente das regras do bolão.
+    </p>
+    <button id="btnConfirmar">Li e Confirmo</button>
+  </div>
+
+  <script>
+    const dados = JSON.parse(localStorage.getItem("dadosBolao"));
+
+    if (!dados) {
+      document.body.innerHTML = "<h2>Nenhum dado encontrado. Volte à página inicial.</h2>";
+    } else {
+      document.getElementById("dados").innerHTML = `
+        <h2>Informações do Participante</h2>
+        <p><strong>Nome:</strong> ${dados.nome}</p>
+        <p><strong>Telefone:</strong> ${dados.telefone}</p>
+        <p><strong>É chave PIX:</strong> ${dados.pix}</p>
+      `;
+
+      const jogosHTML = dados.jogos
+        .map((jogo, i) => `<p><strong>Jogo ${String(i + 1).padStart(2, "0")}:</strong> ${jogo}</p>`)
+        .join("");
+
+      document.getElementById("jogos").innerHTML = `
+        <h2>Jogos Registrados</h2>
+        ${jogosHTML}
+      `;
+    }
+
+    document.getElementById("btnConfirmar").onclick = () => {
+      alert("Aposta confirmada! Boa sorte 🍀");
+      localStorage.removeItem("dadosBolao");
+      window.location.href = "index.html";
+    };
+  </script>
+</body>
+</html>
