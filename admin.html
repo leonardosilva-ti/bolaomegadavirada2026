@@ -104,8 +104,37 @@
         <strong>${g.acertos} acertos</strong></p>`).join("<hr>");
     };
 
-    document.getElementById("btnFechar").onclick = () => {
-      alert("Bolão encerrado! Exporte a planilha e envie os jogos a todos.");
+      document.getElementById("btnFechar").onclick = async () => {
+      if (!confirm("Tem certeza que deseja fechar o bolão e gerar o PDF?")) return;
+
+      const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get");
+      const dados = await res.json();
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 10;
+
+      doc.setFontSize(16);
+      doc.text("Bolão Mega da Virada 2026", 10, y);
+      y += 10;
+      doc.setFontSize(12);
+      doc.text("Lista de todos os jogos registrados", 10, y);
+      y += 10;
+
+      dados.forEach((linha, i) => {
+        linha.jogos.forEach((jogo, j) => {
+          if (!jogo) return;
+          doc.text(`Jogo ${String(i + 1).padStart(2, "0")}-${j + 1}: ${jogo}`, 10, y);
+          y += 7;
+          if (y > 270) {
+            doc.addPage();
+            y = 10;
+          }
+        });
+      });
+
+      doc.save("bolao_megadavirada.pdf");
+      alert("PDF gerado com sucesso!");
     };
   </script>
 </body>
