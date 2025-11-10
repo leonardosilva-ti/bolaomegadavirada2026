@@ -1,51 +1,85 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmação - Mega da Virada 2026</title>
-  <link rel="stylesheet" href="css/style.css">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Confirmação - Mega da Virada</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>Confirmação de Aposta</h1>
-  <div id="dados"></div>
-  <div id="jogos"></div>
+  <main class="container">
+    <h1>Confirmação de Aposta</h1>
+    <div id="info"></div>
+    <div id="jogos"></div>
 
-  <div class="confirmacao">
-    <p>
-      Declaro que li e confirmo todas as informações acima e estou ciente das regras do bolão.
-    </p>
-    <button id="btnConfirmar">Li e Confirmo</button>
-  </div>
+    <section class="observacao-box">
+      <h3>INFORMAÇÃO IMPORTANTE</h3>
+      <div class="observacao-text" id="obs-static"></div>
+    </section>
 
+    <div style="margin-top:12px">
+      <label><input type="checkbox" id="aceito"> Li e aceito os termos</label>
+    </div>
+
+    <div style="margin-top:12px">
+      <button id="btnBaixar" class="primary">Baixar Comprovante (PDF)</button>
+      <button id="btnCheckPayment" class="muted">Verificar Pagamento (por receipt)</button>
+    </div>
+
+    <div id="statusPago" style="margin-top:10px"></div>
+
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    const dados = JSON.parse(localStorage.getItem("dadosBolao"));
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // <-- substituir
+
+    const dados = JSON.parse(localStorage.getItem("dadosBolao")) || JSON.parse(localStorage.getItem("lastReceiptData"));
+    const obsText = document.getElementById("obs-static");
+    obsText.innerText = "ATENÇÃO: Este bolão NÃO é realizado pela CAIXA como um bolão oficial. Em caso de premiação o valor será rateado entre os participantes e repassado pelo organizador. O site registra todos os jogos, quantidade e participantes para validação pública. Após o sorteio será divulgado o número sorteado e se houve jogo ganhador. Cada participante pode inserir até 5 jogos; será feito um jogo de 9 números ao fechar o bolão.";
 
     if (!dados) {
-      document.body.innerHTML = "<h2>Nenhum dado encontrado. Volte à página inicial.</h2>";
+      document.body.innerHTML = "<main class='container'><h2>Nenhum dado de aposta encontrado. Volte à página inicial.</h2></main>";
     } else {
-      document.getElementById("dados").innerHTML = `
-        <h2>Informações do Participante</h2>
-        <p><strong>Nome:</strong> ${dados.nome}</p>
-        <p><strong>Telefone:</strong> ${dados.telefone}</p>
-        <p><strong>É chave PIX:</strong> ${dados.pix}</p>
-      `;
+      const payload = dados.payload || dados;
+      const receipt = (dados.receipt || dados.receiptId || payload.receipt);
+      const infoDiv = document.getElementById("info");
+      infoDiv.innerHTML = `<p><strong>Nome:</strong> ${payload.nome}<br><strong>Telefone:</strong> ${payload.telefone}<br><strong>Receipt:</strong> ${receipt}</p>`;
 
-      const jogosHTML = dados.jogos
-        .map((jogo, i) => `<p><strong>Jogo ${String(i + 1).padStart(2, "0")}:</strong> ${jogo}</p>`)
-        .join("");
+      const jogosList = (payload.jogos || []).filter(Boolean);
+      document.getElementById("jogos").innerHTML = "<h3>Jogos</h3>" + jogosList.map((j,i)=>`<p><strong>Jogo ${String(i+1).padStart(2,"0")}:</strong> ${j}</p>`).join("");
 
-      document.getElementById("jogos").innerHTML = `
-        <h2>Jogos Registrados</h2>
-        ${jogosHTML}
-      `;
+      document.getElementById("btnBaixar").onclick = async () => {
+        if (!document.getElementById("aceito").checked) { alert("Você precisa aceitar os termos."); return;}
+        // gerar PDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 12;
+        doc.setFontSize(16);
+        doc.text("Comprovante - Bolão Mega da Virada 2026", 14, y); y+=10;
+        doc.setFontSize(12);
+        doc.text(`Receipt: ${receipt}`, 14, y); y+=8;
+        doc.text(`Nome: ${payload.nome}`, 14, y); y+=8;
+        doc.text(`Telefone: ${payload.telefone}`, 14, y); y+=10;
+        doc.text("Jogos:", 14, y); y+=8;
+        jogosList.forEach((j,i)=>{
+          doc.text(`${String(i+1).padStart(2,"0")}: ${j}`, 14, y); y+=7;
+          if (y > 270) { doc.addPage(); y=12; }
+        });
+        doc.save(`comprovante_${receipt}.pdf`);
+        alert("Comprovante gerado — guarde o arquivo.");
+      };
+
+      document.getElementById("btnCheckPayment").onclick = async () => {
+        const r = receipt || prompt("Informe o receipt:");
+        if (!r) return;
+        const res = await fetch(SCRIPT_URL + `?action=getbyreceipt&receipt=${encodeURIComponent(r)}`);
+        const info = await res.json();
+        if (info.status === "NOT_FOUND") {
+          document.getElementById("statusPago").innerHTML = "<p>Receipt não encontrado.</p>";
+        } else {
+          document.getElementById("statusPago").innerHTML = `<p><strong>Pago:</strong> ${info.pago || "Não informado"}</p>`;
+        }
+      };
     }
-
-    document.getElementById("btnConfirmar").onclick = () => {
-      alert("Aposta confirmada! Boa sorte 🍀");
-      localStorage.removeItem("dadosBolao");
-      window.location.href = "index.html";
-    };
   </script>
 </body>
 </html>
