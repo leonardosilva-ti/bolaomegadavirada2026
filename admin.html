@@ -6,8 +6,9 @@
   <title>Admin - Bolão Mega da Virada</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    #area-admin { display: none; }
+    #area-admin { display: none; text-align: center; }
     #jogos-lista { text-align: left; margin-top: 20px; }
+    input, button { margin: 5px; }
   </style>
 </head>
 <body>
@@ -22,11 +23,20 @@
   <div id="area-admin">
     <h2>Jogo Principal (9 números)</h2>
     <input type="text" id="jogo9" placeholder="Ex: 01 05 12 18 25 30 42 50 57" style="width:80%">
-    <button id="btnSalvarJogo9">Salvar Jogo</button>
+    <button id="btnSalvarJogo9">Salvar</button>
 
     <h2>Participantes e Jogos</h2>
     <button id="btnCarregar">Carregar Dados</button>
     <div id="jogos-lista"></div>
+
+    <h3>Excluir participante</h3>
+    <input type="text" id="nomeExcluir" placeholder="Nome completo">
+    <button id="btnExcluir">Excluir</button>
+
+    <h2>Verificação de Resultados</h2>
+    <input type="text" id="numsSorteados" placeholder="Ex: 01,02,10,25,37,59" style="width:60%">
+    <button id="btnVerificar">Verificar Acertos</button>
+    <div id="resultado"></div>
 
     <h2>Encerramento</h2>
     <button id="btnFechar">Fechar Bolão</button>
@@ -34,6 +44,7 @@
 
   <script>
     const SENHA_ADMIN = "12345"; // 🔒 Altere aqui sua senha
+    const GOOGLE_SCRIPT_URL = https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec;
 
     document.getElementById("btnEntrar").onclick = () => {
       const senha = document.getElementById("senha").value;
@@ -45,17 +56,10 @@
       }
     };
 
-    // Substitua pela URL do seu Apps Script
-    const GOOGLE_SCRIPT_URL = https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec;
-
     document.getElementById("btnCarregar").onclick = async () => {
-      try {
-        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get");
-        const dados = await res.json();
-        mostrarDados(dados);
-      } catch (e) {
-        alert("Erro ao carregar dados. Isso só funcionará se criarmos um endpoint GET no Apps Script.");
-      }
+      const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get");
+      const dados = await res.json();
+      mostrarDados(dados);
     };
 
     function mostrarDados(dados) {
@@ -67,8 +71,11 @@
       });
     }
 
-    document.getElementById("btnFechar").onclick = () => {
-      alert("Bolão encerrado! Exporte os dados da planilha e envie aos participantes.");
+    document.getElementById("btnExcluir").onclick = async () => {
+      const nome = document.getElementById("nomeExcluir").value.trim();
+      if (!nome) return alert("Informe o nome completo do participante.");
+      await fetch(`${GOOGLE_SCRIPT_URL}?action=delete&nome=${encodeURIComponent(nome)}`);
+      alert("Participante excluído (caso existisse).");
     };
 
     document.getElementById("btnSalvarJogo9").onclick = () => {
@@ -79,6 +86,26 @@
       }
       localStorage.setItem("jogo9", jogo);
       alert("Jogo de 9 números salvo!");
+    };
+
+    document.getElementById("btnVerificar").onclick = async () => {
+      const nums = document.getElementById("numsSorteados").value.trim();
+      if (!nums) return alert("Digite os números sorteados separados por vírgula.");
+      const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=verify&nums=${nums}`);
+      const ganhadores = await res.json();
+      const div = document.getElementById("resultado");
+      if (ganhadores.length === 0) {
+        div.innerHTML = "<p>Nenhum jogo com 4 ou mais acertos.</p>";
+        return;
+      }
+      div.innerHTML = "<h3>Ganhadores:</h3>" + ganhadores.map(g => `
+        <p><strong>${g.nome}</strong> (${g.telefone})<br>
+        ${g.jogo}: ${g.numeros}<br>
+        <strong>${g.acertos} acertos</strong></p>`).join("<hr>");
+    };
+
+    document.getElementById("btnFechar").onclick = () => {
+      alert("Bolão encerrado! Exporte a planilha e envie os jogos a todos.");
     };
   </script>
 </body>
