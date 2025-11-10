@@ -54,7 +54,7 @@ function salvarDados() {
   }
 
   const dados = { nome, telefone, pix, jogos };
-  fetch("COLE_AQUI_SUA_URL_DO_GOOGLE_SCRIPT", {
+  fetch("https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec", {
     method: "POST",
     body: JSON.stringify(dados)
   })
@@ -64,3 +64,4 @@ function salvarDados() {
   })
   .catch(() => alert("Erro ao enviar, tente novamente."));
 }
+
