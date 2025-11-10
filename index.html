@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mega da Virada 2026</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <h1>Mega da Virada 2026</h1>
+
+  <div class="observacao">
+    <label>"OBSERVAÇÃO"</label>
+    <textarea id="obs" rows="3" placeholder="Informações sobre o bolão..."></textarea>
+  </div>
+
+  <div class="dados">
+    <label>Nome completo:</label>
+    <input type="text" id="nome" required>
+
+    <label>Telefone:</label>
+    <input type="tel" id="telefone" required>
+
+    <label>Esse número é sua chave pix em caso de premiação?</label><br>
+    <label><input type="radio" name="pix" value="Sim"> Sim</label>
+    <label><input type="radio" name="pix" value="Não"> Não</label>
+  </div>
+
+  <div id="jogos-container">
+    <h2 id="titulo-jogo">Jogo 1 de 5</h2>
+    <div id="numeros"></div>
+    <button id="btn-proximo">Próximo →</button>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

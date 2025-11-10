@@ -1,0 +1,36 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+#numeros {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+  margin: 20px 0;
+}
+
+.numero {
+  padding: 10px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #f8f8f8;
+}
+
+.numero.selecionado {
+  background: #00b894;
+  color: white;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  background: #0984e3;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
