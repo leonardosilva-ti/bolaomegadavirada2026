@@ -1,140 +1,108 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Bolão Mega da Virada</title>
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    #area-admin { display: none; text-align: center; }
-    #jogos-lista { text-align: left; margin-top: 20px; }
-    input, button { margin: 5px; }
-  </style>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin - Bolão</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>Área Administrativa</h1>
+  <main class="container">
+    <h1>Área Administrativa</h1>
+    <div id="login">
+      <p>Senha:</p>
+      <input type="password" id="senha"><button id="btnEntrar">Entrar</button>
+    </div>
 
-  <div id="login">
-    <p>Digite a senha de acesso:</p>
-    <input type="password" id="senha" placeholder="Senha">
-    <button id="btnEntrar">Entrar</button>
-  </div>
+    <div id="area-admin" style="display:none">
+      <h2>Carregar Participantes</h2>
+      <button id="btnCarregar">Carregar Dados</button>
+      <div id="jogos-lista"></div>
 
-  <div id="area-admin">
-    <h2>Jogo Principal (9 números)</h2>
-    <input type="text" id="jogo9" placeholder="Ex: 01 05 12 18 25 30 42 50 57" style="width:80%">
-    <button id="btnSalvarJogo9">Salvar</button>
+      <h3>Excluir participante (por nome)</h3>
+      <input id="nomeExcluir" placeholder="Nome completo"><button id="btnExcluir">Excluir</button>
 
-    <h2>Participantes e Jogos</h2>
-    <button id="btnCarregar">Carregar Dados</button>
-    <div id="jogos-lista"></div>
+      <h3>Marcar pagamento</h3>
+      <input id="receiptMark" placeholder="Receipt ID"><button id="btnMarkPaid">Marcar Pago</button>
 
-    <h3>Excluir participante</h3>
-    <input type="text" id="nomeExcluir" placeholder="Nome completo">
-    <button id="btnExcluir">Excluir</button>
+      <h3>Verificar resultados (números sorteados)</h3>
+      <input id="numsSorteados" placeholder="Ex: 01,02,03,04,05,06"><button id="btnVerificar">Verificar</button>
+      <div id="resultado"></div>
 
-    <h2>Verificação de Resultados</h2>
-    <input type="text" id="numsSorteados" placeholder="Ex: 01,02,10,25,37,59" style="width:60%">
-    <button id="btnVerificar">Verificar Acertos</button>
-    <div id="resultado"></div>
+      <h3>Encerrar / Gerar PDF (lista de jogos)</h3>
+      <button id="btnFechar">Gerar PDF de todos os jogos</button>
+    </div>
+  </main>
 
-    <h2>Encerramento</h2>
-    <button id="btnFechar">Fechar Bolão</button>
-  </div>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    const SENHA_ADMIN = "12345"; // 🔒 Altere aqui sua senha
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // <-- substituir
+    const SENHA_ADMIN = "Blq15206395!"; // mude aqui
 
     document.getElementById("btnEntrar").onclick = () => {
-      const senha = document.getElementById("senha").value;
-      if (senha === SENHA_ADMIN) {
+      if (document.getElementById("senha").value === SENHA_ADMIN) {
         document.getElementById("login").style.display = "none";
         document.getElementById("area-admin").style.display = "block";
-      } else {
-        alert("Senha incorreta!");
-      }
+      } else alert("Senha incorreta");
     };
 
     document.getElementById("btnCarregar").onclick = async () => {
-      const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get");
+      const res = await fetch(SCRIPT_URL + "?action=get");
       const dados = await res.json();
-      mostrarDados(dados);
-    };
-
-    function mostrarDados(dados) {
       const div = document.getElementById("jogos-lista");
       div.innerHTML = "";
-      dados.forEach((linha, i) => {
-        div.innerHTML += `<p><strong>${i + 1} - ${linha.nome}</strong> (${linha.telefone})<br>
-          ${linha.jogos.join("<br>")}</p><hr>`;
+      dados.forEach((d,i)=>{
+        div.innerHTML += `<div style="border-bottom:1px solid #ddd;padding:6px">
+          <strong>${i+1} - ${d.nome}</strong> (${d.telefone}) - Receipt: ${d.receipt} - Pago: ${d.pago || "Não"}<br>
+          ${d.jogos.filter(Boolean).map((j,idx)=>`<div>Jogo ${idx+1}: ${j}</div>`).join('')}
+        </div>`;
       });
-    }
+    };
 
     document.getElementById("btnExcluir").onclick = async () => {
       const nome = document.getElementById("nomeExcluir").value.trim();
-      if (!nome) return alert("Informe o nome completo do participante.");
-      await fetch(`${GOOGLE_SCRIPT_URL}?action=delete&nome=${encodeURIComponent(nome)}`);
-      alert("Participante excluído (caso existisse).");
+      if (!nome) return alert("Informe nome");
+      await fetch(SCRIPT_URL + `?action=delete&nome=${encodeURIComponent(nome)}`);
+      alert("Solicitação enviada; recarregue para ver mudanças.");
     };
 
-    document.getElementById("btnSalvarJogo9").onclick = () => {
-      const jogo = document.getElementById("jogo9").value.trim();
-      if (jogo.split(" ").length !== 9) {
-        alert("Digite exatamente 9 números separados por espaço.");
-        return;
-      }
-      localStorage.setItem("jogo9", jogo);
-      alert("Jogo de 9 números salvo!");
+    document.getElementById("btnMarkPaid").onclick = async () => {
+      const r = document.getElementById("receiptMark").value.trim();
+      if (!r) return alert("Informe receipt");
+      const res = await fetch(SCRIPT_URL + `?action=markpaid&receipt=${encodeURIComponent(r)}`);
+      const data = await res.json();
+      alert("Marca pago: " + JSON.stringify(data));
     };
 
     document.getElementById("btnVerificar").onclick = async () => {
       const nums = document.getElementById("numsSorteados").value.trim();
-      if (!nums) return alert("Digite os números sorteados separados por vírgula.");
-      const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=verify&nums=${nums}`);
-      const ganhadores = await res.json();
+      if (!nums) return alert("Informe números");
+      const res = await fetch(SCRIPT_URL + `?action=verify&nums=${encodeURIComponent(nums)}`);
+      const g = await res.json();
       const div = document.getElementById("resultado");
-      if (ganhadores.length === 0) {
-        div.innerHTML = "<p>Nenhum jogo com 4 ou mais acertos.</p>";
-        return;
+      if (g.length === 0) div.innerHTML = "<p>Nenhum jogo com 4+ acertos.</p>";
+      else {
+        div.innerHTML = "<h4>Ganhadores</h4>" + g.map(x=>`<p>${x.nome} (${x.telefone}) - Jogo ${x.jogoIndex}: ${x.numeros} - ${x.acertos} acertos (Receipt ${x.receipt})</p>`).join("<hr>");
       }
-      div.innerHTML = "<h3>Ganhadores:</h3>" + ganhadores.map(g => `
-        <p><strong>${g.nome}</strong> (${g.telefone})<br>
-        ${g.jogo}: ${g.numeros}<br>
-        <strong>${g.acertos} acertos</strong></p>`).join("<hr>");
     };
 
-      document.getElementById("btnFechar").onclick = async () => {
-      if (!confirm("Tem certeza que deseja fechar o bolão e gerar o PDF?")) return;
-
-      const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get");
+    document.getElementById("btnFechar").onclick = async () => {
+      if (!confirm("Gerar PDF com todos os jogos?")) return;
+      const res = await fetch(SCRIPT_URL + "?action=get");
       const dados = await res.json();
-
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      let y = 10;
-
-      doc.setFontSize(16);
-      doc.text("Bolão Mega da Virada 2026", 10, y);
-      y += 10;
-      doc.setFontSize(12);
-      doc.text("Lista de todos os jogos registrados", 10, y);
-      y += 10;
-
-      dados.forEach((linha, i) => {
-        linha.jogos.forEach((jogo, j) => {
-          if (!jogo) return;
-          doc.text(`Jogo ${String(i + 1).padStart(2, "0")}-${j + 1}: ${jogo}`, 10, y);
-          y += 7;
-          if (y > 270) {
-            doc.addPage();
-            y = 10;
-          }
+      let y=12;
+      doc.setFontSize(16); doc.text("Bolão - Lista de jogos", 12, y); y+=10;
+      dados.forEach((d,i)=>{
+        d.jogos.forEach((j,idx)=>{
+          if (!j) return;
+          doc.setFontSize(11);
+          doc.text(`(${d.receipt}) J${String(i+1).padStart(2,"0")}-${idx+1}: ${j}`, 12, y);
+          y+=7;
+          if (y>270){ doc.addPage(); y=12; }
         });
       });
-
-      doc.save("bolao_megadavirada.pdf");
-      alert("PDF gerado com sucesso!");
+      doc.save("bolao_todos_jogos.pdf");
+      alert("PDF salvo.");
     };
   </script>
 </body>
