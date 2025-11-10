@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Bolão Mega da Virada</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    #area-admin { display: none; }
+    #jogos-lista { text-align: left; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Área Administrativa</h1>
+
+  <div id="login">
+    <p>Digite a senha de acesso:</p>
+    <input type="password" id="senha" placeholder="Senha">
+    <button id="btnEntrar">Entrar</button>
+  </div>
+
+  <div id="area-admin">
+    <h2>Jogo Principal (9 números)</h2>
+    <input type="text" id="jogo9" placeholder="Ex: 01 05 12 18 25 30 42 50 57" style="width:80%">
+    <button id="btnSalvarJogo9">Salvar Jogo</button>
+
+    <h2>Participantes e Jogos</h2>
+    <button id="btnCarregar">Carregar Dados</button>
+    <div id="jogos-lista"></div>
+
+    <h2>Encerramento</h2>
+    <button id="btnFechar">Fechar Bolão</button>
+  </div>
+
+  <script>
+    const SENHA_ADMIN = "12345"; // 🔒 Altere aqui sua senha
+
+    document.getElementById("btnEntrar").onclick = () => {
+      const senha = document.getElementById("senha").value;
+      if (senha === SENHA_ADMIN) {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("area-admin").style.display = "block";
+      } else {
+        alert("Senha incorreta!");
+      }
+    };
+
+    // Substitua pela URL do seu Apps Script
+    const GOOGLE_SCRIPT_URL = "COLE_AQUI_SUA_URL_DO_GOOGLE_SCRIPT";
+
+    document.getElementById("btnCarregar").onclick = async () => {
+      try {
+        const res = await fetch(GOOGLE_SCRIPT_URL + "?action=get");
+        const dados = await res.json();
+        mostrarDados(dados);
+      } catch (e) {
+        alert("Erro ao carregar dados. Isso só funcionará se criarmos um endpoint GET no Apps Script.");
+      }
+    };
+
+    function mostrarDados(dados) {
+      const div = document.getElementById("jogos-lista");
+      div.innerHTML = "";
+      dados.forEach((linha, i) => {
+        div.innerHTML += `<p><strong>${i + 1} - ${linha.nome}</strong> (${linha.telefone})<br>
+          ${linha.jogos.join("<br>")}</p><hr>`;
+      });
+    }
+
+    document.getElementById("btnFechar").onclick = () => {
+      alert("Bolão encerrado! Exporte os dados da planilha e envie aos participantes.");
+    };
+
+    document.getElementById("btnSalvarJogo9").onclick = () => {
+      const jogo = document.getElementById("jogo9").value.trim();
+      if (jogo.split(" ").length !== 9) {
+        alert("Digite exatamente 9 números separados por espaço.");
+        return;
+      }
+      localStorage.setItem("jogo9", jogo);
+      alert("Jogo de 9 números salvo!");
+    };
+  </script>
+</body>
+</html>
