@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta de Jogos - Mega da Virada</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Consulta de Jogos</h1>
+  </header>
+
+  <div class="consulta-container">
+    <div class="contagem" id="contagem"></div>
+
+    <div class="center" style="margin-bottom:15px;">
+      <button class="muted" onclick="window.location.href='index.html'">⬅ Voltar</button>
+    </div>
+
+    <div id="listaJogos" class="jogos-grid">
+      <p>Carregando jogos...</p>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+
+    async function carregarJogos() {
+      const lista = document.getElementById("listaJogos");
+      lista.innerHTML = "<p>Carregando...</p>";
+
+      try {
+        const resp = await fetch(SCRIPT_URL + "?modo=LISTAR");
+        const data = await resp.json();
+        lista.innerHTML = "";
+        data.forEach(j => {
+          const div = document.createElement("div");
+          div.innerHTML = `
+            <strong>${j.nome}</strong><br>
+            ${j.jogos.map(n => n).join("<br>")}
+          `;
+          lista.appendChild(div);
+        });
+      } catch (e) {
+        lista.innerHTML = "<p>Erro ao carregar jogos.</p>";
+      }
+    }
+
+    function contagemRegressiva() {
+      const alvo = new Date("2025-12-31T20:30:00-03:00").getTime();
+      const el = document.getElementById("contagem");
+      const timer = setInterval(() => {
+        const agora = new Date().getTime();
+        const diff = alvo - agora;
+        if (diff <= 0) {
+          el.textContent = "Sorteio em andamento!";
+          clearInterval(timer);
+          return;
+        }
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        el.textContent = `Faltam ${d}d ${h}h ${m}m ${s}s para o sorteio`;
+      }, 1000);
+    }
+
+    contagemRegressiva();
+    carregarJogos();
+  </script>
+</body>
+</html>
