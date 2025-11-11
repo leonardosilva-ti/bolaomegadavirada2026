@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mega da Virada 2026</title>
+  <title>Mega da Virada - Bolão</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -13,13 +13,16 @@
     <form id="formAposta" onsubmit="return false;">
       <div class="row">
         <label>Nome completo:</label>
-        <input id="nome" required>
+        <input id="nome" autocomplete="name" required>
       </div>
 
       <div class="row">
         <label>Telefone:</label>
-        <input id="telefone" placeholder="Ex: 19 988887777" required>
-        <span class="help">Esse número é sua chave pix em caso de premiação?</span>
+        <input id="telefone" placeholder="Ex: 11988887777" autocomplete="tel" required>
+      </div>
+
+      <div class="row">
+        <label>É chave PIX?</label>
         <label><input type="radio" name="pix" value="Sim"> Sim</label>
         <label><input type="radio" name="pix" value="Não" checked> Não</label>
       </div>
@@ -28,24 +31,23 @@
 
       <h2 id="titulo-jogo">Jogo 1 de 5</h2>
 
-      <!-- area jogos: cada jogo tem 6 inputs; usuário pode preencher parcial e clicar Aleatório -->
       <div id="jogos-area">
-        <!-- Será preenchido por JS -->
+        <!-- grade de 1..60 + controle serão montados por JS -->
+        <div id="grade-numeros" class="grade"></div>
       </div>
 
       <div class="controles">
         <button id="btnAnterior" type="button" class="muted" disabled>← Anterior</button>
-        <button id="btnAleatorioJogo" type="button">Aleatoriamente (preencher este jogo)</button>
+        <button id="btnAleatorioJogo" type="button">Aleatoriamente (preencher faltantes)</button>
         <button id="btnProximo" type="button" class="primary">Próximo →</button>
       </div>
 
       <hr>
 
-      <section class="observacao-box">
+      <section class="observacao-box center">
         <h3>INFORMAÇÃO IMPORTANTE</h3>
         <div class="observacao-text" id="obs-static">
-          <!-- texto fixo -->
-          <p>ATENÇÃO: Este bolão NÃO é realizado pela CAIXA como um bolão oficial. Estamos organizando de forma independente — em caso de premiação o valor será rateado entre os participantes e repassado por uma pessoa responsável (organizador). O site registra todos os jogos, quantidade e participantes para validação pública. Após o sorteio será divulgado o número sorteado e se houve ou não jogo ganhador. Cada participante pode inserir até 5 jogos; ao fechar o bolão haverá também um jogo de 9 números feito pelo organizador; jogos restantes poderão ser preenchidos aleatoriamente conforme regras do fechamento.</p>
+          <p>Este bolão não é realizado de forma oficial pela Caixa Econômica Federal. A organização e divisão de prêmios serão feitas entre os participantes, através de uma pessoa responsável. O site ficará disponível para consulta de todos os jogos, participantes e quantidades, para que todos possam validar individualmente e cobrar o valor de premiação, se houver. Após o sorteio, serão exibidos os números sorteados e se houve ganhadores. Cada participante poderá criar 5 jogos de 6 números, e será feito um jogo adicional de 9 números ao fechar o bolão. Caso o participante deseje, os jogos poderão ser preenchidos de forma aleatória.</p>
         </div>
       </section>
 
@@ -53,20 +55,39 @@
 
       <section class="consultar">
         <h3>Consultar Jogos Registrados</h3>
-        <p>Informe seus dados para visualizar todos os jogos do bolão:</p>
+        <p>Informe seus dados para visualizar todos os jogos do bolão (serão exibidos apenas os números):</p>
         <label>Primeiro nome:</label>
         <input id="verNome" placeholder="Ex: Leonardo">
         <label>Últimos 4 dígitos do telefone:</label>
         <input id="verTelefone" maxlength="4" placeholder="Ex: 1234">
         <button id="btnVerJogos" type="button">Ver Jogos</button>
+
+        <div id="consulta-stats" class="center small"></div>
         <div id="lista-jogos"></div>
-        <div id="consulta-stats"></div>
       </section>
 
       <hr>
 
-      <div class="submit-area">
-        <button id="btnEnviar" class="primary" type="button">Concluir e Enviar</button>
+      <div id="resumo-final" class="resumo" style="display:none">
+        <h3>Resumo da Aposta</h3>
+        <div id="resumo-dados"></div>
+
+        <section class="observacao-box center small">
+          <div class="observacao-text" id="obs-static-resumo"></div>
+        </section>
+
+        <div style="margin-top:12px">
+          <label><input type="checkbox" id="aceito"> Li e aceito os termos</label>
+        </div>
+
+        <div style="margin-top:12px">
+          <button id="btnConfirmarEnvio" class="primary">Confirmar e Enviar Aposta</button>
+          <button id="btnVoltarEditar" class="muted">Voltar e Editar</button>
+        </div>
+      </div>
+
+      <div class="submit-area" id="submit-area">
+        <button id="btnIniciarEnvio" class="primary" type="button" style="display:none">Concluir</button>
       </div>
     </form>
   </main>
