@@ -7,11 +7,9 @@ const btnGerar = document.getElementById("gerarAleatorios");
 const form = document.getElementById("cadastroForm");
 const msg = document.getElementById("mensagem");
 
-// Novo botão "Jogo Anterior"
-let btnAnterior;
-
 let jogoAtual = 1;
 let jogos = [];
+let btnAnterior = null; // será criado dinamicamente
 
 function gerarNumeros() {
   numerosContainer.innerHTML = "";
@@ -35,22 +33,22 @@ function selecionarNumero(btn) {
 function atualizarBotoes() {
   const selecionados = document.querySelectorAll(".numeros-grid button.selected").length;
 
-  // Estado dos botões
-  btnProximo.disabled = selecionados !== 6;
-
-  // Jogo Anterior - cinza no 1º jogo, azul nos outros
-  if (jogoAtual === 1) {
-    btnAnterior.className = "muted";
-    btnAnterior.disabled = true;
-  } else {
-    btnAnterior.className = "primary";
-    btnAnterior.disabled = false;
+  // Evita erro antes do botão existir
+  if (btnAnterior) {
+    if (jogoAtual === 1) {
+      btnAnterior.className = "muted";
+      btnAnterior.disabled = true;
+    } else {
+      btnAnterior.className = "primary";
+      btnAnterior.disabled = false;
+    }
   }
 
   // Próximo/Confirmar
   if (jogoAtual < 5) {
     btnProximo.textContent = "Próximo Jogo";
     btnProximo.className = selecionados === 6 ? "primary" : "muted";
+    btnProximo.disabled = selecionados !== 6;
   } else {
     btnProximo.textContent = "Confirmar";
     btnProximo.className = "primary";
@@ -58,6 +56,7 @@ function atualizarBotoes() {
   }
 }
 
+// Geração aleatória
 btnGerar.onclick = () => {
   const botoes = Array.from(numerosContainer.querySelectorAll("button"));
   const selecionados = new Set(botoes.filter(b => b.classList.contains("selected")).map(b => b.textContent));
@@ -91,7 +90,7 @@ function restaurarJogo() {
   atualizarBotoes();
 }
 
-// Função para avançar de jogo
+// Próximo / Confirmar
 btnProximo.onclick = () => {
   const selecionados = [...document.querySelectorAll(".numeros-grid button.selected")].map(b => b.textContent);
 
@@ -110,7 +109,7 @@ btnProximo.onclick = () => {
         }
       }
     } else {
-      return; // aguarda completar manualmente
+      return;
     }
   }
 
@@ -125,9 +124,11 @@ btnProximo.onclick = () => {
   }
 };
 
-// Criar o botão "Jogo Anterior" apenas uma vez, após o DOM estar pronto
+// Criação do botão “Jogo Anterior” ao carregar o DOM
 window.addEventListener("DOMContentLoaded", () => {
   const controles = document.querySelector(".controles");
+
+  // Evita duplicação
   if (!document.getElementById("btnAnterior")) {
     btnAnterior = document.createElement("button");
     btnAnterior.id = "btnAnterior";
@@ -146,12 +147,12 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
   }
+
+  gerarNumeros(); // só gera os números depois do botão existir
 });
 
-
-
 function finalizarJogos() {
-  // Validação de duplicados
+  // Verifica se há jogos duplicados
   const duplicado = jogos.some((j, idx) => jogos.indexOf(j) !== idx);
   if (duplicado) {
     alert("Você escolheu o mesmo conjunto de 6 números em mais de um jogo. Altere antes de confirmar.");
@@ -185,7 +186,3 @@ form.onsubmit = async (e) => {
   localStorage.setItem("pendingAposta", JSON.stringify(payload));
   window.location.href = "confirmacao.html";
 };
-
-gerarNumeros();
-
-
