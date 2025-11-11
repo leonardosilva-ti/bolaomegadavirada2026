@@ -12,42 +12,61 @@ function gerarNumeros() {
   numerosContainer.innerHTML = "";
   for (let i = 1; i <= 60; i++) {
     const btn = document.createElement("button");
-    btn.type = "button"; // <--- ESSENCIAL: evita submit ao clicar
+    btn.type = "button";
     btn.textContent = i.toString().padStart(2, "0");
     btn.onclick = () => {
-      btn.classList.toggle("selected");
+      if (btn.classList.contains("selected")) {
+        btn.classList.remove("selected");
+      } else {
+        const selecionados = document.querySelectorAll(".numeros-grid button.selected");
+        if (selecionados.length >= 6) {
+          alert("Você só pode selecionar 6 números por jogo.");
+          return;
+        }
+        btn.classList.add("selected");
+      }
       validarSelecao();
     };
     numerosContainer.appendChild(btn);
   }
+
+  // adiciona botão de gerar aleatório
+  const gerarAuto = document.createElement("button");
+  gerarAuto.type = "button";
+  gerarAuto.textContent = "Gerar Números Aleatórios";
+  gerarAuto.classList.add("muted");
+  gerarAuto.onclick = () => gerarAleatorios();
+  numerosContainer.after(gerarAuto);
+}
+
+function gerarAleatorios() {
+  const botoes = [...document.querySelectorAll(".numeros-grid button")];
+  botoes.forEach(b => b.classList.remove("selected"));
+  const numeros = [];
+  while (numeros.length < 6) {
+    const n = String(Math.floor(Math.random() * 60 + 1)).padStart(2, "0");
+    if (!numeros.includes(n)) numeros.push(n);
+  }
+  botoes.forEach(b => {
+    if (numeros.includes(b.textContent)) b.classList.add("selected");
+  });
+  validarSelecao();
 }
 
 gerarNumeros();
 
 function validarSelecao() {
   const selecionados = document.querySelectorAll(".numeros-grid button.selected");
-  if (selecionados.length === 6) {
-    btnProximo.disabled = false;
-  } else {
-    btnProximo.disabled = true;
-  }
+  btnProximo.disabled = selecionados.length !== 6;
 }
 
 btnProximo.onclick = () => {
   const selecionados = [...document.querySelectorAll(".numeros-grid button.selected")].map(b => b.textContent);
-  if (selecionados.length < 6) {
-    if (confirm(`Você selecionou apenas ${selecionados.length}. Deseja completar aleatoriamente?`)) {
-      while (selecionados.length < 6) {
-        const n = String(Math.floor(Math.random() * 60 + 1)).padStart(2, "0");
-        if (!selecionados.includes(n)) selecionados.push(n);
-      }
-    } else return;
-  }
-
+  if (selecionados.length !== 6) return alert("Você deve selecionar 6 números.");
   jogos.push(selecionados.join(" "));
   if (jogos.length < 5) {
     jogoAtual++;
-    alert(`Jogo ${jogoAtual}/5 — Selecione seus números`);
+    document.getElementById("titulo-jogo").textContent = `Jogo ${jogoAtual} de 5`;
     gerarNumeros();
   } else {
     btnProximo.style.display = "none";
@@ -89,4 +108,3 @@ form.onsubmit = async (e) => {
     alert("Erro ao enviar, tente novamente.");
   }
 };
-
