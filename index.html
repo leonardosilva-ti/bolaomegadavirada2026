@@ -15,7 +15,7 @@
     <section class="observacao center">
       <h2>INFORMAÇÃO IMPORTANTE</h2>
       <p>
-        Este bolão não é feito de forma oficial pela Caixa Econômica Federal. O valor de premiação será dividido entre os participantes por meio de uma pessoa responsável. Todos os jogos ficam disponíveis para consulta pública, permitindo validação individual. Cada participante pode criar até 5 jogos, e ao fechar o bolão um jogo de 9 números será adicionado. Jogos restantes poderão ser completados aleatoriamente.
+        Este bolão não é feito de forma oficial pela Caixa Econômica Federal. A premiação será dividida entre os participantes por meio de uma pessoa responsável.
       </p>
     </section>
 
@@ -28,7 +28,7 @@
       <div class="form-row">
         <label for="telefone">Telefone:</label>
         <input type="text" id="telefone" placeholder="(DDD) 99999-9999" required>
-        <label for="pix" class="pix-label">O número é sua chave PIX?</label>
+        <label for="pix" class="pix-label">É chave PIX?</label>
         <select id="pix" required>
           <option value="">Selecione</option>
           <option value="Sim">Sim</option>
@@ -40,25 +40,23 @@
 
       <h2 id="titulo-jogo" class="center">Jogo 1 de 5</h2>
 
-      <div id="numerosContainer" class="numeros-grid" aria-hidden="false"></div>
+      <div id="numerosContainer" class="numeros-grid"></div>
 
       <div class="controles">
-        <button type="button" id="proximo" class="muted">Próximo Jogo</button>
+        <button type="button" id="gerarAleatorios" class="muted">Gerar Aleatórios</button>
+        <button type="button" id="proximo" class="muted" disabled>Próximo Jogo</button>
         <button type="submit" id="enviar" class="primary" disabled>Enviar Aposta</button>
       </div>
-
     </form>
 
     <div id="mensagem" class="mensagem"></div>
 
     <div class="links">
-      <button id="adminBtn" onclick="window.location.href='admin.html'">Área Administrativa</button>
-      <button id="consultarBtn" onclick="window.location.href='consulta.html'">Consultar Jogos</button>
+      <button onclick="window.location.href='consulta.html'">Consultar Jogos</button>
+      <button onclick="window.location.href='admin.html'">Área Administrativa</button>
     </div>
   </main>
 
   <script src="js/script.js"></script>
 </body>
 </html>
-
-
