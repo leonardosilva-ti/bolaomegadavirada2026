@@ -128,8 +128,11 @@ btnProximo.onclick = () => {
 window.addEventListener("DOMContentLoaded", () => {
   const controles = document.querySelector(".controles");
 
-  // Evita duplicação
-  if (!document.getElementById("btnAnterior")) {
+  // Verifica se o botão já existe no HTML
+  btnAnterior = document.getElementById("btnAnterior");
+
+  // Se não existir, cria dinamicamente
+  if (!btnAnterior) {
     btnAnterior = document.createElement("button");
     btnAnterior.id = "btnAnterior";
     btnAnterior.type = "button";
@@ -137,19 +140,21 @@ window.addEventListener("DOMContentLoaded", () => {
     btnAnterior.className = "muted";
     btnAnterior.disabled = true;
     controles.insertBefore(btnAnterior, btnGerar);
-
-    btnAnterior.onclick = () => {
-      if (jogoAtual > 1) {
-        salvarJogoAtual();
-        jogoAtual--;
-        document.getElementById("titulo-jogo").textContent = `Jogo ${jogoAtual} de 5`;
-        restaurarJogo();
-      }
-    };
   }
 
-  gerarNumeros(); // só gera os números depois do botão existir
+  // Define a ação de voltar
+  btnAnterior.onclick = () => {
+    if (jogoAtual > 1) {
+      salvarJogoAtual();
+      jogoAtual--;
+      document.getElementById("titulo-jogo").textContent = `Jogo ${jogoAtual} de 5`;
+      restaurarJogo();
+    }
+  };
+
+  gerarNumeros(); // só executa após garantir que o botão existe
 });
+
 
 function finalizarJogos() {
   // Verifica se há jogos duplicados
@@ -186,3 +191,4 @@ form.onsubmit = async (e) => {
   localStorage.setItem("pendingAposta", JSON.stringify(payload));
   window.location.href = "confirmacao.html";
 };
+
