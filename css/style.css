@@ -80,6 +80,38 @@ button:disabled {
   border: 1px solid #ccc !important;
 }
 
+/* ... (Seu código CSS anterior) ... */
+
+.status-jogos-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.status-jogo-btn {
+  background: #6c757d; /* Cinza */
+  color: #fff;
+  padding: 8px 0;
+  border-radius: 4px;
+  border: 1px solid #6c757d;
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s;
+  font-size: 14px;
+}
+.status-jogo-btn.ativo {
+  background: #ffc107; /* Amarelo */
+  border-color: #ffc107;
+  color: #333;
+}
+.status-jogo-btn.preenchido {
+  background: #28a745; /* Verde */
+  border-color: #28a745;
+  color: #fff;
+}
+.status-jogo-btn:disabled {
+  opacity: 1; /* Não queremos opacidade para desativado */
+}
+/* ... (Restante do seu código CSS) ... */
 
 .numeros-grid {
   display: grid;
@@ -141,5 +173,6 @@ button:disabled {
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
 
 
