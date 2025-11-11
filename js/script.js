@@ -1,280 +1,239 @@
-// /js/admin.js
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // Use sua URL
+// /js/script.js - Lógica da Página Principal
 
-// 5.1 - Login simples
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "12345";
+const NUMEROS_TOTAL = 60;
+const JOGOS_MAXIMO = 5;
+const NUMEROS_POR_JOGO = 6;
 
-// Elementos
-const loginArea = document.getElementById("loginArea");
-const adminArea = document.getElementById("adminArea");
-const listaParticipantes = document.getElementById("listaParticipantes");
-const loginMsg = document.getElementById("loginMsg");
-const countParticipantes = document.getElementById("countParticipantes");
-const countJogos = document.getElementById("countJogos");
-const jogoSorteAtual = document.getElementById("jogoSorteAtual");
-const inputJogoSorte = document.getElementById("inputJogoSorte");
-const btnSalvarJogoSorte = document.getElementById("btnSalvarJogoSorte");
-const inputSorteados = document.getElementById("inputSorteados");
-const btnConferir = document.getElementById("btnConferir");
-const resultadoConferencia = document.getElementById("resultadoConferencia");
-const areaRateio = document.getElementById("areaRateio");
-const inputValorPremio = document.getElementById("valorPremio");
-const btnCalcularRateio = document.getElementById("btnCalcularRateio");
-const resultadoRateio = document.getElementById("resultadoRateio");
-
-let todosDados = []; // Armazena todos os dados para conferência
-
-// --- LOGIN/LOGOUT ---
-
-document.getElementById("btnLogin").addEventListener("click", () => {
-  const user = document.getElementById("adminUser").value.trim();
-  const pass = document.getElementById("adminPass").value.trim();
-
-  if (user === ADMIN_USER && pass === ADMIN_PASS) {
-    loginArea.classList.add("hidden");
-    adminArea.classList.remove("hidden");
-    carregarParticipantes();
-  } else {
-    loginMsg.textContent = "Usuário ou senha inválidos.";
-    loginMsg.classList.remove("hidden");
-  }
-});
-
-document.getElementById("btnLogout").addEventListener("click", () => {
-  adminArea.classList.add("hidden");
-  loginArea.classList.remove("hidden");
-  document.getElementById("adminUser").value = "";
-  document.getElementById("adminPass").value = "";
-});
-
-document.getElementById("btnAtualizar").addEventListener("click", carregarParticipantes);
-
-// --- 5.2 - CARREGAR DADOS E ESTATÍSTICAS ---
-
-async function carregarParticipantes() {
-  listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Carregando...</td></tr>`;
-  try {
-    // Usa a ação que retorna todos os dados necessários
-    const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
-    const data = await res.json();
-    
-    // Armazena dados do bolão para conferência
-    todosDados = data.participantes || []; 
-
-    // 5.2 - Atualiza Estatísticas
-    const totalParticipantes = todosDados.length;
-    const totalJogos = todosDados.reduce((acc, p) => acc + (p.Jogos?.split('|').length || 0), 0);
-    countParticipantes.textContent = totalParticipantes;
-    countJogos.textContent = totalJogos;
-
-    // 5.4 - Atualiza Jogo da Sorte
-    jogoSorteAtual.textContent = `Jogo atual: ${data.jogoDaSorte || "N/A"}`;
-    
-    renderTabela(todosDados);
-  } catch (err) {
-    listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center text-red-500 py-4">Erro ao carregar: ${err.message}</td></tr>`;
-  }
-}
-
-// --- 5.2 - RENDERIZAR TABELA ---
-
-function renderTabela(dados) {
-  if (!Array.isArray(dados) || dados.length === 0) {
-    listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Nenhum participante encontrado.</td></tr>`;
-    return;
-  }
-
-  listaParticipantes.innerHTML = dados.map((p) => {
-    const jogosParticipante = p.Jogos.split('|').map((j, i) => `Jogo ${i + 1}: ${j}`).join(' | ');
-    return `
-      <tr>
-        <td class="py-2 px-3">${p.Nome}<br><span style="font-size:0.8em; color:#555;">${jogosParticipante}</span></td>
-        <td class="py-2 px-3">${p.Protocolo}</td>
-        <td class="py-2 px-3 font-semibold ${p.Status === "PAGO" ? "text-green-600" : "text-red-500"}">${p.Status || "AGUARDANDO"}</td>
-        <td class="py-2 px-3 text-center">
-                    <button class="primary small mb-1" onclick="confirmarPagamento('${p.Protocolo}')">Confirmar Pagamento</button>
-          <button class="danger small" onclick="excluirParticipante('${p.Protocolo}')">Excluir</button>
-        </td>
-      </tr>
-  `;
-  }).join("");
-}
-
-// --- 5.3 - AÇÕES DE GERENCIAMENTO ---
-
-window.confirmarPagamento = async (protocolo) => { // Tornada global
-  if (!confirm(`Confirmar pagamento para o protocolo ${protocolo}?`)) return;
-
-  try {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `action=setPago&protocolo=${protocolo}` // Apps Script deve processar
-    });
-    const data = await res.json();
-    alert(data.message || "Status de pagamento atualizado.");
-    carregarParticipantes();
-  } catch (err) {
-    alert("Erro ao atualizar pagamento: " + err.message);
-  }
-}
-
-window.excluirParticipante = async (protocolo) => { // Tornada global
-  if (!confirm(`Tem certeza que deseja EXCLUIR o participante com protocolo ${protocolo}? Esta ação é IRREVERSÍVEL.`)) return;
-
-  try {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `action=excluir&protocolo=${protocolo}` // Apps Script deve processar
-    });
-    const data = await res.json();
-    alert(data.message || "Participante excluído.");
-    carregarParticipantes();
-  } catch (err) {
-    alert("Erro ao excluir: " + err.message);
-  }
-}
-
-// --- 5.4 - JOGO DA SORTE ---
-
-btnSalvarJogoSorte.onclick = async () => {
-  const numeros = inputJogoSorte.value.trim();
-  const numerosArray = numeros.split(/\s+/).filter(n => n.length > 0);
-  
-  if (numerosArray.length !== 9 || numerosArray.some(n => isNaN(parseInt(n)) || parseInt(n) < 1 || parseInt(n) > 60)) {
-    alert("Por favor, insira exatamente 9 números válidos (entre 01 e 60) separados por espaço.");
-    return;
-  }
-
-  try {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `action=salvarJogoSorte&jogo=${numeros}` // Apps Script deve processar
-    });
-    const data = await res.json();
-    if (data.success) {
-      alert("Jogo da Sorte salvo com sucesso!");
-      carregarParticipantes(); // Atualiza a exibição
-    } else {
-      throw new Error(data.message || "Erro desconhecido.");
-    }
-  } catch (err) {
-    alert("Erro ao salvar Jogo da Sorte: " + err.message);
-  }
-}
-
-// --- 5.5 / 5.6 - CONFERÊNCIA DE PRÊMIOS ---
-
-btnConferir.onclick = () => {
-  const sorteadosStr = inputSorteados.value.trim();
-  const sorteadosArray = sorteadosStr.split(/\s+/).filter(n => n.length > 0).map(n => n.padStart(2, '0')).sort();
-  
-  if (sorteadosArray.length !== 6) {
-    alert("Por favor, insira exatamente 6 números sorteados separados por espaço.");
-    return;
-  }
-  
-  resultadoConferencia.innerHTML = "Conferindo...";
-  areaRateio.classList.add('hidden');
-  
-  let premiados = {
-    sena: [], // 6 acertos
-    quina: [], // 5 acertos
-    quadra: [] // 4 acertos
-  };
-  
-  let totalJogosPremiados = 0;
-
-  // Itera sobre os participantes e seus jogos
-  todosDados.forEach(participante => {
-    const jogos = participante.Jogos.split('|');
-    jogos.forEach((jogoStr, index) => {
-      const jogoParticipante = jogoStr.split(' ').map(n => n.padStart(2, '0'));
-      let acertos = 0;
-      
-      jogoParticipante.forEach(num => {
-        if (sorteadosArray.includes(num)) {
-          acertos++;
-        }
-      });
-
-      if (acertos >= 4) {
-        const premio = acertos === 6 ? 'sena' : acertos === 5 ? 'quina' : 'quadra';
-        premiados[premio].push({
-          nome: participante.Nome,
-          protocolo: participante.Protocolo,
-          jogo: jogoStr,
-          acertos: acertos,
-          numJogo: index + 1 // Jogo 1, 2, 3...
-        });
-        totalJogosPremiados++;
-      }
-    });
-  });
-
-  // Exibe resultados
-  let resultadoHtml = `<h4>Resultado da Conferência:</h4>`;
-  resultadoHtml += `<p><strong>Números Sorteados:</strong> ${sorteadosArray.join(' ')}</p><hr>`;
-  
-  if (totalJogosPremiados === 0) {
-    resultadoHtml += `<p style="color:red; font-weight:bold;">Nenhum jogo premiado (Sena, Quina ou Quadra) encontrado.</p>`;
-  } else {
-    const renderPremios = (lista, titulo) => {
-      if (lista.length > 0) {
-        resultadoHtml += `<h5>🎉 **${titulo} (${lista.length} jogos):**</h5>`;
-        lista.forEach(p => {
-          resultadoHtml += `<p style="margin-left:15px; font-size:0.9em;">
-            ${p.nome} (${p.protocolo}) acertou ${p.acertos} números no Jogo ${p.numJogo}: <strong>${p.jogo}</strong>
-          </p>`;
-        });
-      }
-    };
-
-    renderPremios(premiados.sena, 'SENA (6 Acertos)');
-    renderPremios(premiados.quina, 'QUINA (5 Acertos)');
-    renderPremios(premiados.quadra, 'QUADRA (4 Acertos)');
-    
-    areaRateio.classList.remove('hidden'); // Mostra a área de rateio
-  }
-  
-  resultadoConferencia.innerHTML = resultadoHtml;
-  
-  // Armazena temporariamente os premiados para o rateio
-  document.rateioData = {
-    totalParticipantesPagos: todosDados.filter(p => p.Status === 'PAGO').length,
-    premiados: premiados
-  };
+// Variável para armazenar o estado atual dos jogos
+let aposta = {
+    nome: "",
+    telefone: "",
+    pix: "",
+    jogos: new Array(JOGOS_MAXIMO).fill("") // Array para armazenar as strings de números
 };
 
-// --- 5.6 - CÁLCULO DE RATEIO ---
+let jogoAtual = 0; // Começa no Jogo 1
 
-btnCalcularRateio.onclick = () => {
-  const valorTotal = parseFloat(inputValorPremio.value);
-  const totalParticipantesPagos = document.rateioData.totalParticipantesPagos;
-  
-  if (isNaN(valorTotal) || valorTotal <= 0) {
-    resultadoRateio.textContent = "Insira um valor de prêmio válido.";
-    resultadoRateio.style.color = "red";
-    return;
-  }
-  
-  if (totalParticipantesPagos === 0) {
-    resultadoRateio.textContent = "Não há participantes com status 'PAGO' para rateio.";
-    resultadoRateio.style.color = "red";
-    return;
-  }
-  
-  const valorPorParticipante = valorTotal / totalParticipantesPagos;
-  
-  resultadoRateio.textContent = `O valor de R$ ${valorTotal.toFixed(2).replace('.', ',')} será dividido igualmente entre ${totalParticipantesPagos} participantes PAGOS. Cada participante receberá R$ ${valorPorParticipante.toFixed(2).replace('.', ',')}.`;
-  resultadoRateio.style.color = "green";
-};
+// Elementos do DOM
+const nomeInput = document.getElementById("nome");
+const telefoneInput = document.getElementById("telefone");
+const pixSelect = document.getElementById("pix");
+const tituloJogo = document.getElementById("titulo-jogo");
+const numerosContainer = document.getElementById("numerosContainer");
+const statusJogosContainer = document.getElementById("statusJogosContainer");
+const btnAnterior = document.getElementById("btnAnterior");
+const btnProximo = document.getElementById("btnProximo");
+const gerarAleatorios = document.getElementById("gerarAleatorios");
+const cadastroForm = document.getElementById("cadastroForm");
+const mensagem = document.getElementById("mensagem");
 
+// --- FUNÇÕES DE LÓGICA ---
 
-// Inicia o carregamento dos dados após o login
-// Se o usuário já estiver logado (para testes), a função `carregarParticipantes` deve ser chamada.
-// No seu HTML, ela é chamada no sucesso do login.
-// Em um ambiente de produção, seria necessário um controle de sessão mais robusto.
+function renderNumeroButtons() {
+    numerosContainer.innerHTML = "";
+    for (let i = 1; i <= NUMEROS_TOTAL; i++) {
+        const num = String(i).padStart(2, '0');
+        const button = document.createElement("button");
+        button.textContent = num;
+        button.value = num;
+        button.onclick = () => toggleNumero(num, button);
+
+        // Verifica se o número já foi selecionado no jogo atual
+        const jogoSelecionado = aposta.jogos[jogoAtual].split(' ');
+        if (jogoSelecionado.includes(num)) {
+            button.classList.add("selected");
+        }
+        numerosContainer.appendChild(button);
+    }
+    updateControles();
+}
+
+function toggleNumero(num, button) {
+    let jogoSelecionado = aposta.jogos[jogoAtual].split(' ').filter(n => n !== "");
+    
+    if (button.classList.contains("selected")) {
+        // Desselecionar
+        button.classList.remove("selected");
+        jogoSelecionado = jogoSelecionado.filter(n => n !== num);
+    } else {
+        // Selecionar (apenas se houver espaço)
+        if (jogoSelecionado.length < NUMEROS_POR_JOGO) {
+            button.classList.add("selected");
+            jogoSelecionado.push(num);
+        } else {
+            alert(`Você só pode selecionar ${NUMEROS_POR_JOGO} números por jogo.`);
+        }
+    }
+    
+    // Atualiza o estado da aposta
+    aposta.jogos[jogoAtual] = jogoSelecionado.sort().join(' ');
+    
+    updateControles();
+    renderStatusJogos();
+}
+
+function updateControles() {
+    const numerosSelecionados = aposta.jogos[jogoAtual].split(' ').filter(n => n !== "").length;
+    
+    // Título do Jogo
+    tituloJogo.textContent = `Jogo ${jogoAtual + 1} de ${JOGOS_MAXIMO} (${numerosSelecionados}/${NUMEROS_POR_JOGO})`;
+
+    // Navegação
+    btnAnterior.disabled = jogoAtual === 0;
+    btnProximo.disabled = jogoAtual === JOGOS_MAXIMO - 1;
+    
+    // Botão de Próximo Jogo ou Concluir (se todos estiverem preenchidos)
+    if (jogoAtual < JOGOS_MAXIMO - 1 && numerosSelecionados === NUMEROS_POR_JOGO) {
+        btnProximo.classList.remove("muted");
+        btnProximo.classList.add("primary");
+        btnProximo.textContent = "Próximo Jogo";
+    } else if (jogoAtual === JOGOS_MAXIMO - 1 && aposta.jogos.every(j => j.split(' ').filter(n => n !== "").length === NUMEROS_POR_JOGO)) {
+        btnProximo.classList.remove("muted");
+        btnProximo.classList.add("primary");
+        btnProximo.textContent = "Confirmar Aposta";
+    } else {
+        btnProximo.classList.remove("primary");
+        btnProximo.classList.add("muted");
+        btnProximo.textContent = "Próximo Jogo";
+    }
+}
+
+function renderStatusJogos() {
+    statusJogosContainer.innerHTML = "";
+    for (let i = 0; i < JOGOS_MAXIMO; i++) {
+        const btn = document.createElement("button");
+        btn.className = "status-jogo-btn";
+        btn.textContent = `Jogo ${i + 1}`;
+        btn.onclick = () => navegarJogo(i);
+        
+        const numeros = aposta.jogos[i].split(' ').filter(n => n !== "").length;
+        
+        if (i === jogoAtual) {
+            btn.classList.add("ativo");
+        }
+        if (numeros === NUMEROS_POR_JOGO) {
+            btn.classList.add("preenchido");
+        } else {
+            btn.classList.remove("preenchido");
+        }
+        
+        statusJogosContainer.appendChild(btn);
+    }
+}
+
+function navegarJogo(novoJogo) {
+    // 1. Validações antes de mudar de jogo
+    const numerosAnterior = aposta.jogos[jogoAtual].split(' ').filter(n => n !== "").length;
+
+    if (numerosAnterior > 0 && numerosAnterior < NUMEROS_POR_JOGO) {
+        if (!confirm(`O Jogo ${jogoAtual + 1} tem apenas ${numerosAnterior} números. Deseja prosseguir?`)) {
+            return;
+        }
+    }
+    
+    jogoAtual = novoJogo;
+    renderNumeroButtons();
+    renderStatusJogos();
+    updateControles();
+}
+
+function preencherAleatoriamente() {
+    let jogoSelecionado = aposta.jogos[jogoAtual].split(' ').filter(n => n !== "");
+    let numerosFaltantes = NUMEROS_POR_JOGO - jogoSelecionado.length;
+    
+    if (numerosFaltantes <= 0) {
+        alert("Este jogo já está completo.");
+        return;
+    }
+
+    const todosNumeros = Array.from({ length: NUMEROS_TOTAL }, (_, i) => String(i + 1).padStart(2, '0'));
+    const disponiveis = todosNumeros.filter(n => !jogoSelecionado.includes(n));
+
+    // Seleciona aleatoriamente os números faltantes
+    for (let i = 0; i < numerosFaltantes; i++) {
+        if (disponiveis.length === 0) break;
+        const indiceAleatorio = Math.floor(Math.random() * disponiveis.length);
+        jogoSelecionado.push(disponiveis.splice(indiceAleatorio, 1)[0]);
+    }
+
+    // Atualiza e renderiza
+    aposta.jogos[jogoAtual] = jogoSelecionado.sort().join(' ');
+    renderNumeroButtons();
+    renderStatusJogos();
+}
+
+// --- FLUXO PRINCIPAL ---
+
+function carregarDadosSalvos() {
+    const apostaSalva = localStorage.getItem("pendingAposta");
+    if (apostaSalva) {
+        aposta = JSON.parse(apostaSalva);
+        nomeInput.value = aposta.nome || "";
+        telefoneInput.value = aposta.telefone || "";
+        pixSelect.value = aposta.pix || "";
+    }
+}
+
+function validarDadosPessoais() {
+    if (!nomeInput.value.trim() || !telefoneInput.value.trim() || !pixSelect.value) {
+        mensagem.textContent = "Preencha todos os dados pessoais (Nome, Telefone e PIX).";
+        mensagem.style.color = "red";
+        return false;
+    }
+    aposta.nome = nomeInput.value.trim();
+    aposta.telefone = telefoneInput.value.trim();
+    aposta.pix = pixSelect.value;
+    mensagem.textContent = "";
+    return true;
+}
+
+function validarJogosCompletos() {
+    const jogosIncompletos = aposta.jogos.filter(j => j.split(' ').filter(n => n !== "").length !== NUMEROS_POR_JOGO);
+    return jogosIncompletos.length === 0;
+}
+
+function salvarERedirecionar() {
+    if (!validarDadosPessoais()) return;
+    if (!validarJogosCompletos()) {
+        mensagem.textContent = `Preencha todos os ${JOGOS_MAXIMO} jogos com ${NUMEROS_POR_JOGO} números antes de continuar.`;
+        mensagem.style.color = "red";
+        return;
+    }
+
+    // Salva a aposta no LocalStorage e redireciona para confirmação
+    localStorage.setItem("pendingAposta", JSON.stringify(aposta));
+    window.location.href = "confirmacao.html";
+}
+
+// --- EVENT LISTENERS ---
+
+// Inicialização dos dados e renderização da grade
+document.addEventListener("DOMContentLoaded", () => {
+    carregarDadosSalvos();
+    renderStatusJogos();
+    renderNumeroButtons(); // Inicia a exibição da grade de números
+});
+
+// Navegação
+btnAnterior.addEventListener("click", () => navegarJogo(jogoAtual - 1));
+btnProximo.addEventListener("click", () => {
+    if (jogoAtual < JOGOS_MAXIMO - 1) {
+        navegarJogo(jogoAtual + 1);
+    } else {
+        salvarERedirecionar();
+    }
+});
+
+// Preencher Aleatoriamente
+gerarAleatorios.addEventListener("click", preencherAleatoriamente);
+
+// Salva os dados do formulário no objeto aposta em cada mudança (para persistência)
+const inputs = [nomeInput, telefoneInput, pixSelect];
+inputs.forEach(input => {
+    input.addEventListener("change", () => {
+        aposta.nome = nomeInput.value;
+        aposta.telefone = telefoneInput.value;
+        aposta.pix = pixSelect.value;
+        localStorage.setItem("pendingAposta", JSON.stringify(aposta));
+    });
+});
