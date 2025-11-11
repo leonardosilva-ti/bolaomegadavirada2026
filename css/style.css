@@ -31,7 +31,7 @@ body {
   box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
 
-.center { text-align: center; }
+.center { text-align: justify; }
 
 .form-row {
   display: flex;
@@ -132,3 +132,4 @@ button.small {
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
