@@ -1,70 +1,114 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Confirmação - Mega da Virada</title>
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-  <main class="container">
-    <h1>Confirmação da Aposta</h1>
-    <div id="info"></div>
-    <div id="jogos"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+  const obsText = "Este bolão não é realizado de forma oficial pela Caixa Econômica Federal. A organização e divisão de prêmios serão feitas entre os participantes, através de uma pessoa responsável. O site ficará disponível para consulta de todos os jogos, participantes e quantidades, para que todos possam validar individualmente e cobrar o valor de premiação, se houver. Após o sorteio, serão exibidos os números sorteados e se houve ganhadores. Cada participante poderá criar 5 jogos de 6 números, e será feito um jogo adicional de 9 números ao fechar o bolão. Caso o participante deseje, os jogos poderão ser preenchidos de forma aleatória.";
+  document.getElementById("obs-static").innerText = obsText;
 
-    <section class="observacao-box center small">
-      <div class="observacao-text" id="obs-static"></div>
-    </section>
+  // Lê o payload pendente (preenchido na index) ou um envio já realizado (lastReceiptData)
+  const pending = JSON.parse(localStorage.getItem("pendingAposta") || "null");
+  const last = JSON.parse(localStorage.getItem("lastReceiptData") || "null");
 
-    <div style="margin-top:12px">
-      <label><input type="checkbox" id="aceito2"> Li e aceito os termos</label>
-    </div>
+  // Prioriza pending (ainda não enviado). Se não houver, mostra last (já enviado).
+  const dataToShow = pending || (last && last.payload) || null;
 
-    <div style="margin-top:12px">
-      <button id="btnBaixar" class="primary">Baixar Comprovante (PDF)</button>
-      <button id="btnVoltar" class="muted">Voltar ao Início</button>
-    </div>
+  if (!dataToShow) {
+    document.getElementById("info").innerHTML = "<p>Nenhuma aposta encontrada para confirmação. Volte à página inicial e preencha o formulário.</p>";
+  } else {
+    // mostra os dados
+    const jogosHTML = (dataToShow.jogos || []).filter(Boolean).map((j,i)=>`<p><strong>Jogo ${String(i+1).padStart(2,'0')}:</strong> ${j}</p>`).join("");
+    document.getElementById("info").innerHTML = `<p><strong>Nome:</strong> ${dataToShow.nome}<br><strong>Telefone:</strong> ${dataToShow.telefone}</p>`;
+    document.getElementById("jogos").innerHTML = `<h3>Jogos</h3>${jogosHTML}`;
 
-    <div id="statusPago" style="margin-top:12px"></div>
-  </main>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
-    const last = JSON.parse(localStorage.getItem("lastReceiptData"));
-    const obsText = "Este bolão não é realizado de forma oficial pela Caixa Econômica Federal. A organização e divisão de prêmios serão feitas entre os participantes, através de uma pessoa responsável. O site ficará disponível para consulta de todos os jogos, participantes e quantidades, para que todos possam validar individualmente e cobrar o valor de premiação, se houver. Após o sorteio, serão exibidos os números sorteados e se houve ganhadores. Cada participante poderá criar 5 jogos de 6 números, e será feito um jogo adicional de 9 números ao fechar o bolão. Caso o participante deseje, os jogos poderão ser preenchidos de forma aleatória.";
-    document.getElementById("obs-static").innerText = obsText;
-
-    if (!last) {
-      document.getElementById("info").innerHTML = "<p>Nenhum comprovante encontrado. Volte ao site e envie sua aposta.</p>";
-    } else {
-      const payload = last.payload;
-      const receipt = last.receipt;
-      document.getElementById("info").innerHTML = `<p><strong>Nome:</strong> ${payload.nome}<br><strong>Telefone:</strong> ${payload.telefone}<br><strong>Receipt:</strong> ${receipt}</p>`;
-      const jogosHTML = (payload.jogos || []).filter(Boolean).map((j,i)=>`<p><strong>Jogo ${String(i+1).padStart(2,"0")}:</strong> ${j}</p>`).join("");
-      document.getElementById("jogos").innerHTML = `<h3>Jogos</h3>${jogosHTML}`;
-
+    // Se já tiver sido enviado (last), mostra botão de download apenas
+    if (last && !pending && last.receipt) {
+      document.getElementById("btnBaixar").style.display = "inline-block";
       document.getElementById("btnBaixar").onclick = () => {
         if (!document.getElementById("aceito2").checked) { alert("Você precisa aceitar os termos."); return; }
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        let y = 12;
-        doc.setFontSize(16); doc.text("Comprovante - Bolão Mega da Virada", 12, y); y+=10;
-        doc.setFontSize(11); doc.text(`Receipt: ${receipt}`, 12, y); y+=8;
-        doc.text(`Nome: ${payload.nome}`, 12, y); y+=8;
-        doc.text(`Telefone: ${payload.telefone}`, 12, y); y+=10;
-        doc.text("Jogos:", 12, y); y+=8;
-        (payload.jogos || []).filter(Boolean).forEach((j,i)=>{
-          doc.text(`${String(i+1).padStart(2,"0")}: ${j}`, 12, y); y+=7;
-          if (y > 270) { doc.addPage(); y=12; }
-        });
-        doc.save(`comprovante_${receipt}.pdf`);
-        alert("Comprovante gerado — guarde o arquivo.");
+        gerarPDFConfirmacao(last.payload, last.receipt);
       };
+    } else {
+      // habilita botão Confirmar -> fará o POST
+      document.getElementById("btnBaixar").textContent = "Confirmar e Enviar Aposta";
+      document.getElementById("btnBaixar").onclick = async () => {
+        if (!document.getElementById("aceito2").checked) { alert("Você precisa aceitar os termos."); return; }
+        // envia ao Apps Script agora
+        try {
+          const resp = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(dataToShow)
+          });
 
-      document.getElementById("btnVoltar").onclick = () => {
-        window.location.href = "index.html";
+          // tentar parse seguro: primeiro tentativa JSON, se falhar, text
+          let text = await resp.text();
+          let json = null;
+          try {
+            json = JSON.parse(text);
+          } catch (e) {
+            // não é JSON - pode ser "OK" ou outro texto
+            json = null;
+          }
+
+          // Tratamento: aceitar tanto JSON {status:"OK", receipt: "..."} quanto retorno textual "OK"
+          if (json && json.status === "OK" && json.receipt) {
+            // sucesso padrão com receipt
+            const receipt = json.receipt;
+            localStorage.setItem("lastReceiptData", JSON.stringify({payload: dataToShow, receipt: receipt}));
+            // remover pending
+            localStorage.removeItem("pendingAposta");
+            alert("Aposta enviada com sucesso. Receipt: " + receipt);
+            gerarPDFConfirmacao(dataToShow, receipt);
+            // opcional: redirecionar ou atualizar UI
+          } else {
+            // se veio "OK" puro ou outro texto, tentamos buscar por receipt via endpoint getbyreceipt buscando pelo nome+telefone
+            if (text && text.trim().toUpperCase() === "OK") {
+              // fallback: chamar endpoint get para tentar recuperar última linha com mesmo nome+telefone
+              const q = await fetch(SCRIPT_URL + "?action=get");
+              const all = await q.json();
+              // procurar última ocorrência do mesmo nome+telefone (por timestamp mais recente)
+              const matches = all.filter(r => (r.nome === dataToShow.nome && String(r.telefone) === String(dataToShow.telefone)));
+              if (matches.length > 0) {
+                // pega o mais recente (último)
+                const recent = matches[matches.length - 1];
+                const receipt = recent.receipt || ("NO_RECEIPT");
+                localStorage.setItem("lastReceiptData", JSON.stringify({payload: dataToShow, receipt: receipt}));
+                localStorage.removeItem("pendingAposta");
+                alert("Aposta enviada com sucesso (resposta OK). Receipt encontrado: " + receipt);
+                gerarPDFConfirmacao(dataToShow, receipt);
+              } else {
+                // nenhum match — informar ao usuário e salvar pending para tentar depois
+                alert("Envio retornou 'OK' mas não foi possível localizar o receipt automaticamente. Verifique a planilha.");
+              }
+            } else {
+              // resposta inesperada — mostra o texto ao usuário
+              alert("Resposta inesperada do servidor: " + text);
+            }
+          }
+        } catch (err) {
+          alert("Erro ao enviar: " + err.message);
+        }
       };
     }
-  </script>
-</body>
-</html>
+  }
+
+  document.getElementById("btnVoltar").addEventListener("click", () => {
+    // volta para edição — mantém pendingAposta
+    window.location.href = "index.html";
+  });
+
+  // função para gerar PDF (usada tanto para last quanto para o envio imediato)
+  function gerarPDFConfirmacao(payload, receipt) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let y = 12;
+    doc.setFontSize(16); doc.text("Comprovante - Bolão Mega da Virada", 12, y); y+=10;
+    doc.setFontSize(11); doc.text(`Receipt: ${receipt}`, 12, y); y+=8;
+    doc.text(`Nome: ${payload.nome}`, 12, y); y+=8;
+    doc.text(`Telefone: ${payload.telefone}`, 12, y); y+=10;
+    doc.text("Jogos:", 12, y); y+=8;
+    (payload.jogos || []).filter(Boolean).forEach((j,i)=>{
+      doc.text(`${String(i+1).padStart(2,"0")}: ${j}`, 12, y); y+=7;
+      if (y > 270) { doc.addPage(); y = 12; }
+    });
+    doc.save(`comprovante_${receipt}.pdf`);
+  }
+</script>
