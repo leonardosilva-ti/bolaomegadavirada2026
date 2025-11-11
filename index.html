@@ -1,55 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mega da Virada - Bolão</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mega da Virada - Bolão</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header class="site-header">
+    <h1>Mega da Virada</h1>
+  </header>
 
-<header>
-  <h1>Mega da Virada</h1>
-</header>
+  <main class="container">
+    <section class="observacao center">
+      <h2>INFORMAÇÃO IMPORTANTE</h2>
+      <p>
+        Este bolão não é feito de forma oficial pela Caixa Econômica Federal. O valor de premiação será dividido entre os participantes por meio de uma pessoa responsável. Todos os jogos ficam disponíveis para consulta pública, permitindo validação individual. Cada participante pode criar até 5 jogos, e ao fechar o bolão um jogo de 9 números será adicionado. Jogos restantes poderão ser completados aleatoriamente.
+      </p>
+    </section>
 
-<main>
-  <section class="observacao">
-    <h2>INFORMAÇÃO IMPORTANTE</h2>
-    <p>
-      Este bolão não é feito de forma oficial pela Caixa Econômica Federal.  
-      O valor de premiação será dividido entre os participantes por meio de uma pessoa responsável.  
-      Todos os jogos ficam disponíveis para consulta pública, permitindo validação individual.  
-      Cada participante pode criar até 5 jogos, e ao fechar o bolão um jogo de 9 números será adicionado.  
-      Jogos restantes poderão ser completados aleatoriamente.
-    </p>
-  </section>
+    <form id="cadastroForm" class="form">
+      <div class="form-row">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required>
+      </div>
 
-  <form id="cadastroForm">
-    <label>Nome:</label>
-    <input type="text" id="nome" required>
+      <div class="form-row">
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" placeholder="(DDD) 99999-9999" required>
+        <label for="pix" class="pix-label">O número é sua chave PIX?</label>
+        <select id="pix" required>
+          <option value="">Selecione</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
 
-    <label>Telefone:</label>
-    <input type="text" id="telefone" required placeholder="(DDD) 99999-9999">
+      <hr>
 
-    <label>O número é sua chave PIX?</label>
-    <select id="pix" required>
-      <option value="">Selecione</option>
-      <option value="Sim">Sim</option>
-      <option value="Não">Não</option>
-    </select>
+      <h2 id="titulo-jogo" class="center">Jogo 1 de 5</h2>
 
-    <div id="numerosContainer" class="numeros-grid"></div>
+      <div id="numerosContainer" class="numeros-grid" aria-hidden="false"></div>
 
-    <button type="button" id="proximo">Próximo Jogo</button>
-    <button type="submit" id="enviar" disabled>Enviar Aposta</button>
-  </form>
+      <div class="controles">
+        <button type="button" id="proximo" class="muted">Próximo Jogo</button>
+        <button type="submit" id="enviar" class="primary" disabled>Enviar Aposta</button>
+      </div>
 
-  <div id="mensagem"></div>
+    </form>
 
-  <button id="adminBtn" onclick="window.location.href='admin.html'">Área Administrativa</button>
-  <button id="consultarBtn" onclick="window.location.href='consulta.html'">Consultar Jogos</button>
-</main>
+    <div id="mensagem" class="mensagem"></div>
 
-<script src="script.js"></script>
+    <div class="links">
+      <button id="adminBtn" onclick="window.location.href='admin.html'">Área Administrativa</button>
+      <button id="consultarBtn" onclick="window.location.href='consulta.html'">Consultar Jogos</button>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
