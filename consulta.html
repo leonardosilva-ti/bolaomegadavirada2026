@@ -67,25 +67,23 @@ document.getElementById("buscar").onclick = async () => {
 function gerarPDF(m) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
-  const status = m.Pago === "TRUE" ? "Pago" : "Aguardando Pagamento";
-  const data = new Date(m.Timestamp).toLocaleString("pt-BR");
+  const status = (String(m.pago || m.Pago || "").toLowerCase() === "sim" || String(m.pago || m.Pago || "").toLowerCase() === "true") ? "Pago" : "Aguardando Pagamento";
+  const timestamp = m.Timestamp || m.timestamp || m.Timestamp || new Date().toISOString();
+  const data = new Date(timestamp).toLocaleString("pt-BR");
   let y = 15;
-  doc.setFontSize(16);
-  doc.text("Comprovante - Bolão Mega da Virada", 12, y);
-  y+=10;
-  doc.setFontSize(11);
-  doc.text(`Receipt: ${m.ReceiptID}`, 12, y); y+=8;
-  doc.text(`Nome: ${m.Nome}`, 12, y); y+=8;
-  doc.text(`Telefone: ${m.Telefone}`, 12, y); y+=8;
+  doc.setFontSize(16); doc.text("Comprovante - Bolão Mega da Virada", 12, y); y+=10;
+  doc.setFontSize(11); doc.text(`Receipt: ${m.receipt || m.ReceiptID || ""}`, 12, y); y+=8;
+  doc.text(`Nome: ${m.nome || m.Nome}`, 12, y); y+=8;
+  doc.text(`Telefone: ${m.telefone || m.Telefone}`, 12, y); y+=8;
   doc.text(`Status: ${status}`, 12, y); y+=8;
   doc.text(`Data/Hora: ${data}`, 12, y); y+=10;
   doc.text("Jogos:", 12, y); y+=6;
-  for (let i=1; i<=5; i++) {
-    const j = m["Jogo "+i];
-    if (j) { doc.text(`${i}: ${j}`, 12, y); y+=7; if (y>270){doc.addPage(); y=12;} }
-  }
-  doc.save(`comprovante_${m.ReceiptID}.pdf`);
+  const jogos = m.jogos || [m["Jogo 1"], m["Jogo 2"], m["Jogo 3"], m["Jogo 4"], m["Jogo 5"]];
+  (Array.isArray(jogos) ? jogos : []).filter(Boolean).forEach((j,i)=>{ doc.text(`${i+1}: ${j}`, 12, y); y+=7; if (y>270){ doc.addPage(); y=12;} });
+  doc.save(`comprovante_${m.receipt || m.ReceiptID || "unknown"}.pdf`);
 }
+
+
 </script>
 </body>
 </html>
