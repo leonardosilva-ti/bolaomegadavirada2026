@@ -8,7 +8,6 @@ const NUMEROS_POR_JOGO = 6;
 let aposta = {
     nome: "",
     telefone: "",
-    pix: "",
     jogos: new Array(JOGOS_MAXIMO).fill("") // Array para armazenar as strings de números
 };
 
@@ -17,7 +16,6 @@ let jogoAtual = 0; // Começa no Jogo 1
 // Elementos do DOM
 const nomeInput = document.getElementById("nome");
 const telefoneInput = document.getElementById("telefone");
-const pixSelect = document.getElementById("pix");
 const tituloJogo = document.getElementById("titulo-jogo");
 const numerosContainer = document.getElementById("numerosContainer");
 const statusJogosContainer = document.getElementById("statusJogosContainer");
@@ -178,19 +176,18 @@ function carregarDadosSalvos() {
         aposta = JSON.parse(apostaSalva);
         nomeInput.value = aposta.nome || "";
         telefoneInput.value = aposta.telefone || "";
-        pixSelect.value = aposta.pix || "";
+        
     }
 }
 
 function validarDadosPessoais() {
-    if (!nomeInput.value.trim() || !telefoneInput.value.trim() || !pixSelect.value) {
-        mensagem.textContent = "Preencha todos os dados pessoais (Nome, Telefone e PIX).";
+    if (!nomeInput.value.trim() || !telefoneInput.value.trim()) { 
+        mensagem.textContent = "Preencha todos os dados pessoais (Nome e Telefone).";
         mensagem.style.color = "red";
         return false;
     }
     aposta.nome = nomeInput.value.trim();
     aposta.telefone = telefoneInput.value.trim();
-    aposta.pix = pixSelect.value;
     mensagem.textContent = "";
     return true;
 }
@@ -236,12 +233,12 @@ btnProximo.addEventListener("click", () => {
 gerarAleatorios.addEventListener("click", preencherAleatoriamente);
 
 // Salva os dados do formulário no objeto aposta em cada mudança (para persistência)
-const inputs = [nomeInput, telefoneInput, pixSelect];
+const inputs = [nomeInput, telefoneInput]; 
 inputs.forEach(input => {
     input.addEventListener("change", () => {
         aposta.nome = nomeInput.value;
         aposta.telefone = telefoneInput.value;
-        aposta.pix = pixSelect.value;
         localStorage.setItem("pendingAposta", JSON.stringify(aposta));
     });
 });
+
