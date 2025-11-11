@@ -1,109 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Admin - Bolão</title>
-<link rel="stylesheet" href="css/style.css">
+<head>
+<meta charset="UTF-8">
+<title>Área Administrativa</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <main class="container">
-    <h1>Área Administrativa</h1>
-    <div id="login">
-      <p>Senha:</p>
-      <input type="password" id="senha"><button id="btnEntrar">Entrar</button>
-    </div>
+<body class="bg-gray-100 text-gray-900 p-6">
+  <h1 class="text-2xl font-bold mb-4 text-center">Área Administrativa</h1>
 
-    <div id="area-admin" style="display:none">
-      <h2>Dados do Bolão</h2>
-      <button id="btnCarregar">Carregar Participantes</button>
-      <div id="jogos-lista"></div>
+  <div id="lista"></div>
 
-      <h3>Excluir participante (por nome)</h3>
-      <input id="nomeExcluir" placeholder="Nome completo"><button id="btnExcluir">Excluir</button>
+  <h2 class="text-xl font-bold mt-8">Números Sorteados</h2>
+  <div id="sorteio" class="mt-2"></div>
+  <button id="btnAtualizar" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">Atualizar Números</button>
 
-      <h3>Marcar pagamento</h3>
-      <input id="receiptMark" placeholder="Receipt ID"><button id="btnMarkPaid">Marcar Pago</button>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-      <h3>Verificar resultados (números sorteados)</h3>
-      <input id="numsSorteados" placeholder="Ex: 01,02,03,04,05,06"><button id="btnVerificar">Verificar</button>
-      <div id="resultado"></div>
+async function carregarLista() {
+  const res = await fetch(SCRIPT_URL + "?action=get");
+  const data = await res.json();
 
-      <h3>Gerar PDF de todos os jogos</h3>
-      <button id="btnFechar">Gerar PDF de todos os jogos</button>
-    </div>
-  </main>
+  const listaDiv = document.getElementById("lista");
+  listaDiv.innerHTML = "";
+  data.forEach(p => {
+    const jogos = JSON.parse(p.jogos || "[]").join(" | ");
+    listaDiv.innerHTML += `
+      <div class="bg-white p-3 mb-2 rounded shadow flex justify-between items-center">
+        <div>
+          <strong>${p.nome}</strong> - ${p.telefone}<br>
+          Pix: ${p.pix} | Status: <b>${p.status || "Pendente"}</b><br>
+          Jogos: ${jogos}
+        </div>
+        <div class="space-x-2">
+          <button class="bg-green-500 text-white px-3 py-1 rounded" onclick="confirmarPagamento('${p.nome}','${p.telefone}')">Confirmar Pagamento</button>
+          <button class="bg-red-500 text-white px-3 py-1 rounded" onclick="excluir('${p.nome}','${p.telefone}')">Excluir</button>
+        </div>
+      </div>`;
+  });
+}
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
-    const SENHA_ADMIN = "Blq15206395!"; // altere para sua senha desejada
+async function excluir(nome, telefone) {
+  if (!confirm("Tem certeza que deseja excluir este participante?")) return;
+  await fetch(`${SCRIPT_URL}?action=delete&nome=${encodeURIComponent(nome)}&telefone=${encodeURIComponent(telefone)}`);
+  carregarLista();
+}
 
-    document.getElementById("btnEntrar").onclick = () => {
-      if (document.getElementById("senha").value === SENHA_ADMIN) {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("area-admin").style.display = "block";
-      } else alert("Senha incorreta");
-    };
+async function confirmarPagamento(nome, telefone) {
+  await fetch(`${SCRIPT_URL}?action=confirmarPagamento&nome=${encodeURIComponent(nome)}&telefone=${encodeURIComponent(telefone)}`);
+  carregarLista();
+}
 
-    document.getElementById("btnCarregar").onclick = async () => {
-      const res = await fetch(SCRIPT_URL + "?action=get");
-      const dados = await res.json();
-      const div = document.getElementById("jogos-lista");
-      div.innerHTML = "";
-      dados.forEach((d,i)=>{
-        div.innerHTML += `<div style="border-bottom:1px solid #eee;padding:8px">
-          <strong>${i+1} - ${d.nome}</strong> (${d.telefone}) - Receipt: ${d.receipt} - Pago: ${d.pago || "Não"}<br>
-          ${d.jogos.filter(Boolean).map((j,idx)=>`<div>Jogo ${idx+1}: ${j}</div>`).join('')}
-        </div>`;
-      });
-    };
+document.getElementById("btnAtualizar").onclick = async () => {
+  const numeros = prompt("Informe os 6 números sorteados separados por espaço (ex: 01 05 13 27 45 60):");
+  if (!numeros) return;
+  const arr = numeros.split(" ").map(n=>parseInt(n)).slice(0,6);
+  await fetch(SCRIPT_URL + "?action=registrarSorteio&nums=" + arr.join(","));
+  alert("Números registrados!");
+};
 
-    document.getElementById("btnExcluir").onclick = async () => {
-      const nome = document.getElementById("nomeExcluir").value.trim();
-      if (!nome) return alert("Informe nome");
-      await fetch(SCRIPT_URL + `?action=delete&nome=${encodeURIComponent(nome)}`);
-      alert("Exclusão solicitada. Recarregue os dados.");
-    };
-
-    document.getElementById("btnMarkPaid").onclick = async () => {
-      const r = document.getElementById("receiptMark").value.trim();
-      if (!r) return alert("Informe receipt");
-      const res = await fetch(SCRIPT_URL + `?action=markpaid&receipt=${encodeURIComponent(r)}`);
-      const data = await res.json();
-      alert("Resposta: " + JSON.stringify(data));
-    };
-
-    document.getElementById("btnVerificar").onclick = async () => {
-      const nums = document.getElementById("numsSorteados").value.trim();
-      if (!nums) return alert("Informe números sorteados");
-      const res = await fetch(SCRIPT_URL + `?action=verify&nums=${encodeURIComponent(nums)}`);
-      const g = await res.json();
-      const div = document.getElementById("resultado");
-      if (!g || g.length === 0) div.innerHTML = "<p>Nenhum jogo com 4+ acertos.</p>";
-      else {
-        div.innerHTML = "<h4>Ganhadores</h4>" + g.map(x=>`<p>${x.nome} (${x.telefone}) - Jogo ${x.jogoIndex}: ${x.numeros} - ${x.acertos} acertos (Receipt ${x.receipt})</p>`).join("<hr>");
-      }
-    };
-
-    document.getElementById("btnFechar").onclick = async () => {
-      if (!confirm("Gerar PDF com todos os jogos?")) return;
-      const res = await fetch(SCRIPT_URL + "?action=get");
-      const dados = await res.json();
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      let y=12;
-      doc.setFontSize(16); doc.text("Bolão - Lista de jogos", 12, y); y+=10;
-      dados.forEach((d,i)=>{
-        d.jogos.forEach((j,idx)=>{
-          if (!j) return;
-          doc.setFontSize(11);
-          doc.text(`(${d.receipt}) J${String(i+1).padStart(2,"0")}-${idx+1}: ${j}`, 12, y);
-          y+=7;
-          if (y>270){ doc.addPage(); y=12; }
-        });
-      });
-      doc.save("bolao_todos_jogos.pdf");
-      alert("PDF salvo.");
-    };
-  </script>
+carregarLista();
+</script>
 </body>
 </html>
