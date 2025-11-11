@@ -80,6 +80,10 @@ button:disabled {
   border: 1px solid #ccc !important;
 }
 
+/* /css/style.css */
+.hidden {
+    display: none !important;
+}
 /* ... (Seu código CSS anterior) ... */
 
 .status-jogos-grid {
@@ -173,6 +177,7 @@ button:disabled {
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
 
 
 
