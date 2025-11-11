@@ -1,73 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Jogos - Mega da Virada</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Consulta de Jogos</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <h1>Consulta de Jogos</h1>
-  </header>
-
-  <div class="consulta-container">
-    <div class="contagem" id="contagem"></div>
-
-    <div class="center" style="margin-bottom:15px;">
-      <button class="muted" onclick="window.location.href='index.html'">⬅ Voltar</button>
-    </div>
-
-    <div id="listaJogos" class="jogos-grid">
-      <p>Carregando jogos...</p>
-    </div>
+<main class="container">
+  <h1>Consultar Jogos</h1>
+  <div class="form-row">
+    <input type="text" id="nome" placeholder="Nome completo">
+    <input type="text" id="ultimos4" placeholder="Últimos 4 números do telefone">
+    <button id="buscar" class="primary">Buscar</button>
   </div>
+  <div id="resultado"></div>
+</main>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-    async function carregarJogos() {
-      const lista = document.getElementById("listaJogos");
-      lista.innerHTML = "<p>Carregando...</p>";
+document.getElementById("buscar").onclick = async () => {
+  const nome = document.getElementById("nome").value.trim();
+  const ult4 = document.getElementById("ultimos4").value.trim();
+  if (!nome || !ult4) return alert("Informe o nome e os 4 últimos números do telefone.");
 
-      try {
-        const resp = await fetch(SCRIPT_URL + "?modo=LISTAR");
-        const data = await resp.json();
-        lista.innerHTML = "";
-        data.forEach(j => {
-          const div = document.createElement("div");
-          div.innerHTML = `
-            <strong>${j.nome}</strong><br>
-            ${j.jogos.map(n => n).join("<br>")}
-          `;
-          lista.appendChild(div);
-        });
-      } catch (e) {
-        lista.innerHTML = "<p>Erro ao carregar jogos.</p>";
-      }
-    }
+  const res = await fetch(SCRIPT_URL + "?action=get");
+  const data = await res.json();
+  const matches = data.filter(r => r.nome.toLowerCase() === nome.toLowerCase() && r.telefone.slice(-4) === ult4);
 
-    function contagemRegressiva() {
-      const alvo = new Date("2025-12-31T20:30:00-03:00").getTime();
-      const el = document.getElementById("contagem");
-      const timer = setInterval(() => {
-        const agora = new Date().getTime();
-        const diff = alvo - agora;
-        if (diff <= 0) {
-          el.textContent = "Sorteio em andamento!";
-          clearInterval(timer);
-          return;
-        }
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const m = Math.floor((diff / (1000 * 60)) % 60);
-        const s = Math.floor((diff / 1000) % 60);
-        el.textContent = `Faltam ${d}d ${h}h ${m}m ${s}s para o sorteio`;
-      }, 1000);
-    }
+  const div = document.getElementById("resultado");
+  div.innerHTML = "";
 
-    contagemRegressiva();
-    carregarJogos();
-  </script>
+  if (matches.length === 0) {
+    div.innerHTML = "<p>Nenhuma aposta encontrada.</p>";
+    return;
+  }
+
+  matches.forEach(m => {
+    const status = m.Pago === "TRUE" ? "Pago" : "Aguardando Pagamento";
+    const jogos = [m["Jogo 1"], m["Jogo 2"], m["Jogo 3"], m["Jogo 4"], m["Jogo 5"]]
+      .filter(Boolean)
+      .map((j,i)=>`<p><b>Jogo ${i+1}:</b> ${j}</p>`).join("");
+    div.innerHTML += `
+      <div class="card">
+        <p><b>Nome:</b> ${m.Nome}<br><b>Telefone:</b> ${m.Telefone}<br><b>Status:</b> ${status}</p>
+        ${jogos}
+        <button class="muted" onclick='gerarPDF(${JSON.stringify(m)})'>Baixar Comprovante</button>
+      </div>`;
+  });
+};
+
+function gerarPDF(m) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const status = m.Pago === "TRUE" ? "Pago" : "Aguardando Pagamento";
+  const data = new Date(m.Timestamp).toLocaleString("pt-BR");
+  let y = 15;
+  doc.setFontSize(16);
+  doc.text("Comprovante - Bolão Mega da Virada", 12, y);
+  y+=10;
+  doc.setFontSize(11);
+  doc.text(`Receipt: ${m.ReceiptID}`, 12, y); y+=8;
+  doc.text(`Nome: ${m.Nome}`, 12, y); y+=8;
+  doc.text(`Telefone: ${m.Telefone}`, 12, y); y+=8;
+  doc.text(`Status: ${status}`, 12, y); y+=8;
+  doc.text(`Data/Hora: ${data}`, 12, y); y+=10;
+  doc.text("Jogos:", 12, y); y+=6;
+  for (let i=1; i<=5; i++) {
+    const j = m["Jogo "+i];
+    if (j) { doc.text(`${i}: ${j}`, 12, y); y+=7; if (y>270){doc.addPage(); y=12;} }
+  }
+  doc.save(`comprovante_${m.ReceiptID}.pdf`);
+}
+</script>
 </body>
 </html>
