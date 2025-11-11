@@ -1,21 +1,25 @@
-:root{--maxw:900px}
-body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#fff;color:#111}
-.container{max-width:var(--maxw);margin:20px auto;padding:10px}
+:root{--maxw:980px;--accent:#0b87e7}
+*{box-sizing:border-box}
+body{font-family:Inter,Arial,Helvetica,sans-serif;margin:0;background:#fff;color:#111}
+.container{max-width:var(--maxw);margin:18px auto;padding:12px}
 h1{text-align:center;font-size:34px;margin:6px 0 18px}
-.row{display:flex;align-items:center;gap:8px;margin:6px 0}
-.row label{min-width:130px}
-input[type=text],input[type=tel],input{padding:6px;border:1px solid #ccc;border-radius:4px;flex:1}
-hr{margin:18px 0;border:0;border-top:1px solid #ddd}
-#jogos-area{display:block;margin:12px auto;max-width:700px}
-.jogo-card{border:0;padding:8px;margin:8px 0;text-align:center}
-.jogo-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-width:420px;margin:8px auto 0}
-.jogo-grid input{padding:10px;border:1px solid #ccc;border-radius:6px;text-align:center}
-.controles{text-align:center;margin:12px 0;display:flex;justify-content:center;gap:10px}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.row label{min-width:150px;font-weight:600}
+input[type=text],input[type=tel],input{padding:8px;border:1px solid #ccc;border-radius:6px;flex:1}
+hr{margin:18px 0;border:0;border-top:1px solid #eee}
+#jogos-area{display:block;margin:12px auto;max-width:900px}
+.grade{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:12px}
+.num-btn{padding:10px;border-radius:6px;border:1px solid #bdbdbd;background:#fafafa;cursor:pointer;text-align:center;font-weight:600}
+.num-btn.selecionado{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 2px 0 rgba(0,0,0,0.06)}
+.controles{text-align:center;margin:12px 0;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 button{cursor:pointer}
-button.primary{background:#0b87e7;color:#fff;border:0;padding:10px 18px;border-radius:8px}
-button.muted{background:#efefef;border:1px solid #ccc;padding:8px 12px;border-radius:6px}
-.observacao-box{max-width:800px;margin:20px auto}
-.observacao-text{border:2px solid #ccc;padding:18px;border-radius:6px;background:#fff}
-.consultar{max-width:800px;margin:12px auto;text-align:center}
+button.primary{background:var(--accent);color:#fff;border:0;padding:10px 18px;border-radius:8px}
+button.muted{background:#efefef;border:1px solid #ddd;padding:8px 12px;border-radius:6px}
+.observacao-box{max-width:900px;margin:18px auto}
+.center{text-align:center}
+.observacao-text{border:2px solid #eee;padding:16px;border-radius:8px;background:#fff}
+.consultar{max-width:900px;margin:12px auto;text-align:center}
 #lista-jogos{margin-top:10px;text-align:left}
+.small{font-size:0.95rem}
+.resumo{max-width:900px;margin:12px auto;padding:12px;border-radius:8px;border:1px solid #eee}
 .submit-area{text-align:center;margin:18px 0}
