@@ -3,75 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmação da Aposta - Mega da Virada</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Confirmação da Aposta</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1>Confirmação da Aposta</h1>
-  </header>
+  <div class="container confirmacao">
+    <h2>Confirme seus dados e jogos</h2>
+    <div id="dadosConfirmacao"></div>
+    <div id="jogosConfirmacao"></div>
 
-  <main class="container">
-    <section id="resumo" class="center">
-      <h2>Revise suas informações antes de enviar</h2>
-      <div id="dados"></div>
-      <div id="jogos"></div>
-    </section>
-
-    <div class="controles">
-      <button id="voltar" class="muted">Voltar e Editar</button>
-      <button id="confirmarEnvio" class="primary">Confirmar e Enviar</button>
+    <div class="termos">
+      <label>
+        <input type="checkbox" id="aceitoTermos">
+        Li e aceito os termos da aposta.
+      </label>
     </div>
 
-    <div id="mensagem" class="mensagem"></div>
-  </main>
+    <div class="botoes">
+      <button id="btnVoltar" class="btn-cinza">Voltar</button>
+      <button id="btnConfirmar" class="btn-azul">Confirmar Aposta</button>
+    </div>
+
+    <p id="mensagem" class="mensagem"></p>
+  </div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+    const aposta = JSON.parse(localStorage.getItem("pendingAposta"));
+    const dadosDiv = document.getElementById("dadosConfirmacao");
+    const jogosDiv = document.getElementById("jogosConfirmacao");
+    const mensagem = document.getElementById("mensagem");
 
-    const payload = JSON.parse(localStorage.getItem("pendingAposta"));
-    const dadosDiv = document.getElementById("dados");
-    const jogosDiv = document.getElementById("jogos");
-    const msg = document.getElementById("mensagem");
-
-    if (!payload) {
-      dadosDiv.innerHTML = "<p style='color:red'>Nenhuma aposta encontrada. Retorne à página inicial.</p>";
-      document.getElementById("confirmarEnvio").disabled = true;
+    if (!aposta) {
+      dadosDiv.innerHTML = "<p style='color:red'>Nenhuma aposta encontrada.</p>";
+      document.getElementById("btnConfirmar").disabled = true;
     } else {
       dadosDiv.innerHTML = `
-        <p><b>Nome:</b> ${payload.nome}</p>
-        <p><b>Telefone:</b> ${payload.telefone}</p>
-        <p><b>É chave PIX?:</b> ${payload.pix}</p>
+        <p><b>Nome:</b> ${aposta.nome}</p>
+        <p><b>Telefone:</b> ${aposta.telefone}</p>
+        <p><b>É chave PIX?:</b> ${aposta.pix}</p>
       `;
 
       jogosDiv.innerHTML = `
-        <h3>Jogos</h3>
-        ${payload.jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
+        <h3>Jogos Selecionados</h3>
+        ${aposta.jogos.map((jogo, i) => `<p><b>Jogo ${i + 1}:</b> ${jogo}</p>`).join("")}
       `;
     }
 
-    document.getElementById("voltar").onclick = () => {
+    document.getElementById("btnVoltar").onclick = () => {
       window.location.href = "index.html";
     };
 
-    document.getElementById("confirmarEnvio").onclick = async () => {
-      msg.innerHTML = "<p>Enviando seus dados...</p>";
+    document.getElementById("btnConfirmar").onclick = async () => {
+      const aceito = document.getElementById("aceitoTermos").checked;
+      if (!aceito) {
+        mensagem.textContent = "Você deve aceitar os termos antes de confirmar.";
+        mensagem.style.color = "red";
+        return;
+      }
+
+      document.getElementById("btnConfirmar").disabled = true;
+      mensagem.textContent = "Enviando aposta...";
+      mensagem.style.color = "black";
+
+      const apostaCompleta = {
+        ...aposta,
+        dataHora: new Date().toLocaleString("pt-BR"),
+        receiptID: Math.floor(Math.random() * 900000 + 100000),
+        status: "Aguardando Pagamento"
+      };
+
       try {
-        const res = await fetch(SCRIPT_URL, {
+        const formData = new FormData();
+        formData.append("nome", apostaCompleta.nome);
+        formData.append("telefone", apostaCompleta.telefone);
+        formData.append("pix", apostaCompleta.pix);
+        formData.append("jogos", JSON.stringify(apostaCompleta.jogos));
+        formData.append("receiptID", apostaCompleta.receiptID);
+        formData.append("dataHora", apostaCompleta.dataHora);
+
+        const response = await fetch(SCRIPT_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: formData
         });
 
-        if (res.ok) {
-          msg.innerHTML = "<p style='color:green'><b>Aposta enviada com sucesso!</b></p>";
+        const texto = await response.text();
+
+        if (response.ok) {
+          localStorage.setItem("lastAposta", JSON.stringify(apostaCompleta));
           localStorage.removeItem("pendingAposta");
-          setTimeout(() => window.location.href = "comprovante.html", 1500);
+          window.location.href = "comprovante.html";
         } else {
-          msg.innerHTML = "<p style='color:red'>Erro ao enviar. Tente novamente.</p>";
+          mensagem.textContent = "Erro ao enviar: " + texto;
+          mensagem.style.color = "red";
+          document.getElementById("btnConfirmar").disabled = false;
         }
-      } catch (e) {
-        msg.innerHTML = `<p style='color:red'>Erro: ${e.message}</p>`;
+      } catch (err) {
+        mensagem.textContent = "Erro ao enviar: " + err.message;
+        mensagem.style.color = "red";
+        document.getElementById("btnConfirmar").disabled = false;
       }
     };
   </script>
