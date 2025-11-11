@@ -14,12 +14,14 @@ function gerarNumeros() {
   numerosContainer.innerHTML = "";
   for (let i = 1; i <= 60; i++) {
     const btn = document.createElement("button");
+    btn.type = "button"; // <- IMPORTANTE: evita submit do form
     btn.textContent = i.toString().padStart(2, "0");
     btn.onclick = () => selecionarNumero(btn);
     numerosContainer.appendChild(btn);
   }
   atualizarBotoes();
 }
+
 
 function selecionarNumero(btn) {
   btn.classList.toggle("selected");
@@ -34,16 +36,23 @@ function atualizarBotoes() {
 }
 
 btnGerar.onclick = () => {
-  const selecionados = [...document.querySelectorAll(".numeros-grid button.selected")].map(b => b.textContent);
-  while (selecionados.length < 6) {
+  // usar Set para controlar os já selecionados e evitar loop infinito
+  const botoes = Array.from(numerosContainer.querySelectorAll("button"));
+  const selecionados = new Set(botoes.filter(b => b.classList.contains("selected")).map(b => b.textContent));
+
+  while (selecionados.size < 6) {
     const n = String(Math.floor(Math.random() * 60 + 1)).padStart(2, "0");
-    if (!selecionados.includes(n)) {
-      const btn = [...numerosContainer.children].find(b => b.textContent === n);
-      btn.classList.add("selected");
+    if (!selecionados.has(n)) {
+      const btn = botoes.find(b => b.textContent === n);
+      if (btn) {
+        btn.classList.add("selected");
+        selecionados.add(n);
+      }
     }
   }
   atualizarBotoes();
 };
+;
 
 btnProximo.onclick = () => {
   const selecionados = [...document.querySelectorAll(".numeros-grid button.selected")].map(b => b.textContent);
@@ -86,3 +95,4 @@ form.onsubmit = async (e) => {
 };
 
 gerarNumeros();
+
