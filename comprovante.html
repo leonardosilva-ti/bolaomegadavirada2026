@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comprovante de Aposta - Bolão Mega da Virada</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 flex justify-center items-center min-h-screen p-4">
+
+  <div id="comprovante" class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full">
+    <div class="text-center mb-4">
+      <h1 class="text-2xl font-bold text-indigo-700">Comprovante de Aposta</h1>
+      <p class="text-sm text-gray-500">Bolão Mega da Virada 2025</p>
+    </div>
+
+    <div id="dadosComprovante" class="text-gray-800 space-y-2">
+      <p><strong>Nome:</strong> <span id="nome"></span></p>
+      <p><strong>Telefone:</strong> <span id="telefone"></span></p>
+      <p><strong>Status:</strong> <span id="status" class="font-semibold"></span></p>
+      <p><strong>Data e Hora:</strong> <span id="dataHora"></span></p>
+      <hr class="my-3">
+      <div id="jogos" class="space-y-2"></div>
+    </div>
+
+    <div class="text-center mt-6">
+      <button id="btnBaixar" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
+        Baixar PDF
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+
+    async function carregarComprovante() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const receipt = urlParams.get("id");
+
+      if (!receipt) {
+        alert("Comprovante inválido.");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=get&id=${receipt}`);
+        const data = await res.json();
+
+        if (!data || !data.Nome) {
+          alert("Comprovante não encontrado.");
+          return;
+        }
+
+        document.getElementById("nome").textContent = data.Nome;
+        document.getElementById("telefone").textContent = data.Telefone;
+        document.getElementById("status").textContent = data.Pago === "SIM" ? "Pago" : "Aguardando pagamento";
+        document.getElementById("status").className = data.Pago === "SIM" ? "text-green-600 font-semibold" : "text-red-600 font-semibold";
+        document.getElementById("dataHora").textContent = data.Timestamp || new Date().toLocaleString("pt-BR");
+
+        const jogosDiv = document.getElementById("jogos");
+        jogosDiv.innerHTML = "";
+
+        for (let i = 1; i <= 5; i++) {
+          const jogo = data[`Jogo ${i}`];
+          if (jogo) {
+            const p = document.createElement("p");
+            p.innerHTML = `<strong>Jogo ${i}:</strong> ${jogo}`;
+            jogosDiv.appendChild(p);
+          }
+        }
+
+      } catch (err) {
+        alert("Erro ao carregar comprovante: " + err.message);
+      }
+    }
+
+    // Baixar PDF
+    document.getElementById("btnBaixar").addEventListener("click", () => {
+      const element = document.getElementById("comprovante");
+      const nomeArquivo = `Comprovante_${document.getElementById("nome").textContent}.pdf`;
+      const opt = {
+        margin: 10,
+        filename: nomeArquivo,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    });
+
+    carregarComprovante();
+  </script>
+
+</body>
+</html>
