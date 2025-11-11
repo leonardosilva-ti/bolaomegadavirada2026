@@ -1,108 +1,79 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Confirmação da Aposta</title>
-<link rel="stylesheet" href="css/style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmação da Aposta - Mega da Virada</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<main class="container">
-  <h1>Confirmação da Aposta</h1>
-  <div id="info"></div>
-  <div id="jogos"></div>
-  <label class="termo">
-    <input type="checkbox" id="aceito2"> Li e aceito os termos
-  </label>
-  <div class="controles">
-    <button id="btnBaixar" class="primary">Confirmar e Enviar</button>
-    <button id="btnVoltar" class="muted">Voltar</button>
-  </div>
-</main>
+  <header class="site-header">
+    <h1>Confirmação da Aposta</h1>
+  </header>
 
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+  <main class="container">
+    <section id="resumo" class="center">
+      <h2>Revise suas informações antes de enviar</h2>
+      <div id="dados"></div>
+      <div id="jogos"></div>
+    </section>
 
-const pending = JSON.parse(localStorage.getItem("pendingAposta") || "null");
-if (!pending) {
-  document.body.innerHTML = "<p>Nenhuma aposta pendente. Volte à página inicial.</p>";
-}
+    <div class="controles">
+      <button id="voltar" class="muted">Voltar e Editar</button>
+      <button id="confirmarEnvio" class="primary">Confirmar e Enviar</button>
+    </div>
 
-document.getElementById("info").innerHTML = `<p><strong>Nome:</strong> ${pending.nome}<br><strong>Telefone:</strong> ${pending.telefone}</p>`;
-document.getElementById("jogos").innerHTML = pending.jogos.map((j,i)=>`<p><b>Jogo ${i+1}:</b> ${j}</p>`).join("");
+    <div id="mensagem" class="mensagem"></div>
+  </main>
 
-document.getElementById("btnBaixar").onclick = async () => {
-  if (!document.getElementById("aceito2").checked) { alert("Você precisa aceitar os termos."); return; }
-  try {
-    const resp = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(pending) });
-    const text = await resp.text();
-    let json = null;
-    try { json = JSON.parse(text); } catch(e){ json = null; }
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-    // Caso padrão: JSON com receipt
-    if (json && (json.status === "OK" || json.status === "ok") && json.receipt) {
-      const receipt = json.receipt;
-      localStorage.setItem("lastReceiptData", JSON.stringify({ payload: pending, receipt }));
-      localStorage.removeItem("pendingAposta");
-      gerarPDF(pending, receipt, "Aguardando Pagamento");
-      alert("Aposta enviada com sucesso. Receipt: " + receipt);
-      return;
+    const payload = JSON.parse(localStorage.getItem("pendingAposta"));
+    const dadosDiv = document.getElementById("dados");
+    const jogosDiv = document.getElementById("jogos");
+    const msg = document.getElementById("mensagem");
+
+    if (!payload) {
+      dadosDiv.innerHTML = "<p style='color:red'>Nenhuma aposta encontrada. Retorne à página inicial.</p>";
+      document.getElementById("confirmarEnvio").disabled = true;
+    } else {
+      dadosDiv.innerHTML = `
+        <p><b>Nome:</b> ${payload.nome}</p>
+        <p><b>Telefone:</b> ${payload.telefone}</p>
+        <p><b>É chave PIX?:</b> ${payload.pix}</p>
+      `;
+
+      jogosDiv.innerHTML = `
+        <h3>Jogos</h3>
+        ${payload.jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
+      `;
     }
 
-    // Caso resposta textual "OK" (legacy) -> tentar recuperar último registro por nome+telefone
-    if (typeof text === "string" && text.trim().toUpperCase() === "OK") {
-      const q = await fetch(SCRIPT_URL + "?action=get");
-      const all = await q.json();
-      const matches = all.filter(r => String(r.nome).trim().toLowerCase() === String(pending.nome).trim().toLowerCase()
-        && String(r.telefone).trim() === String(pending.telefone).trim());
-      if (matches.length > 0) {
-        const recent = matches[matches.length - 1];
-        const receipt = recent.receipt || ("NO_RECEIPT");
-        localStorage.setItem("lastReceiptData", JSON.stringify({ payload: pending, receipt }));
-        localStorage.removeItem("pendingAposta");
-        gerarPDF(pending, receipt, "Aguardando Pagamento");
-        alert("Aposta enviada com sucesso. Receipt: " + receipt);
-        return;
-      } else {
-        alert("Envio retornou 'OK' mas não foi possível localizar o receipt automaticamente. Verifique a planilha.");
-        return;
+    document.getElementById("voltar").onclick = () => {
+      window.location.href = "index.html";
+    };
+
+    document.getElementById("confirmarEnvio").onclick = async () => {
+      msg.innerHTML = "<p>Enviando seus dados...</p>";
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          msg.innerHTML = "<p style='color:green'><b>Aposta enviada com sucesso!</b></p>";
+          localStorage.removeItem("pendingAposta");
+          setTimeout(() => window.location.href = "comprovante.html", 1500);
+        } else {
+          msg.innerHTML = "<p style='color:red'>Erro ao enviar. Tente novamente.</p>";
+        }
+      } catch (e) {
+        msg.innerHTML = `<p style='color:red'>Erro: ${e.message}</p>`;
       }
-    }
-
-    // Caso JSON com status ok mas sem receipt
-    if (json && (json.status === "ok" || json.status === "OK")) {
-      localStorage.setItem("lastReceiptData", JSON.stringify({ payload: pending, receipt: ("NO_RECEIPT") }));
-      localStorage.removeItem("pendingAposta");
-      gerarPDF(pending, "NO_RECEIPT", "Aguardando Pagamento");
-      alert("Aposta enviada (sem receipt retornado).");
-      return;
-    }
-
-    // fallback: mostrar texto bruto
-    alert("Resposta inesperada do servidor: " + text);
-  } catch (err) {
-    alert("Erro ao enviar: " + err.message);
-  }
-};
-
-function gerarPDF(payload, receipt, status) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const data = new Date().toLocaleString("pt-BR");
-  let y = 15;
-  doc.setFontSize(16);
-  doc.text("Comprovante - Bolão Mega da Virada", 12, y);
-  y += 10;
-  doc.setFontSize(11);
-  doc.text(`Receipt: ${receipt}`, 12, y); y += 8;
-  doc.text(`Nome: ${payload.nome}`, 12, y); y += 8;
-  doc.text(`Telefone: ${payload.telefone}`, 12, y); y += 8;
-  doc.text(`Status: ${status}`, 12, y); y += 8;
-  doc.text(`Data/Hora: ${data}`, 12, y); y += 10;
-  doc.text("Jogos:", 12, y); y += 6;
-  payload.jogos.forEach((j,i)=>{ doc.text(`${i+1}: ${j}`, 12, y); y+=7; if (y>270){doc.addPage(); y=12;} });
-  doc.save(`comprovante_${receipt}.pdf`);
-}
-</script>
+    };
+  </script>
 </body>
 </html>
