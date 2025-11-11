@@ -1,4 +1,4 @@
-// /js/script.js - Lógica da Página Principal
+// /js/script.js - Lógica da Página Principal (CORRIGIDO)
 
 const NUMEROS_TOTAL = 60;
 const JOGOS_MAXIMO = 5;
@@ -80,21 +80,25 @@ function updateControles() {
 
     // Navegação
     btnAnterior.disabled = jogoAtual === 0;
-    btnProximo.disabled = jogoAtual === JOGOS_MAXIMO - 1;
     
-    // Botão de Próximo Jogo ou Concluir (se todos estiverem preenchidos)
+    // CORREÇÃO 2: Habilitar e mudar cor do botão quando todos os jogos estiverem completos
+    const todosCompletos = aposta.jogos.every(j => j.split(' ').filter(n => n !== "").length === NUMEROS_POR_JOGO);
+    
     if (jogoAtual < JOGOS_MAXIMO - 1 && numerosSelecionados === NUMEROS_POR_JOGO) {
+        btnProximo.disabled = false;
         btnProximo.classList.remove("muted");
         btnProximo.classList.add("primary");
         btnProximo.textContent = "Próximo Jogo";
-    } else if (jogoAtual === JOGOS_MAXIMO - 1 && aposta.jogos.every(j => j.split(' ').filter(n => n !== "").length === NUMEROS_POR_JOGO)) {
+    } else if (jogoAtual === JOGOS_MAXIMO - 1 && todosCompletos) {
+        btnProximo.disabled = false; // Habilitado
         btnProximo.classList.remove("muted");
-        btnProximo.classList.add("primary");
+        btnProximo.classList.add("primary"); // Fica azul
         btnProximo.textContent = "Confirmar Aposta";
     } else {
+        btnProximo.disabled = (jogoAtual < JOGOS_MAXIMO - 1 && numerosSelecionados < NUMEROS_POR_JOGO);
         btnProximo.classList.remove("primary");
         btnProximo.classList.add("muted");
-        btnProximo.textContent = "Próximo Jogo";
+        btnProximo.textContent = (jogoAtual === JOGOS_MAXIMO - 1) ? "Confirmar Aposta" : "Próximo Jogo";
     }
 }
 
@@ -108,11 +112,15 @@ function renderStatusJogos() {
         
         const numeros = aposta.jogos[i].split(' ').filter(n => n !== "").length;
         
+        // CORREÇÃO 1: Adicionar classe 'ativo' e 'preenchido'
         if (i === jogoAtual) {
-            btn.classList.add("ativo");
+            btn.classList.add("ativo"); // Destaca o jogo atual
+        } else {
+            btn.classList.remove("ativo");
         }
+        
         if (numeros === NUMEROS_POR_JOGO) {
-            btn.classList.add("preenchido");
+            btn.classList.add("preenchido"); // Fica verde
         } else {
             btn.classList.remove("preenchido");
         }
