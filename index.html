@@ -1,68 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mega da Virada - Bolão</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mega da Virada - Bolão</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 <body>
-  <header class="site-header">
-    <h1>Mega da Virada</h1>
-  </header>
+  <header class="site-header">
+    <h1>Mega da Virada</h1>
+  </header>
 
-  <main class="container">
-    <section class="observacao center">
-      <h2>INFORMAÇÃO IMPORTANTE</h2>
-      <p>
-        Este bolão NÃO é realizado pela CAIXA como um bolão oficial. Estamos organizando de forma independente — em caso de premiação o valor será rateado entre os participantes e repassado por uma pessoa responsável (organizador). O site registra todos os jogos, quantidade e participantes para validação pública. Após o sorteio será divulgado o número sorteado e se houve ou não jogo ganhador. Cada participante pode inserir até 5 jogos; ao fechar o bolão haverá também um jogo de 9 números feito pelo organizador; jogos restantes poderão ser preenchidos aleatoriamente conforme regras do fechamento.
-      </p>
-    </section>
+  <main class="container">
+    <section class="observacao center">
+            <h2>INFORMAÇÃO IMPORTANTE</h2>
+      <p>
+        Este bolão NÃO é realizado pela CAIXA como um bolão oficial. Estamos organizando de forma independente — em caso de premiação o valor será rateado entre os participantes e repassado por uma pessoa responsável (organizador). O site registra todos os jogos, quantidade e participantes para validação pública. Após o sorteio será divulgado o número sorteado e se houve ou não jogo ganhador. Cada participante pode inserir até 5 jogos; ao fechar o bolão haverá também um jogo de 9 números feito pelo organizador; jogos restantes poderão ser preenchidos aleatoriamente conforme regras do fechamento.
+      </p>
+    </section>
 
-    <form id="cadastroForm" class="form">
-      <div class="form-row">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" required>
-      </div>
+    <form id="cadastroForm" class="form" onsubmit="return false;">
+            <div class="form-row">
+        <label for="nome">Nome Completo:</label>
+        <input type="text" id="nome" required>
+      </div>
 
-      <div class="form-row">
-        <label for="telefone">Telefone:</label>
-        <input type="text" id="telefone" placeholder="(DDD) 99999-9999" required>
-        <label for="pix" class="pix-label">É chave PIX?</label>
-        <select id="pix" required>
-          <option value="">Selecione</option>
-          <option value="Sim">Sim</option>
-          <option value="Não">Não</option>
-        </select>
-      </div>
+      <div class="form-row">
+        <label for="telefone">Telefone (Whatsapp):</label>
+        <input type="text" id="telefone" placeholder="(DDD) 99999-9999" required>
+        <label for="pix" class="pix-label">É chave PIX?</label>
+        <select id="pix" required>
+          <option value="">Selecione</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
 
-      <hr>
+      <hr>
 
-      <h2 id="titulo-jogo" class="center">Jogo 1 de 5</h2>
+            <div id="statusJogosContainer" class="status-jogos-grid">
+              </div>
 
-      <div id="numerosContainer" class="numeros-grid"></div>
+      <h2 id="titulo-jogo" class="center">Jogo 1 de 5</h2>
 
-      <div class="controles">
-        <button type="button" id="gerarAleatorios" class="muted">Gerar Aleatórios</button>
-        <button type="button" id="proximo" class="muted" disabled>Próximo Jogo</button>
-      </div>
-      
-    </form>
+            <div id="numerosContainer" class="numeros-grid"></div>
 
-    <div id="mensagem" class="mensagem"></div>
+            <div class="controles">
+        <button type="button" id="btnAnterior" class="muted" disabled>Jogo Anterior</button>
+        <button type="button" id="gerarAleatorios" class="muted">Preencher Aleatoriamente</button>
+        <button type="button" id="btnProximo" class="muted" disabled>Próximo Jogo</button>
+      </div>
+      
+    </form>
 
-    <div class="links">
-      <button onclick="window.location.href='consulta.html'">Consultar Jogos</button>
-      <button onclick="window.location.href='admin.html'">Área Administrativa</button>
-    </div>
-  </main>
+    <div id="mensagem" class="mensagem"></div>
 
-  <script src="js/script.js"></script>
+    <hr>
+        <div class="links">
+      <button onclick="window.location.href='consulta.html'">Consultar Jogos</button>
+      <button onclick="window.location.href='admin.html'">Área Administrativa</button>
+    </div>
+  </main>
+
+  <script src="js/script.js"></script>
 </body>
 </html>
-
-
-
-
-
