@@ -1,96 +1,124 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comprovante de Aposta - Bolão Mega da Virada</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comprovante da Aposta</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .comprovante {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: 20px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .comprovante h2 {
+      text-align: center;
+      color: var(--accent);
+    }
+    .comprovante p {
+      margin: 6px 0;
+    }
+    .status {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 1.1em;
+      color: #c62828;
+    }
+    .status.pago {
+      color: green;
+    }
+    .controles {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900 flex justify-center items-center min-h-screen p-4">
 
-  <div id="comprovante" class="bg-white shadow-lg rounded-lg p-6 max-w-md w-full">
-    <div class="text-center mb-4">
-      <h1 class="text-2xl font-bold text-indigo-700">Comprovante de Aposta</h1>
-      <p class="text-sm text-gray-500">Bolão Mega da Virada 2025</p>
+<body>
+  <header class="site-header">
+    <h1>Mega da Virada - Comprovante</h1>
+  </header>
+
+  <main class="container">
+    <section class="comprovante" id="areaComprovante">
+      <h2>Comprovante da Aposta</h2>
+      <div id="dadosComprovante"></div>
+      <div id="jogosComprovante"></div>
+      <p class="status" id="statusAposta"></p>
+    </section>
+
+    <div class="controles">
+      <button id="baixarPDF" class="primary">Baixar PDF</button>
+      <button onclick="window.location.href='index.html'" class="muted">Voltar ao Início</button>
     </div>
+  </main>
 
-    <div id="dadosComprovante" class="text-gray-800 space-y-2">
-      <p><strong>Nome:</strong> <span id="nome"></span></p>
-      <p><strong>Telefone:</strong> <span id="telefone"></span></p>
-      <p><strong>Status:</strong> <span id="status" class="font-semibold"></span></p>
-      <p><strong>Data e Hora:</strong> <span id="dataHora"></span></p>
-      <hr class="my-3">
-      <div id="jogos" class="space-y-2"></div>
-    </div>
-
-    <div class="text-center mt-6">
-      <button id="btnBaixar" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
-        Baixar PDF
-      </button>
-    </div>
-  </div>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+    const aposta = JSON.parse(localStorage.getItem("pendingAposta")) || JSON.parse(localStorage.getItem("lastAposta"));
+    const dadosDiv = document.getElementById("dadosComprovante");
+    const jogosDiv = document.getElementById("jogosComprovante");
+    const statusEl = document.getElementById("statusAposta");
 
-    async function carregarComprovante() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const receipt = urlParams.get("id");
+    if (!aposta) {
+      dadosDiv.innerHTML = "<p style='color:red'>Nenhum dado encontrado. Retorne à página inicial.</p>";
+      document.getElementById("baixarPDF").disabled = true;
+    } else {
+      // Gera número aleatório do recibo
+      const receiptID = Math.floor(Math.random() * 900000 + 100000);
+      const dataHora = new Date().toLocaleString("pt-BR");
 
-      if (!receipt) {
-        alert("Comprovante inválido.");
-        return;
-      }
+      aposta.receiptID = receiptID;
+      aposta.dataHora = dataHora;
+      aposta.status = aposta.status || "Aguardando Pagamento";
 
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=get&id=${receipt}`);
-        const data = await res.json();
+      // salva para reexibição futura
+      localStorage.setItem("lastAposta", JSON.stringify(aposta));
 
-        if (!data || !data.Nome) {
-          alert("Comprovante não encontrado.");
-          return;
-        }
+      dadosDiv.innerHTML = `
+        <p><b>Nome:</b> ${aposta.nome}</p>
+        <p><b>Telefone:</b> ${aposta.telefone}</p>
+        <p><b>É chave PIX?:</b> ${aposta.pix}</p>
+        <p><b>Número do Recibo:</b> ${receiptID}</p>
+        <p><b>Data e Hora:</b> ${dataHora}</p>
+      `;
 
-        document.getElementById("nome").textContent = data.Nome;
-        document.getElementById("telefone").textContent = data.Telefone;
-        document.getElementById("status").textContent = data.Pago === "SIM" ? "Pago" : "Aguardando pagamento";
-        document.getElementById("status").className = data.Pago === "SIM" ? "text-green-600 font-semibold" : "text-red-600 font-semibold";
-        document.getElementById("dataHora").textContent = data.Timestamp || new Date().toLocaleString("pt-BR");
+      jogosDiv.innerHTML = `
+        <h3>Jogos Realizados</h3>
+        ${aposta.jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
+      `;
 
-        const jogosDiv = document.getElementById("jogos");
-        jogosDiv.innerHTML = "";
-
-        for (let i = 1; i <= 5; i++) {
-          const jogo = data[`Jogo ${i}`];
-          if (jogo) {
-            const p = document.createElement("p");
-            p.innerHTML = `<strong>Jogo ${i}:</strong> ${jogo}`;
-            jogosDiv.appendChild(p);
-          }
-        }
-
-      } catch (err) {
-        alert("Erro ao carregar comprovante: " + err.message);
-      }
+      statusEl.textContent = aposta.status;
+      if (aposta.status === "Pago") statusEl.classList.add("pago");
     }
 
-    // Baixar PDF
-    document.getElementById("btnBaixar").addEventListener("click", () => {
-      const element = document.getElementById("comprovante");
-      const nomeArquivo = `Comprovante_${document.getElementById("nome").textContent}.pdf`;
-      const opt = {
-        margin: 10,
-        filename: nomeArquivo,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
-    });
-
-    carregarComprovante();
+    // Gera PDF
+    document.getElementById("baixarPDF").onclick = () => {
+      import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(jsPDF => {
+        const { jsPDF: PDF } = jsPDF;
+        const doc = new PDF();
+        doc.setFontSize(16);
+        doc.text("Comprovante de Aposta - Mega da Virada", 20, 20);
+        doc.setFontSize(12);
+        let y = 35;
+        doc.text(`Nome: ${aposta.nome}`, 20, y); y += 8;
+        doc.text(`Telefone: ${aposta.telefone}`, 20, y); y += 8;
+        doc.text(`É chave PIX?: ${aposta.pix}`, 20, y); y += 8;
+        doc.text(`Número do Recibo: ${aposta.receiptID}`, 20, y); y += 8;
+        doc.text(`Data e Hora: ${aposta.dataHora}`, 20, y); y += 12;
+        aposta.jogos.forEach((jogo, i) => {
+          doc.text(`Jogo ${i + 1}: ${jogo}`, 20, y);
+          y += 8;
+        });
+        y += 12;
+        doc.text(`Status: ${aposta.status}`, 20, y);
+        doc.save(`Comprovante_${aposta.receiptID}.pdf`);
+      });
+    };
   </script>
-
 </body>
 </html>
