@@ -1,204 +1,256 @@
-// script.js - lógica de frontend
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // <<-- substitua
+// js/script.js
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
 const totalJogos = 5;
 let jogoAtual = 1;
-let jogos = new Array(totalJogos).fill(null).map(()=>new Array(6).fill("")); // cada jogo 6 slots
-
-const jogosArea = document.getElementById("jogos-area");
+let selections = Array.from({length: totalJogos}, ()=> new Set()); // cada jogo: set de números (1..60)
+const gradeEl = document.getElementById("grade-numeros");
 const tituloJogo = document.getElementById("titulo-jogo");
+const btnAnterior = document.getElementById("btnAnterior");
+const btnProximo = document.getElementById("btnProximo");
+const btnAleatorio = document.getElementById("btnAleatorioJogo");
 
-function pad(n){ return String(n).padStart(2,"0"); }
+const resumoFinal = document.getElementById("resumo-final");
+const resumoDados = document.getElementById("resumo-dados");
+const aceito = document.getElementById("aceito");
+const btnConfirmarEnvio = document.getElementById("btnConfirmarEnvio");
+const btnVoltarEditar = document.getElementById("btnVoltarEditar");
 
-// render jogo atual
-function renderJogo() {
-  tituloJogo.textContent = `Jogo ${jogoAtual} de ${totalJogos}`;
-  jogosArea.innerHTML = "";
-  const card = document.createElement("div");
-  card.className = "jogo-card";
+const listaJogosDiv = document.getElementById("lista-jogos");
+const consultaStats = document.getElementById("consulta-stats");
 
-  const grid = document.createElement("div");
-  grid.className = "jogo-grid";
-  for (let i=0;i<6;i++) {
-    const inp = document.createElement("input");
-    inp.type = "text";
-    inp.maxLength = 2;
-    inp.placeholder = pad(i+1);
-    inp.value = jogos[jogoAtual-1][i] || "";
-    inp.oninput = (e) => {
-      let v = e.target.value.replace(/\D/g,"");
-      if (v !== "") {
-        let num = Number(v);
-        if (num < 1) num = 1;
-        if (num > 60) num = 60;
-        v = String(num);
-      }
-      e.target.value = v;
-      jogos[jogoAtual-1][i] = v;
-    };
-    grid.appendChild(inp);
+const obsStaticText = document.getElementById("obs-static").innerHTML;
+document.getElementById("obs-static-resumo").innerHTML = obsStaticText;
+
+// monta grades 1..60 (6 linhas x 10 colunas via CSS grid)
+function buildGrade() {
+  gradeEl.innerHTML = "";
+  for (let n=1; n<=60; n++) {
+    const btn = document.createElement("button");
+    btn.className = "num-btn";
+    btn.textContent = String(n).padStart(2,"0");
+    btn.dataset.num = n;
+    btn.onclick = () => toggleNumber(n, btn);
+    gradeEl.appendChild(btn);
   }
-
-  card.appendChild(grid);
-  jogosArea.appendChild(card);
 }
-renderJogo();
+buildGrade();
 
-// botões
-document.getElementById("btnProximo").onclick = () => {
-  // validações: pode passar mesmo com campos vazios, mas quando enviar final, garantimos ter 6 por jogo (preenche aleatoriamente)
-  if (jogoAtual < totalJogos) {
-    jogoAtual++;
-    updateNavButtons();
-    renderJogo();
+function updateGradeUI() {
+  // limpa todas classes
+  document.querySelectorAll(".num-btn").forEach(b => b.classList.remove("selecionado"));
+  // aplica seleção atual
+  const set = selections[jogoAtual-1];
+  set.forEach(n => {
+    const btn = document.querySelector(`.num-btn[data-num='${n}']`);
+    if (btn) btn.classList.add("selecionado");
+  });
+  tituloJogo.textContent = `Jogo ${jogoAtual} de ${totalJogos}`;
+  btnAnterior.disabled = jogoAtual === 1;
+}
+
+function toggleNumber(n, btnEl) {
+  const s = selections[jogoAtual-1];
+  if (s.has(n)) {
+    s.delete(n);
+    btnEl.classList.remove("selecionado");
   } else {
-    alert("Último jogo — clique Concluir e Enviar para gravar seu bolão.");
+    if (s.size >= 6) {
+      alert("Você já selecionou 6 números neste jogo.");
+      return;
+    }
+    s.add(n);
+    btnEl.classList.add("selecionado");
   }
-};
+}
 
-document.getElementById("btnAnterior").onclick = () => {
+btnAnterior.addEventListener("click", () => {
   if (jogoAtual > 1) {
     jogoAtual--;
-    updateNavButtons();
-    renderJogo();
+    updateGradeUI();
   }
-};
+});
 
-function updateNavButtons(){
-  document.getElementById("btnAnterior").disabled = (jogoAtual===1);
-}
-updateNavButtons();
-
-// preencher aleatoriamente o JOGO atual (somente números não preenchidos)
-document.getElementById("btnAleatorioJogo").onclick = () => {
-  preencherAleatorioParaJogo(jogoAtual-1);
-  renderJogo();
-};
-
-// completa um jogo com números random sem repetir dentro do mesmo jogo
-function preencherAleatorioParaJogo(index) {
-  const used = jogos[index].filter(Boolean).map(Number);
-  const slots = jogos[index].map((v,i)=> v?null:i).filter(v=>v!==null);
-  // generate pool
-  const pool = [];
-  for (let n=1;n<=60;n++) if (!used.includes(n)) pool.push(n);
-  // shuffle pool
-  for (let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
-  // fill slots
-  for (let i=0;i<6;i++){
-    if (!jogos[index][i]) {
-      jogos[index][i] = String(pool.pop());
+btnProximo.addEventListener("click", () => {
+  const s = selections[jogoAtual-1];
+  if (s.size === 6) {
+    if (jogoAtual < totalJogos) {
+      jogoAtual++;
+      updateGradeUI();
+    } else {
+      // todos os jogos preenchidos? mostrar resumo
+      // check if at least one jogo has 6 numbers. Requirement is up to 5 games; user may leave some empty?
+      // We'll require each game to have either 6 numbers or be deliberately left empty.
+      showResumoIfReady();
     }
-  }
-}
-
-// função que normaliza e valida todos os jogos antes do envio - preenche aleatoriamente qualquer jogo incompleto
-function prepararJogosParaEnvio() {
-  for (let gi=0; gi<totalJogos; gi++) {
-    // se todos vazios -> considera jogo não enviado (deixa vazio)
-    const allEmpty = jogos[gi].every(v=>!v);
-    if (allEmpty) {
-      jogos[gi] = ["","","","","",""];
-      continue;
-    }
-    // preencher faltantes
-    const filled = jogos[gi].map(v => v?Number(v):null);
-    // remove duplicates and ensure 1-60
-    let used = filled.filter(n=>n).map(Number);
-    used = used.filter((v,i,arr)=>arr.indexOf(v)===i);
-    // fill missing with random no-repeat
-    for (let i=0;i<6;i++){
-      if (!filled[i]) {
-        // pick random not used
-        let candidate;
-        do { candidate = Math.floor(Math.random()*60)+1; } while (used.includes(candidate));
-        filled[i] = candidate;
-        used.push(candidate);
+  } else {
+    // menos de 6 -> perguntar se deseja completar aleatoriamente
+    const faltam = 6 - s.size;
+    const confirmar = confirm(`Você selecionou apenas ${s.size} números. Deseja que o sistema complete aleatoriamente os ${faltam} números faltantes? Clique "OK" para completar automaticamente ou "Cancelar" para preencher manualmente.`);
+    if (confirmar) {
+      preencherAleatorioParaJogo(jogoAtual-1);
+      updateGradeUI();
+      // avançar (se ainda não for o último)
+      if (jogoAtual < totalJogos) {
+        jogoAtual++;
+        updateGradeUI();
+      } else {
+        showResumoIfReady();
       }
+    } else {
+      // não completar -> bloqueia avanço até ter 6
+      alert("Por favor, preencha os números faltantes para continuar.");
     }
-    jogos[gi] = filled.map(n=>pad(n));
   }
-  // convert jogo arrays to string or empty if all empty
-  const out = jogos.map(g=>{
-    if (g.every(v=>!v || v==="00")) return "";
-    return g.map(n=>pad(Number(n))).join(" ");
-  });
-  return out;
+});
+
+btnAleatorio.addEventListener("click", () => {
+  // preenche ALEATORIAMENTE somente os números faltantes deste jogo
+  preencherAleatorioParaJogo(jogoAtual-1);
+  updateGradeUI();
+});
+
+// preenche aleatoriamente os números faltantes sem repetir no mesmo jogo
+function preencherAleatorioParaJogo(index) {
+  const s = selections[index];
+  const used = Array.from(s);
+  // pool of remaining numbers 1..60 not in used
+  const pool = [];
+  for (let i=1; i<=60; i++) if (!used.includes(i)) pool.push(i);
+  shuffleArray(pool);
+  while (s.size < 6 && pool.length > 0) {
+    s.add(pool.pop());
+  }
 }
 
-// enviar dados
-document.getElementById("btnEnviar").onclick = async () => {
+// Fisher-Yates
+function shuffleArray(a) {
+  for (let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+}
+
+// quando finalizar, mostra resumo (apenas se todos os jogos tiverem 6 ou vazios)
+function showResumoIfReady() {
+  // require every non-empty jogo to have exactly 6 numbers
+  for (let i=0;i<totalJogos;i++) {
+    const s = selections[i];
+    if (s.size > 0 && s.size !== 6) {
+      alert(`O Jogo ${i+1} está incompleto. Complete 6 números ou deixe-o vazio.`);
+      jogoAtual = i+1;
+      updateGradeUI();
+      return;
+    }
+  }
+  // build resumo: default consider only jogos with 6 numbers
+  const jogosList = selections.map((s,i) => {
+    if (s.size === 6) {
+      const arr = Array.from(s).sort((a,b)=>a-b).map(n => String(n).padStart(2,"0"));
+      return arr.join(" ");
+    }
+    return "";
+  });
+
+  // show resumo section
+  resumoFinal.style.display = "block";
+  document.getElementById("submit-area").style.display = "none";
+
   const nome = document.getElementById("nome").value.trim();
   const telefone = document.getElementById("telefone").value.trim();
   const pix = document.querySelector('input[name="pix"]:checked')?.value || "Não";
-  if (!nome || !telefone) { alert("Preencha nome e telefone."); return; }
 
-  const jogosParaEnviar = prepararJogosParaEnvio();
-  // se nenhum jogo informado -> avisar
-  if (jogosParaEnviar.every(j=>!j)) {
-    if (!confirm("Você não preencheu nenhum número. Deseja enviar mesmo assim?")) return;
-  }
+  resumoDados.innerHTML = `<p><strong>Nome:</strong> ${nome}<br><strong>Telefone:</strong> ${telefone}<br><strong>É chave PIX:</strong> ${pix}</p>
+  <h4>Jogos</h4>
+  ${jogosList.map((j,i)=> j ? `<p><strong>Jogo ${String(i+1).padStart(2,"0")}:</strong> ${j}</p>` : `<p><strong>Jogo ${String(i+1).padStart(2,"0")}:</strong> (não enviado)</p>`).join("")}`;
+
+  // scroll to resumo
+  resumoFinal.scrollIntoView({behavior:"smooth"});
+}
+
+// voltar para editar
+btnVoltarEditar.addEventListener("click", () => {
+  resumoFinal.style.display = "none";
+  document.getElementById("submit-area").style.display = "block";
+  jogoAtual = 1;
+  updateGradeUI();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+// confirmação final e envio (somente se aceito)
+btnConfirmarEnvio.addEventListener("click", async () => {
+  if (!document.getElementById("aceito").checked) { alert("Você precisa marcar 'Li e aceito os termos' antes de enviar."); return; }
+  // preparar payload
+  const nome = document.getElementById("nome").value.trim();
+  const telefone = document.getElementById("telefone").value.trim();
+  if (!nome || !telefone) { alert("Nome e telefone são obrigatórios."); return; }
+
+  const jogosList = selections.map(s => {
+    if (s.size === 6) {
+      return Array.from(s).sort((a,b)=>a-b).map(n=>String(n).padStart(2,"0")).join(" ");
+    }
+    return "";
+  });
 
   const payload = {
-    nome: nome,
-    telefone: telefone,
-    pix: pix,
-    jogos: jogosParaEnviar,
-    obs: document.getElementById("obs-static").innerText,
+    nome,
+    telefone,
+    pix: document.querySelector('input[name="pix"]:checked')?.value || "Não",
+    jogos: jogosList,
+    obs: document.getElementById("obs-static").innerText || "",
     origem: "web"
   };
 
   try {
-    const res = await fetch(SCRIPT_URL, {
+    const resp = await fetch(SCRIPT_URL, {
       method: "POST",
       body: JSON.stringify(payload)
     });
-    const data = await res.json();
-    if (data.status === "OK" && data.receipt) {
-      // gerar comprovante em PDF simples
-      gerarComprovantePDF(payload, data.receipt);
-      // salvar local para confirmar na pagina de confirmação
-      localStorage.setItem("dadosBolao", JSON.stringify({payload, receipt:data.receipt}));
-      // redireciona para confirmação
+    const data = await resp.json();
+    if (data && data.status === "OK" && data.receipt) {
+      // salvar local para confirmacao.html gerar comprovante
+      localStorage.setItem("lastReceiptData", JSON.stringify({payload, receipt: data.receipt}));
+      // redirecionar para confirmacao
       window.location.href = "confirmacao.html";
     } else {
-      alert("Erro ao enviar: " + (data.message || "resposta inesperada"));
+      alert("Erro ao enviar. Tente novamente. " + (data && data.message ? data.message : ""));
     }
   } catch (err) {
     alert("Erro ao enviar: " + err.message);
   }
-};
+});
 
-// gerar comprovante (PDF) e baixar automaticamente (usa jsPDF via CDN no confirm page)
-// Aqui apenas criaremos um link para baixar o comprovante após o envio (a confirmação fará o download)
-// Para simplificar, a geração real do PDF fica em confirmacao.html para ter a lib jsPDF disponível.
-function gerarComprovantePDF(payload, receipt) {
-  // apenas guarda no localStorage; geração do PDF será feita na confirmacao.html
-  localStorage.setItem("lastReceiptData", JSON.stringify({payload, receipt}));
-}
-
-// ----------------------------------------------------
-// Consulta jogos (verificação por primeiro nome + ultimos 4)
-document.getElementById("btnVerJogos").onclick = async () => {
+// Consulta "Ver Jogos" (primeiro nome + últimos 4 digitos)
+document.getElementById("btnVerJogos").addEventListener("click", async () => {
   const nome = document.getElementById("verNome").value.trim().toLowerCase();
   const ultimos = document.getElementById("verTelefone").value.trim();
-  if (!nome || !ultimos) { alert("Informe primeiro nome e últimos 4 dígitos."); return; }
+  if (!nome || !ultimos || ultimos.length < 2) { alert("Informe primeiro nome e últimos 4 dígitos do telefone."); return; }
+
   try {
     const res = await fetch(SCRIPT_URL + "?action=get");
     const dados = await res.json();
-    // valida
-    const autorizado = dados.some(d => d.nome.toLowerCase().split(" ")[0] === nome.split(" ")[0] && String(d.telefone).slice(-4) === ultimos);
-    if (!autorizado) { alert("Não foi possível validar seus dados."); return; }
-    // exibe todos os jogos (apenas números, anonimamente)
-    const todosJogos = dados.flatMap(d => d.jogos.filter(Boolean));
-    const div = document.getElementById("lista-jogos");
-    if (todosJogos.length === 0) div.innerHTML = "<p>Nenhum jogo registrado ainda.</p>";
-    else div.innerHTML = "<h4>Todos os jogos registrados:</h4>" + todosJogos.map((j,i)=>`<p><strong>Jogo ${pad(i+1)}:</strong> ${j}</p>`).join("");
+    // valida: encontra participante que tenha primeiro nome e últimos 4 dígitos
+    const autorizado = dados.some(d => {
+      const first = String(d.nome || "").trim().split(/\s+/)[0].toLowerCase();
+      return first === nome.split(/\s+/)[0] && String(d.telefone || "").slice(-4) === ultimos;
+    });
+    if (!autorizado) { alert("Não foi possível validar seus dados. Verifique e tente novamente."); return; }
+
+    const todosJogos = dados.flatMap(d => (d.jogos || []).filter(Boolean));
+    if (todosJogos.length === 0) {
+      listaJogosDiv.innerHTML = "<p>Nenhum jogo registrado ainda.</p>";
+    } else {
+      listaJogosDiv.innerHTML = "<h4>Todos os jogos registrados:</h4>" + todosJogos.map((j,i)=>`<p><strong>Jogo ${String(i+1).padStart(2,"0")}:</strong> ${j}</p>`).join("");
+    }
+
     // stats
     const statsRes = await fetch(SCRIPT_URL + "?action=stats");
     const stats = await statsRes.json();
-    document.getElementById("consulta-stats").innerHTML = `<p><strong>Total de participantes:</strong> ${stats.participants} — <strong>Total de jogos:</strong> ${stats.totalJogos}</p>`;
+    consultaStats.innerHTML = `<p><strong>Total de participantes:</strong> ${stats.participants} — <strong>Total de jogos:</strong> ${stats.totalJogos}</p>`;
   } catch (err) {
     alert("Erro ao consultar jogos: " + err.message);
   }
-};
+});
+
+// inicializa UI
+updateGradeUI();
