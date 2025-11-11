@@ -157,7 +157,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 function finalizarJogos() {
-  // Verifica se há jogos duplicados
+  // Validação de duplicados
   const duplicado = jogos.some((j, idx) => jogos.indexOf(j) !== idx);
   if (duplicado) {
     alert("Você escolheu o mesmo conjunto de 6 números em mais de um jogo. Altere antes de confirmar.");
@@ -167,15 +167,37 @@ function finalizarJogos() {
   numerosContainer.innerHTML = "";
   btnGerar.style.display = "none";
   btnProximo.style.display = "none";
-  btnAnterior.style.display = "none";
-  btnEnviar.disabled = false;
+  if (btnAnterior) btnAnterior.style.display = "none";
 
+  // Exibe os jogos para confirmação
   msg.innerHTML = `
     <h3>Confirme suas apostas</h3>
     ${jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
     <label><input type="checkbox" id="termos"> Li e concordo com os termos</label>
+    <br><br>
+    <button id="confirmarApostas" class="primary">Confirmar Apostas</button>
   `;
+
+  // Ação do botão confirmar
+  const btnConfirmar = document.getElementById("confirmarApostas");
+  btnConfirmar.addEventListener("click", () => {
+    const termos = document.getElementById("termos");
+    if (!termos.checked) {
+      alert("Você deve aceitar os termos para continuar.");
+      return;
+    }
+
+    const nome = document.getElementById("nome").value.trim();
+    const telefone = document.getElementById("telefone").value.trim();
+    const pix = document.getElementById("pix").value;
+
+    const payload = { nome, telefone, pix, jogos };
+
+    localStorage.setItem("pendingAposta", JSON.stringify(payload));
+    window.location.href = "confirmacao.html";
+  });
 }
+
 
 form.onsubmit = async (e) => {
   e.preventDefault();
@@ -191,4 +213,5 @@ form.onsubmit = async (e) => {
   localStorage.setItem("pendingAposta", JSON.stringify(payload));
   window.location.href = "confirmacao.html";
 };
+
 
