@@ -1,139 +1,178 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comprovante da Aposta</title>
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    .comprovante {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 700px;
-      margin: 20px auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .comprovante h2 {
-      text-align: center;
-      color: var(--accent);
-    }
-    .comprovante p {
-      margin: 6px 0;
-    }
-    .status {
-      text-align: center;
-      margin-top: 15px;
-      font-weight: bold;
-      font-size: 1.1em;
-      color: #c62828;
-    }
-    .status.pago {
-      color: green;
-    }
-    .controles {
-      text-align: center;
-      margin-top: 20px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comprovante da Aposta</title>
+  <link rel="stylesheet" href="css/style.css">
+    <style>
+    .comprovante {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: 20px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 1px dashed #ccc;
+    }
+    .comprovante h2, .comprovante h3 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 15px;
+    }
+    .comprovante p {
+      margin: 6px 0;
+    }
+    .status-wrapper {
+      text-align: center;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      background: #eee;
+    }
+    .status {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #c62828; /* Aguardando */
+    }
+    .status.pago {
+      color: #28a745; /* Pago */
+    }
+    .controles {
+      text-align: center;
+      margin-top: 20px;
+    }
+    /* Oculta elementos que não queremos no PDF */
+    @media print {
+      .site-header, .controles { display: none; }
+      .comprovante { margin: 0; box-shadow: none; border: none; }
+    }
+  </style>
 </head>
 
 <body>
-  <header class="site-header">
-    <h1>Mega da Virada - Comprovante</h1>
-  </header>
+  <header class="site-header">
+    <h1>Mega da Virada - Comprovante</h1>
+  </header>
 
-  <main class="container">
-    <section class="comprovante" id="areaComprovante">
-      <h2>Comprovante da Aposta</h2>
-      <div id="dadosComprovante"></div>
-      <div id="jogosComprovante"></div>
-      <p class="status" id="statusAposta"></p>
-    </section>
+  <main class="container">
+    <section class="comprovante" id="areaComprovante">
+      <h2>Comprovante Oficial do Bolão</h2>
+      <div id="dadosComprovante" class="card" style="background:#fff; border: 1px solid #ddd;"></div>
+      <div id="jogosComprovante" class="card"></div>
+      
+            <div class="status-wrapper">
+        <strong>Status de Pagamento:</strong> <span class="status" id="statusAposta">...</span>
+        <button id="btnAtualizarStatus" class="muted small" style="margin-left: 10px;">Atualizar Status</button>
+      </div>
+    </section>
 
-    <div class="controles">
-      <button id="baixarPDF" class="primary">Baixar PDF</button>
-      <button onclick="window.location.href='index.html'" class="muted">Voltar ao Início</button>
-    </div>
-  </main>
+        <p class="center" style="margin-top: 15px; font-size: 0.9em; color: #555;">
+      Salve este comprovante e o número de **Protocolo** para consultar todos os jogos e dados do bolão na página de consulta.
+    </p>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+    <div class="controles">
+      <button id="baixarPDF" class="primary">Baixar Comprovante em PDF</button>
+      <button onclick="window.location.href='index.html'" class="muted">Voltar ao Início</button>
+    </div>
+  </main>
 
-  const aposta = JSON.parse(localStorage.getItem("pendingAposta")) || JSON.parse(localStorage.getItem("lastAposta"));
-  const dadosDiv = document.getElementById("dadosComprovante");
-  const jogosDiv = document.getElementById("jogosComprovante");
-  const statusEl = document.getElementById("statusAposta");
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-  if (!aposta) {
-    dadosDiv.innerHTML = "<p style='color:red'>Nenhum dado encontrado. Retorne à página inicial.</p>";
-    document.getElementById("baixarPDF").disabled = true;
-  } else {
-    // Gera número de recibo se não tiver
-    if (!aposta.receiptID) aposta.receiptID = Math.floor(Math.random() * 900000 + 100000);
-    if (!aposta.dataHora) aposta.dataHora = new Date().toLocaleString("pt-BR");
+    const aposta = JSON.parse(localStorage.getItem("lastAposta"));
+    const dadosDiv = document.getElementById("dadosComprovante");
+    const jogosDiv = document.getElementById("jogosComprovante");
+    const statusEl = document.getElementById("statusAposta");
+    const btnAtualizarStatus = document.getElementById("btnAtualizarStatus");
 
-    dadosDiv.innerHTML = `
-      <p><b>Nome:</b> ${aposta.nome}</p>
-      <p><b>Telefone:</b> ${aposta.telefone}</p>
-      <p><b>É chave PIX?:</b> ${aposta.pix}</p>
-      <p><b>Número do Recibo:</b> ${aposta.receiptID}</p>
-      <p><b>Data e Hora:</b> ${aposta.dataHora}</p>
-    `;
+    // 3.2 - Função para atualizar o status
+    async function buscarStatus(protocolo) {
+      statusEl.textContent = "Verificando...";
+      btnAtualizarStatus.disabled = true;
+      try {
+        // Chama o Apps Script para buscar o status pelo protocolo
+        const res = await fetch(`${SCRIPT_URL}?action=getStatus&protocolo=${protocolo}`);
+        const data = await res.json();
+        const status = data.status || "AGUARDANDO PAGAMENTO";
 
-    jogosDiv.innerHTML = `
-      <h3>Jogos Realizados</h3>
-      ${aposta.jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
-    `;
+        statusEl.textContent = status.toUpperCase();
+        statusEl.className = status.toUpperCase() === "PAGO" ? "status pago" : "status";
+        
+        // Salva a atualização no localStorage
+        aposta.status = status.toUpperCase();
+        localStorage.setItem("lastAposta", JSON.stringify(aposta));
 
-    statusEl.textContent = "Verificando status do pagamento...";
-    statusEl.classList.remove("pago");
+      } catch (err) {
+        statusEl.textContent = "AGUARDANDO PAGAMENTO";
+        statusEl.className = "status";
+      } finally {
+        btnAtualizarStatus.disabled = false;
+      }
+    }
 
-    // 🔹 Buscar status atual na planilha
-    fetch(`${SCRIPT_URL}?action=getStatus&nome=${encodeURIComponent(aposta.nome)}&telefone=${encodeURIComponent(aposta.telefone)}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.status === "Pago") {
-          aposta.status = "Pago";
-          statusEl.textContent = "Pago";
-          statusEl.classList.add("pago");
-        } else {
-          aposta.status = "Aguardando Pagamento";
-          statusEl.textContent = "Aguardando Pagamento";
-        }
-        localStorage.setItem("lastAposta", JSON.stringify(aposta));
-      })
-      .catch(() => {
-        aposta.status = "Aguardando Pagamento";
-        statusEl.textContent = "Aguardando Pagamento";
-      });
-  }
+    // 3.1 - Exibição dos dados e protocolo
+    if (!aposta || !aposta.protocolo) {
+      dadosDiv.innerHTML = "<p style='color:red'>Nenhum comprovante encontrado. Retorne à página inicial.</p>";
+      document.getElementById("baixarPDF").disabled = true;
+      btnAtualizarStatus.disabled = true;
+    } else {
+      dadosDiv.innerHTML = `
+        <p><b>Protocolo de Registro:</b> ${aposta.protocolo}</p>
+        <p><b>Nome:</b> ${aposta.nome}</p>
+        <p><b>Telefone:</b> ${aposta.telefone}</p>
+        <p><b>É chave PIX?:</b> ${aposta.pix}</p>
+        <p><b>Data e Hora:</b> ${aposta.dataHora}</p>
+      `;
 
-  // 🔹 Baixar comprovante em PDF
-  document.getElementById("baixarPDF").onclick = () => {
-    import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(jsPDF => {
-      const { jsPDF: PDF } = jsPDF;
-      const doc = new PDF();
-      doc.setFontSize(16);
-      doc.text("Comprovante de Aposta - Mega da Virada", 20, 20);
-      doc.setFontSize(12);
-      let y = 35;
-      doc.text(`Nome: ${aposta.nome}`, 20, y); y += 8;
-      doc.text(`Telefone: ${aposta.telefone}`, 20, y); y += 8;
-      doc.text(`É chave PIX?: ${aposta.pix}`, 20, y); y += 8;
-      doc.text(`Número do Recibo: ${aposta.receiptID}`, 20, y); y += 8;
-      doc.text(`Data e Hora: ${aposta.dataHora}`, 20, y); y += 12;
-      aposta.jogos.forEach((jogo, i) => {
-        doc.text(`Jogo ${i + 1}: ${jogo}`, 20, y);
-        y += 8;
-      });
-      y += 12;
-      doc.text(`Status: ${aposta.status}`, 20, y);
-      doc.save(`Comprovante_${aposta.receiptID}.pdf`);
-    });
-  };
-</script>
+      jogosDiv.innerHTML = `
+        <h3>Jogos Realizados</h3>
+        ${aposta.jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
+      `;
+      
+      // Busca o status inicial
+      buscarStatus(aposta.protocolo);
+      btnAtualizarStatus.onclick = () => buscarStatus(aposta.protocolo);
+    }
+
+    // 3.3 - Baixar comprovante em PDF
+    document.getElementById("baixarPDF").onclick = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Título e dados
+      doc.setFontSize(18);
+      doc.text("Comprovante de Aposta - Mega da Virada", 105, 20, null, null, "center");
+      doc.line(20, 25, 190, 25); // Linha
+
+      doc.setFontSize(11);
+      let y = 35;
+      doc.text(`Protocolo de Registro: ${aposta.protocolo}`, 20, y); y += 6;
+      doc.text(`Status de Pagamento: ${aposta.status}`, 20, y); y += 6;
+      doc.text(`Nome: ${aposta.nome}`, 20, y); y += 6;
+      doc.text(`Telefone: ${aposta.telefone}`, 20, y); y += 6;
+      doc.text(`É chave PIX?: ${aposta.pix}`, 20, y); y += 6;
+      doc.text(`Data e Hora: ${aposta.dataHora}`, 20, y); y += 10;
+      
+      // Jogos
+      doc.setFontSize(14);
+      doc.text("Jogos Registrados:", 20, y); y += 8;
+      doc.setFontSize(11);
+      aposta.jogos.forEach((jogo, i) => {
+        doc.text(`Jogo ${i + 1}: ${jogo}`, 20, y);
+        y += 6;
+      });
+
+      // Observação
+      y += 10;
+      doc.setFontSize(9);
+      const obs = "Este comprovante é o registro da sua aposta no bolão, que é organizado de forma independente. Guarde-o para fins de consulta e validação.";
+      doc.text(obs, 20, y, { maxWidth: 170 });
+
+      doc.save(`Comprovante_Bolao_${aposta.protocolo}.pdf`);
+    };
+  </script>
 
 </body>
 </html>
