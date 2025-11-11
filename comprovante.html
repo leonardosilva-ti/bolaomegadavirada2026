@@ -58,67 +58,82 @@
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script>
-    const aposta = JSON.parse(localStorage.getItem("pendingAposta")) || JSON.parse(localStorage.getItem("lastAposta"));
-    const dadosDiv = document.getElementById("dadosComprovante");
-    const jogosDiv = document.getElementById("jogosComprovante");
-    const statusEl = document.getElementById("statusAposta");
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-    if (!aposta) {
-      dadosDiv.innerHTML = "<p style='color:red'>Nenhum dado encontrado. Retorne à página inicial.</p>";
-      document.getElementById("baixarPDF").disabled = true;
-    } else {
-      // Gera número aleatório do recibo
-      const receiptID = Math.floor(Math.random() * 900000 + 100000);
-      const dataHora = new Date().toLocaleString("pt-BR");
+  const aposta = JSON.parse(localStorage.getItem("pendingAposta")) || JSON.parse(localStorage.getItem("lastAposta"));
+  const dadosDiv = document.getElementById("dadosComprovante");
+  const jogosDiv = document.getElementById("jogosComprovante");
+  const statusEl = document.getElementById("statusAposta");
 
-      aposta.receiptID = receiptID;
-      aposta.dataHora = dataHora;
-      aposta.status = aposta.status || "Aguardando Pagamento";
+  if (!aposta) {
+    dadosDiv.innerHTML = "<p style='color:red'>Nenhum dado encontrado. Retorne à página inicial.</p>";
+    document.getElementById("baixarPDF").disabled = true;
+  } else {
+    // Gera número de recibo se não tiver
+    if (!aposta.receiptID) aposta.receiptID = Math.floor(Math.random() * 900000 + 100000);
+    if (!aposta.dataHora) aposta.dataHora = new Date().toLocaleString("pt-BR");
 
-      // salva para reexibição futura
-      localStorage.setItem("lastAposta", JSON.stringify(aposta));
+    dadosDiv.innerHTML = `
+      <p><b>Nome:</b> ${aposta.nome}</p>
+      <p><b>Telefone:</b> ${aposta.telefone}</p>
+      <p><b>É chave PIX?:</b> ${aposta.pix}</p>
+      <p><b>Número do Recibo:</b> ${aposta.receiptID}</p>
+      <p><b>Data e Hora:</b> ${aposta.dataHora}</p>
+    `;
 
-      dadosDiv.innerHTML = `
-        <p><b>Nome:</b> ${aposta.nome}</p>
-        <p><b>Telefone:</b> ${aposta.telefone}</p>
-        <p><b>É chave PIX?:</b> ${aposta.pix}</p>
-        <p><b>Número do Recibo:</b> ${receiptID}</p>
-        <p><b>Data e Hora:</b> ${dataHora}</p>
-      `;
+    jogosDiv.innerHTML = `
+      <h3>Jogos Realizados</h3>
+      ${aposta.jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
+    `;
 
-      jogosDiv.innerHTML = `
-        <h3>Jogos Realizados</h3>
-        ${aposta.jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
-      `;
+    statusEl.textContent = "Verificando status do pagamento...";
+    statusEl.classList.remove("pago");
 
-      statusEl.textContent = aposta.status;
-      if (aposta.status === "Pago") statusEl.classList.add("pago");
-    }
-
-    // Gera PDF
-    document.getElementById("baixarPDF").onclick = () => {
-      import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(jsPDF => {
-        const { jsPDF: PDF } = jsPDF;
-        const doc = new PDF();
-        doc.setFontSize(16);
-        doc.text("Comprovante de Aposta - Mega da Virada", 20, 20);
-        doc.setFontSize(12);
-        let y = 35;
-        doc.text(`Nome: ${aposta.nome}`, 20, y); y += 8;
-        doc.text(`Telefone: ${aposta.telefone}`, 20, y); y += 8;
-        doc.text(`É chave PIX?: ${aposta.pix}`, 20, y); y += 8;
-        doc.text(`Número do Recibo: ${aposta.receiptID}`, 20, y); y += 8;
-        doc.text(`Data e Hora: ${aposta.dataHora}`, 20, y); y += 12;
-        aposta.jogos.forEach((jogo, i) => {
-          doc.text(`Jogo ${i + 1}: ${jogo}`, 20, y);
-          y += 8;
-        });
-        y += 12;
-        doc.text(`Status: ${aposta.status}`, 20, y);
-        doc.save(`Comprovante_${aposta.receiptID}.pdf`);
+    // 🔹 Buscar status atual na planilha
+    fetch(`${SCRIPT_URL}?action=getStatus&nome=${encodeURIComponent(aposta.nome)}&telefone=${encodeURIComponent(aposta.telefone)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === "Pago") {
+          aposta.status = "Pago";
+          statusEl.textContent = "Pago";
+          statusEl.classList.add("pago");
+        } else {
+          aposta.status = "Aguardando Pagamento";
+          statusEl.textContent = "Aguardando Pagamento";
+        }
+        localStorage.setItem("lastAposta", JSON.stringify(aposta));
+      })
+      .catch(() => {
+        aposta.status = "Aguardando Pagamento";
+        statusEl.textContent = "Aguardando Pagamento";
       });
-    };
-  </script>
+  }
+
+  // 🔹 Baixar comprovante em PDF
+  document.getElementById("baixarPDF").onclick = () => {
+    import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(jsPDF => {
+      const { jsPDF: PDF } = jsPDF;
+      const doc = new PDF();
+      doc.setFontSize(16);
+      doc.text("Comprovante de Aposta - Mega da Virada", 20, 20);
+      doc.setFontSize(12);
+      let y = 35;
+      doc.text(`Nome: ${aposta.nome}`, 20, y); y += 8;
+      doc.text(`Telefone: ${aposta.telefone}`, 20, y); y += 8;
+      doc.text(`É chave PIX?: ${aposta.pix}`, 20, y); y += 8;
+      doc.text(`Número do Recibo: ${aposta.receiptID}`, 20, y); y += 8;
+      doc.text(`Data e Hora: ${aposta.dataHora}`, 20, y); y += 12;
+      aposta.jogos.forEach((jogo, i) => {
+        doc.text(`Jogo ${i + 1}: ${jogo}`, 20, y);
+        y += 8;
+      });
+      y += 12;
+      doc.text(`Status: ${aposta.status}`, 20, y);
+      doc.save(`Comprovante_${aposta.receiptID}.pdf`);
+    });
+  };
+</script>
+
 </body>
 </html>
