@@ -1,74 +1,99 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Área Administrativa</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área Administrativa - Mega da Virada</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Área Administrativa</h1>
+  <header class="site-header">
+    <h1>Área Administrativa</h1>
+  </header>
 
-<div id="loginDiv">
-  <label>Senha de Acesso:</label>
-  <input type="password" id="senha">
-  <button onclick="login()">Entrar</button>
-</div>
+  <div id="login" class="login-card">
+    <h2>Acesso Restrito</h2>
+    <input type="text" id="usuario" placeholder="Usuário">
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="fazerLogin()">Entrar</button>
+    <p id="loginErro" style="color:red; margin-top:10px;"></p>
+  </div>
 
-<div id="painel" style="display:none;">
-  <h2>Participantes</h2>
-  <div id="lista"></div>
+  <div id="painel" class="admin-panel" style="display:none;">
+    <h2>Jogos Cadastrados</h2>
+    <button class="muted" onclick="baixarCSV()">Baixar CSV</button>
+    <div id="lista"></div>
+  </div>
 
-  <h3>Registrar Números Sorteados</h3>
-  <input type="text" id="nums" placeholder="Ex: 01 05 10 21 44 60">
-  <button onclick="registrarSorteio()">Registrar</button>
-</div>
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
-const SENHA = "Blq15206395!"; // altere aqui
+    function fazerLogin() {
+      const user = document.getElementById("usuario").value.trim();
+      const pass = document.getElementById("senha").value.trim();
+      const erro = document.getElementById("loginErro");
 
-function login() {
-  const s = document.getElementById("senha").value;
-  if (s === SENHA) {
-    document.getElementById("loginDiv").style.display = "none";
-    document.getElementById("painel").style.display = "block";
-    carregarLista();
-  } else alert("Senha incorreta!");
-}
+      if (user === "admin" && pass === "1234") {
+        localStorage.setItem("logado", "true");
+        document.getElementById("login").style.display = "none";
+        document.getElementById("painel").style.display = "block";
+        carregarJogos();
+      } else {
+        erro.textContent = "Usuário ou senha incorretos.";
+      }
+    }
 
-async function carregarLista() {
-  const res = await fetch(SCRIPT_URL + "?action=get");
-  const data = await res.json();
-  const lista = document.getElementById("lista");
-  lista.innerHTML = "";
+    function verificarLogin() {
+      if (localStorage.getItem("logado") === "true") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("painel").style.display = "block";
+        carregarJogos();
+      }
+    }
 
-  data.forEach(p => {
-    lista.innerHTML += `
-      <div class="card">
-        <b>${p.nome}</b> - ${p.telefone} | Pix: ${p.pix} | Status: ${p.status || "Pendente"}
-        <br><button onclick="confirmarPagamento('${p.nome}','${p.telefone}')">Confirmar Pagamento</button>
-        <button onclick="excluir('${p.nome}','${p.telefone}')">Excluir</button>
-      </div>`;
-  });
-}
+    async function carregarJogos() {
+      const lista = document.getElementById("lista");
+      lista.innerHTML = "<p>Carregando dados...</p>";
+      try {
+        const resp = await fetch(SCRIPT_URL + "?modo=LISTAR");
+        const data = await resp.json();
 
-async function excluir(nome, telefone) {
-  if (!confirm("Excluir este participante?")) return;
-  await fetch(`${SCRIPT_URL}?action=delete&nome=${encodeURIComponent(nome)}&telefone=${encodeURIComponent(telefone)}`);
-  carregarLista();
-}
+        if (!Array.isArray(data) || data.length === 0) {
+          lista.innerHTML = "<p>Nenhum jogo cadastrado.</p>";
+          return;
+        }
 
-async function confirmarPagamento(nome, telefone) {
-  await fetch(`${SCRIPT_URL}?action=confirmarPagamento&nome=${encodeURIComponent(nome)}&telefone=${encodeURIComponent(telefone)}`);
-  carregarLista();
-}
+        lista.innerHTML = "";
+        data.forEach((linha, i) => {
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.innerHTML = `
+            <p><b>${linha.nome}</b> — ${linha.telefone} (${linha.pix})</p>
+            <p>${linha.jogos.join("<br>")}</p>
+          `;
+          lista.appendChild(card);
+        });
+      } catch (e) {
+        lista.innerHTML = "<p>Erro ao carregar dados.</p>";
+      }
+    }
 
-async function registrarSorteio() {
-  const nums = document.getElementById("nums").value.split(" ").map(n => parseInt(n)).filter(Boolean);
-  if (nums.length !== 6) return alert("Informe exatamente 6 números.");
-  google.script.run.registrarNumerosSorteados(nums);
-  alert("Números sorteados registrados!");
-}
-</script>
+    async function baixarCSV() {
+      try {
+        const resp = await fetch(SCRIPT_URL + "?modo=CSV");
+        const text = await resp.text();
+        const blob = new Blob([text], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "jogos.csv";
+        a.click();
+      } catch (e) {
+        alert("Erro ao baixar CSV");
+      }
+    }
+
+    verificarLogin();
+  </script>
 </body>
 </html>
