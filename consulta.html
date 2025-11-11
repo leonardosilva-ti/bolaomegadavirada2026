@@ -21,35 +21,48 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
 document.getElementById("buscar").onclick = async () => {
-  const nome = document.getElementById("nome").value.trim();
+  const nomeInput = document.getElementById("nome").value.trim();
   const ult4 = document.getElementById("ultimos4").value.trim();
-  if (!nome || !ult4) return alert("Informe o nome e os 4 últimos números do telefone.");
+  if (!nomeInput || !ult4) return alert("Informe o primeiro nome e os 4 últimos números do telefone.");
 
-  const res = await fetch(SCRIPT_URL + "?action=get");
-  const data = await res.json();
-  const matches = data.filter(r => r.nome.toLowerCase() === nome.toLowerCase() && r.telefone.slice(-4) === ult4);
+  const primeiroNome = nomeInput.split(/\s+/)[0].toLowerCase();
 
-  const div = document.getElementById("resultado");
-  div.innerHTML = "";
+  try {
+    const res = await fetch(SCRIPT_URL + "?action=get");
+    const data = await res.json();
 
-  if (matches.length === 0) {
-    div.innerHTML = "<p>Nenhuma aposta encontrada.</p>";
-    return;
+    const matches = data.filter(r => {
+      const rNome = String(r.nome || "").trim().split(/\s+/)[0].toLowerCase();
+      const rTelLast4 = String(r.telefone || "").slice(-4);
+      return rNome === primeiroNome && rTelLast4 === String(ult4);
+    });
+
+    const div = document.getElementById("resultado");
+    div.innerHTML = "";
+    if (matches.length === 0) {
+      div.innerHTML = "<p>Nenhuma aposta encontrada.</p>";
+      return;
+    }
+
+    matches.forEach(m => {
+      const status = (String(m.pago || m.Pago || "").toLowerCase() === "sim" || String(m.pago || m.Pago || "").toLowerCase() === "true") ? "Pago" : "Aguardando Pagamento";
+      const jogos = (m.jogos || m["Jogo 1"] || []).length ? (m.jogos || [m["Jogo 1"], m["Jogo 2"], m["Jogo 3"], m["Jogo 4"], m["Jogo 5"]]) : [];
+      const jogosHTML = (Array.isArray(jogos) ? jogos : []).filter(Boolean).map((j,i)=>`<p><b>Jogo ${i+1}:</b> ${j}</p>`).join("");
+      const receipt = m.receipt || m.ReceiptID || "";
+      div.innerHTML += `
+        <div class="card">
+          <p><b>Nome:</b> ${m.nome || m.Nome} <br><b>Telefone:</b> ${m.telefone || m.Telefone} <br><b>Status:</b> ${status}</p>
+          ${jogosHTML}
+          <button class="muted" onclick='gerarPDFConsulta(${JSON.stringify(m)})'>Baixar Comprovante</button>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    alert("Erro ao consultar: " + err.message);
   }
-
-  matches.forEach(m => {
-    const status = m.Pago === "TRUE" ? "Pago" : "Aguardando Pagamento";
-    const jogos = [m["Jogo 1"], m["Jogo 2"], m["Jogo 3"], m["Jogo 4"], m["Jogo 5"]]
-      .filter(Boolean)
-      .map((j,i)=>`<p><b>Jogo ${i+1}:</b> ${j}</p>`).join("");
-    div.innerHTML += `
-      <div class="card">
-        <p><b>Nome:</b> ${m.Nome}<br><b>Telefone:</b> ${m.Telefone}<br><b>Status:</b> ${status}</p>
-        ${jogos}
-        <button class="muted" onclick='gerarPDF(${JSON.stringify(m)})'>Baixar Comprovante</button>
-      </div>`;
-  });
 };
+
 
 function gerarPDF(m) {
   const { jsPDF } = window.jspdf;
