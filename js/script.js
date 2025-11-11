@@ -125,27 +125,29 @@ btnProximo.onclick = () => {
   }
 };
 
-// Voltar para jogo anterior
-btnAnterior = document.createElement("button");
-btnAnterior.type = "button";
-btnAnterior.textContent = "Jogo Anterior";
-btnAnterior.className = "muted";
-btnAnterior.disabled = true;
-btnAnterior.onclick = () => {
-  if (jogoAtual > 1) {
-    salvarJogoAtual();
-    jogoAtual--;
-    document.getElementById("titulo-jogo").textContent = `Jogo ${jogoAtual} de 5`;
-    restaurarJogo();
-  }
-};
+// Criar o botão "Jogo Anterior" apenas uma vez, após o DOM estar pronto
+window.addEventListener("DOMContentLoaded", () => {
+  const controles = document.querySelector(".controles");
+  if (!document.getElementById("btnAnterior")) {
+    btnAnterior = document.createElement("button");
+    btnAnterior.id = "btnAnterior";
+    btnAnterior.type = "button";
+    btnAnterior.textContent = "Jogo Anterior";
+    btnAnterior.className = "muted";
+    btnAnterior.disabled = true;
+    controles.insertBefore(btnAnterior, btnGerar);
 
-// Inserir botão "Jogo Anterior" apenas uma vez, se ainda não existir
-const controles = document.querySelector(".controles");
-if (!document.getElementById("btnAnterior")) {
-  btnAnterior.id = "btnAnterior";
-  controles.insertBefore(btnAnterior, btnGerar);
-}
+    btnAnterior.onclick = () => {
+      if (jogoAtual > 1) {
+        salvarJogoAtual();
+        jogoAtual--;
+        document.getElementById("titulo-jogo").textContent = `Jogo ${jogoAtual} de 5`;
+        restaurarJogo();
+      }
+    };
+  }
+});
+
 
 
 function finalizarJogos() {
@@ -185,4 +187,5 @@ form.onsubmit = async (e) => {
 };
 
 gerarNumeros();
+
 
