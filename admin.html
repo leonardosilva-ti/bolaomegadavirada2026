@@ -1,81 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Área Administrativa</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área Administrativa - Bolão Mega da Virada</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<main class="container admin">
-  <h1>Área Administrativa</h1>
+<body class="bg-gray-100 text-gray-900">
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-4 text-center text-indigo-700">Área Administrativa</h1>
 
-  <div id="loginDiv" class="login-box">
-    <h2>Login de Administrador</h2>
-    <input type="text" id="usuario" placeholder="Usuário">
-    <input type="password" id="senha" placeholder="Senha">
-    <button onclick="login()" class="primary">Entrar</button>
-  </div>
+    <!-- Tela de login -->
+    <div id="loginArea" class="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+      <h2 class="text-lg font-semibold mb-4 text-center">Login</h2>
+      <input type="text" id="adminUser" placeholder="Usuário" class="border p-2 w-full mb-3 rounded">
+      <input type="password" id="adminPass" placeholder="Senha" class="border p-2 w-full mb-3 rounded">
+      <button id="btnLogin" class="bg-indigo-600 text-white px-4 py-2 rounded w-full">Entrar</button>
+      <p id="loginMsg" class="text-red-500 text-sm mt-3 text-center hidden"></p>
+    </div>
 
-  <div id="painel" style="display:none;">
-    <h2>Participantes</h2>
-    <div id="lista"></div>
-
-    <h3>Registrar Números Sorteados</h3>
-    <input type="text" id="nums" placeholder="Ex: 01 05 10 21 44 60">
-    <button onclick="registrarSorteio()" class="primary">Registrar</button>
-  </div>
-</main>
-
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
-const LOGIN = { usuario: "admin", senha: "Blq15206395!" };
-
-function login() {
-  const u = document.getElementById("usuario").value;
-  const s = document.getElementById("senha").value;
-  if (u === LOGIN.usuario && s === LOGIN.senha) {
-    document.getElementById("loginDiv").style.display = "none";
-    document.getElementById("painel").style.display = "block";
-    carregarLista();
-  } else {
-    alert("Usuário ou senha incorretos.");
-  }
-}
-
-async function carregarLista() {
-  const res = await fetch(SCRIPT_URL + "?action=get");
-  const data = await res.json();
-  const lista = document.getElementById("lista");
-  lista.innerHTML = "";
-
-  data.forEach(p => {
-    lista.innerHTML += `
-      <div class="card">
-        <b>${p.Nome}</b><br>${p.Telefone} | Pix: ${p["É chave pix"]}
-        <br>Status: <b>${p.Pago === "TRUE" ? "Pago" : "Pendente"}</b><br>
-        <button onclick="confirmarPagamento('${p.Nome}','${p.Telefone}')" class="primary small">Confirmar Pagamento</button>
-        <button onclick="excluir('${p.Nome}','${p.Telefone}')" class="danger small">Excluir</button>
+    <!-- Área principal -->
+    <div id="adminArea" class="hidden">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-indigo-700">Participantes Cadastrados</h2>
+        <button id="btnAtualizar" class="bg-green-600 text-white px-3 py-2 rounded">Atualizar Lista</button>
       </div>
-    `;
-  });
-}
 
-async function excluir(nome, telefone) {
-  if (!confirm("Excluir este participante?")) return;
-  await fetch(`${SCRIPT_URL}?action=delete&nome=${encodeURIComponent(nome)}&telefone=${encodeURIComponent(telefone)}`);
-  carregarLista();
-}
+      <div id="tabelaParticipantes" class="bg-white rounded-lg shadow-md overflow-x-auto">
+        <table class="min-w-full border-collapse">
+          <thead class="bg-indigo-600 text-white">
+            <tr>
+              <th class="py-2 px-3 text-left">Nome</th>
+              <th class="py-2 px-3 text-left">Telefone</th>
+              <th class="py-2 px-3 text-left">Pago</th>
+              <th class="py-2 px-3 text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="listaParticipantes" class="divide-y divide-gray-200"></tbody>
+        </table>
+      </div>
 
-async function confirmarPagamento(nome, telefone) {
-  await fetch(`${SCRIPT_URL}?action=confirmarPagamento&nome=${encodeURIComponent(nome)}&telefone=${encodeURIComponent(telefone)}`);
-  carregarLista();
-}
+      <div class="mt-6 flex justify-center">
+        <button id="btnLogout" class="bg-red-600 text-white px-4 py-2 rounded">Sair</button>
+      </div>
+    </div>
+  </div>
 
-async function registrarSorteio() {
-  const nums = document.getElementById("nums").value.split(" ").map(n => parseInt(n)).filter(Boolean);
-  if (nums.length !== 6) return alert("Informe exatamente 6 números.");
-  alert("Números sorteados registrados com sucesso!");
-}
-</script>
+  <script src="admin.js"></script>
 </body>
 </html>
