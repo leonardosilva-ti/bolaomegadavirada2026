@@ -5,43 +5,55 @@
 <title>Área Administrativa</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100 text-gray-900 p-6">
-  <h1 class="text-2xl font-bold mb-4 text-center">Área Administrativa</h1>
+<body>
+<h1>Área Administrativa</h1>
 
+<div id="loginDiv">
+  <label>Senha de Acesso:</label>
+  <input type="password" id="senha">
+  <button onclick="login()">Entrar</button>
+</div>
+
+<div id="painel" style="display:none;">
+  <h2>Participantes</h2>
   <div id="lista"></div>
 
-  <h2 class="text-xl font-bold mt-8">Números Sorteados</h2>
-  <div id="sorteio" class="mt-2"></div>
-  <button id="btnAtualizar" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">Atualizar Números</button>
+  <h3>Registrar Números Sorteados</h3>
+  <input type="text" id="nums" placeholder="Ex: 01 05 10 21 44 60">
+  <button onclick="registrarSorteio()">Registrar</button>
+</div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+const SENHA = "Blq15206395!"; // altere aqui
+
+function login() {
+  const s = document.getElementById("senha").value;
+  if (s === SENHA) {
+    document.getElementById("loginDiv").style.display = "none";
+    document.getElementById("painel").style.display = "block";
+    carregarLista();
+  } else alert("Senha incorreta!");
+}
 
 async function carregarLista() {
   const res = await fetch(SCRIPT_URL + "?action=get");
   const data = await res.json();
+  const lista = document.getElementById("lista");
+  lista.innerHTML = "";
 
-  const listaDiv = document.getElementById("lista");
-  listaDiv.innerHTML = "";
   data.forEach(p => {
-    const jogos = JSON.parse(p.jogos || "[]").join(" | ");
-    listaDiv.innerHTML += `
-      <div class="bg-white p-3 mb-2 rounded shadow flex justify-between items-center">
-        <div>
-          <strong>${p.nome}</strong> - ${p.telefone}<br>
-          Pix: ${p.pix} | Status: <b>${p.status || "Pendente"}</b><br>
-          Jogos: ${jogos}
-        </div>
-        <div class="space-x-2">
-          <button class="bg-green-500 text-white px-3 py-1 rounded" onclick="confirmarPagamento('${p.nome}','${p.telefone}')">Confirmar Pagamento</button>
-          <button class="bg-red-500 text-white px-3 py-1 rounded" onclick="excluir('${p.nome}','${p.telefone}')">Excluir</button>
-        </div>
+    lista.innerHTML += `
+      <div class="card">
+        <b>${p.nome}</b> - ${p.telefone} | Pix: ${p.pix} | Status: ${p.status || "Pendente"}
+        <br><button onclick="confirmarPagamento('${p.nome}','${p.telefone}')">Confirmar Pagamento</button>
+        <button onclick="excluir('${p.nome}','${p.telefone}')">Excluir</button>
       </div>`;
   });
 }
 
 async function excluir(nome, telefone) {
-  if (!confirm("Tem certeza que deseja excluir este participante?")) return;
+  if (!confirm("Excluir este participante?")) return;
   await fetch(`${SCRIPT_URL}?action=delete&nome=${encodeURIComponent(nome)}&telefone=${encodeURIComponent(telefone)}`);
   carregarLista();
 }
@@ -51,15 +63,12 @@ async function confirmarPagamento(nome, telefone) {
   carregarLista();
 }
 
-document.getElementById("btnAtualizar").onclick = async () => {
-  const numeros = prompt("Informe os 6 números sorteados separados por espaço (ex: 01 05 13 27 45 60):");
-  if (!numeros) return;
-  const arr = numeros.split(" ").map(n=>parseInt(n)).slice(0,6);
-  await fetch(SCRIPT_URL + "?action=registrarSorteio&nums=" + arr.join(","));
-  alert("Números registrados!");
-};
-
-carregarLista();
+async function registrarSorteio() {
+  const nums = document.getElementById("nums").value.split(" ").map(n => parseInt(n)).filter(Boolean);
+  if (nums.length !== 6) return alert("Informe exatamente 6 números.");
+  google.script.run.registrarNumerosSorteados(nums);
+  alert("Números sorteados registrados!");
+}
 </script>
 </body>
 </html>
