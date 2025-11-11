@@ -71,6 +71,15 @@ button.small {
   font-size: 13px;
   margin-top: 5px;
 }
+/* Estado desativado dos botões */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #ddd !important;
+  color: #666 !important;
+  border: 1px solid #ccc !important;
+}
+
 
 .numeros-grid {
   display: grid;
@@ -132,4 +141,5 @@ button.small {
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
 
