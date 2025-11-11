@@ -13,8 +13,8 @@
     </div>
 
     <div id="area-admin" style="display:none">
-      <h2>Carregar Participantes</h2>
-      <button id="btnCarregar">Carregar Dados</button>
+      <h2>Dados do Bolão</h2>
+      <button id="btnCarregar">Carregar Participantes</button>
       <div id="jogos-lista"></div>
 
       <h3>Excluir participante (por nome)</h3>
@@ -27,15 +27,15 @@
       <input id="numsSorteados" placeholder="Ex: 01,02,03,04,05,06"><button id="btnVerificar">Verificar</button>
       <div id="resultado"></div>
 
-      <h3>Encerrar / Gerar PDF (lista de jogos)</h3>
+      <h3>Gerar PDF de todos os jogos</h3>
       <button id="btnFechar">Gerar PDF de todos os jogos</button>
     </div>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // <-- substituir
-    const SENHA_ADMIN = "Blq15206395!"; // mude aqui
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+    const SENHA_ADMIN = "Blq15206395!"; // altere para sua senha desejada
 
     document.getElementById("btnEntrar").onclick = () => {
       if (document.getElementById("senha").value === SENHA_ADMIN) {
@@ -50,7 +50,7 @@
       const div = document.getElementById("jogos-lista");
       div.innerHTML = "";
       dados.forEach((d,i)=>{
-        div.innerHTML += `<div style="border-bottom:1px solid #ddd;padding:6px">
+        div.innerHTML += `<div style="border-bottom:1px solid #eee;padding:8px">
           <strong>${i+1} - ${d.nome}</strong> (${d.telefone}) - Receipt: ${d.receipt} - Pago: ${d.pago || "Não"}<br>
           ${d.jogos.filter(Boolean).map((j,idx)=>`<div>Jogo ${idx+1}: ${j}</div>`).join('')}
         </div>`;
@@ -61,7 +61,7 @@
       const nome = document.getElementById("nomeExcluir").value.trim();
       if (!nome) return alert("Informe nome");
       await fetch(SCRIPT_URL + `?action=delete&nome=${encodeURIComponent(nome)}`);
-      alert("Solicitação enviada; recarregue para ver mudanças.");
+      alert("Exclusão solicitada. Recarregue os dados.");
     };
 
     document.getElementById("btnMarkPaid").onclick = async () => {
@@ -69,16 +69,16 @@
       if (!r) return alert("Informe receipt");
       const res = await fetch(SCRIPT_URL + `?action=markpaid&receipt=${encodeURIComponent(r)}`);
       const data = await res.json();
-      alert("Marca pago: " + JSON.stringify(data));
+      alert("Resposta: " + JSON.stringify(data));
     };
 
     document.getElementById("btnVerificar").onclick = async () => {
       const nums = document.getElementById("numsSorteados").value.trim();
-      if (!nums) return alert("Informe números");
+      if (!nums) return alert("Informe números sorteados");
       const res = await fetch(SCRIPT_URL + `?action=verify&nums=${encodeURIComponent(nums)}`);
       const g = await res.json();
       const div = document.getElementById("resultado");
-      if (g.length === 0) div.innerHTML = "<p>Nenhum jogo com 4+ acertos.</p>";
+      if (!g || g.length === 0) div.innerHTML = "<p>Nenhum jogo com 4+ acertos.</p>";
       else {
         div.innerHTML = "<h4>Ganhadores</h4>" + g.map(x=>`<p>${x.nome} (${x.telefone}) - Jogo ${x.jogoIndex}: ${x.numeros} - ${x.acertos} acertos (Receipt ${x.receipt})</p>`).join("<hr>");
       }
