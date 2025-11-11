@@ -178,9 +178,12 @@ btnVoltarEditar.addEventListener("click", () => {
 });
 
 // confirmação final e envio (somente se aceito)
-btnConfirmarEnvio.addEventListener("click", async () => {
-  if (!document.getElementById("aceito").checked) { alert("Você precisa marcar 'Li e aceito os termos' antes de enviar."); return; }
-  // preparar payload
+btnConfirmarEnvio.addEventListener("click", () => {
+  if (!document.getElementById("aceito").checked) {
+    alert("Você precisa marcar 'Li e aceito os termos' antes de prosseguir para a confirmação.");
+    return;
+  }
+
   const nome = document.getElementById("nome").value.trim();
   const telefone = document.getElementById("telefone").value.trim();
   if (!nome || !telefone) { alert("Nome e telefone são obrigatórios."); return; }
@@ -201,23 +204,9 @@ btnConfirmarEnvio.addEventListener("click", async () => {
     origem: "web"
   };
 
-  try {
-    const resp = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-    const data = await resp.json();
-    if (data && data.status === "OK" && data.receipt) {
-      // salvar local para confirmacao.html gerar comprovante
-      localStorage.setItem("lastReceiptData", JSON.stringify({payload, receipt: data.receipt}));
-      // redirecionar para confirmacao
-      window.location.href = "confirmacao.html";
-    } else {
-      alert("Erro ao enviar. Tente novamente. " + (data && data.message ? data.message : ""));
-    }
-  } catch (err) {
-    alert("Erro ao enviar: " + err.message);
-  }
+  // salva temporariamente e redireciona para a página de confirmação
+  localStorage.setItem("pendingAposta", JSON.stringify(payload));
+  window.location.href = "confirmacao.html";
 });
 
 // Consulta "Ver Jogos" (primeiro nome + últimos 4 digitos)
@@ -254,3 +243,4 @@ document.getElementById("btnVerJogos").addEventListener("click", async () => {
 
 // inicializa UI
 updateGradeUI();
+
