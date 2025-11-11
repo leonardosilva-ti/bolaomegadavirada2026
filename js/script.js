@@ -140,8 +140,13 @@ btnAnterior.onclick = () => {
   }
 };
 
-// Inserir botão antes dos outros
-document.querySelector(".controles").insertBefore(btnAnterior, btnGerar);
+// Inserir botão "Jogo Anterior" apenas uma vez, se ainda não existir
+const controles = document.querySelector(".controles");
+if (!document.getElementById("btnAnterior")) {
+  btnAnterior.id = "btnAnterior";
+  controles.insertBefore(btnAnterior, btnGerar);
+}
+
 
 function finalizarJogos() {
   // Validação de duplicados
@@ -180,3 +185,4 @@ form.onsubmit = async (e) => {
 };
 
 gerarNumeros();
+
