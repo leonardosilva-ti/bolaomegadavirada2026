@@ -1,92 +1,138 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Jogos - Bolão Mega da Virada</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta de Jogos - Bolão Mega da Virada</title>
+  <link rel="stylesheet" href="css/style.css">   <style>
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .jogo-sorte-box {
+      border: 2px solid var(--accent);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .jogo-sorte-numeros {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .jogo-sorte-numeros span {
+      background: #333;
+      color: #fff;
+      padding: 5px 8px;
+      border-radius: 50%;
+      font-weight: bold;
+      min-width: 30px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col items-center p-4">
+  <header class="site-header" style="width: 100%;">
+    <h1>Consulta de Jogos</h1>
+  </header>
 
-  <div class="bg-white rounded-xl shadow-lg p-6 max-w-lg w-full mt-10">
-    <h1 class="text-2xl font-bold text-indigo-700 text-center mb-4">Consultar Jogos</h1>
-    <p class="text-gray-600 text-center mb-6">
-      Informe o seu <strong>primeiro nome</strong> e os <strong>4 últimos dígitos</strong> do seu telefone.
-    </p>
+  <main class="container">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg w-full mt-10 mx-auto">
+      <h2 class="text-xl font-bold text-center mb-4">Consultar por Protocolo</h2>
+      <p class="text-gray-600 text-center mb-6">
+        Informe o seu **Número de Protocolo** para consultar seus dados e jogos.
+      </p>
 
-    <div class="space-y-4">
-      <input id="nome" type="text" placeholder="Primeiro nome" class="w-full border rounded px-4 py-2 focus:ring focus:ring-indigo-300">
-      <input id="ultimos4" type="text" maxlength="4" placeholder="Últimos 4 dígitos do telefone" class="w-full border rounded px-4 py-2 focus:ring focus:ring-indigo-300">
-      <button id="btnConsultar" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 w-full rounded">Consultar</button>
-    </div>
+            <div class="space-y-4">
+        <input id="protocoloInput" type="text" placeholder="Número de Protocolo" class="w-full border rounded px-4 py-2">
+        <button id="btnConsultar" class="primary w-full">Consultar</button>
+      </div>
 
-    <div id="resultado" class="mt-6"></div>
-  </div>
+      <div id="resultado" class="mt-6"></div>
+    </div>
+  </main>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-    document.getElementById("btnConsultar").addEventListener("click", async () => {
-      const nome = document.getElementById("nome").value.trim().toLowerCase();
-      const ultimos4 = document.getElementById("ultimos4").value.trim();
+    document.getElementById("btnConsultar").addEventListener("click", async () => {
+      const protocolo = document.getElementById("protocoloInput").value.trim();
+      const resultadoDiv = document.getElementById("resultado");
+      
+      resultadoDiv.innerHTML = `<p class="center" style="color:#555">Buscando...</p>`;
 
-      const resultadoDiv = document.getElementById("resultado");
-      resultadoDiv.innerHTML = `<p class="text-center text-gray-600">Buscando...</p>`;
+      if (!protocolo) {
+        resultadoDiv.innerHTML = `<p class="center" style="color:red">Preencha o número de Protocolo.</p>`;
+        return;
+      }
 
-      if (!nome || !ultimos4) {
-        resultadoDiv.innerHTML = `<p class="text-red-600 text-center">Preencha todos os campos.</p>`;
-        return;
-      }
+      try {
+        // 4.1 - Busca o protocolo do participante e todos os dados
+        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
+        const data = await res.json();
+        
+        const participante = data.participantes.find(p => p.Protocolo === protocolo);
+        const totalParticipantes = data.participantes.length;
+        const totalJogos = data.participantes.reduce((acc, p) => acc + (p.Jogos.split('|').length), 0);
+        const jogoDaSorte = data.jogoDaSorte || "Não cadastrado";
+        
+        let html = "";
 
-      try {
-        const res = await fetch(SCRIPT_URL + "?action=get");
-        const data = await res.json();
+        // 4.2 - Estatísticas do Bolão
+        html += `<h3 class="center" style="margin-top:20px;">Estatísticas do Bolão</h3>
+          <div class="stats-grid card">
+            <p><strong>Participantes:</strong> ${totalParticipantes}</p>
+            <p><strong>Total de Jogos:</strong> ${totalJogos}</p>
+          </div>`;
+        
+        // 4.2 - Jogo da Sorte
+        const sorteNumerosHtml = jogoDaSorte.split(' ').map(n => `<span>${n}</span>`).join('');
+        html += `<div class="jogo-sorte-box">
+            <strong>Jogo da Sorte (9 Números)</strong>
+            <div class="jogo-sorte-numeros">${sorteNumerosHtml}</div>
+          </div>`;
 
-        // Normaliza e filtra participantes
-        const encontrados = data.filter(r => {
-          const nomeSplit = String(r.Nome || "").trim().toLowerCase().split(" ")[0];
-          const telefone = String(r.Telefone || "");
-          return nomeSplit === nome && telefone.slice(-4) === ultimos4;
-        });
+        // 4.1 - Dados do Participante
+        if (participante) {
+          const status = participante.Status === "PAGO" ? "Pago" : "Aguardando Pagamento";
+          const statusClass = participante.Status === "PAGO" ? "color:green" : "color:red";
+          const jogosParticipante = participante.Jogos.split('|').map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join('');
 
-        if (encontrados.length === 0) {
-          resultadoDiv.innerHTML = `<p class="text-center text-red-600">Nenhum jogo encontrado.</p>`;
-          return;
-        }
+          html += `<h3 class="center" style="margin-top:20px;">Seus Dados e Jogos</h3>
+            <div class="card">
+              <p><strong>Nome:</strong> ${participante.Nome}</p>
+              <p><strong>Telefone:</strong> ${participante.Telefone}</p>
+              <p><strong>Protocolo:</strong> ${participante.Protocolo}</p>
+              <p><strong>Status:</strong> <span style="${statusClass}">${status}</span></p>
+              <hr style="margin: 8px 0;">
+              ${jogosParticipante}
+              <div class="controles" style="margin-top:15px;">
+                <button onclick="window.location.href='comprovante.html?protocolo=${protocolo}'" class="primary small">Baixar Comprovante</button>
+              </div>
+            </div>`;
+        } else {
+          html += `<p class="center" style="color:red">Protocolo não encontrado.</p>`;
+        }
+        
+        // 4.3 - Lista de todos os jogos
+        html += `<h3 class="center" style="margin-top:20px;">Todos os Jogos do Bolão</h3>
+          <div class="card" style="font-size: 0.9em;">
+            ${data.todosJogos.map(jogo => `<p>${jogo}</p>`).join('')}
+          </div>`;
+        
+        resultadoDiv.innerHTML = html;
 
-        // Exibe lista
-        let html = "";
-        encontrados.forEach((r, i) => {
-          const status = r.Pago === "SIM" ? "Pago" : "Aguardando pagamento";
-          const cor = r.Pago === "SIM" ? "text-green-600" : "text-red-600";
-
-          html += `
-            <div class="border rounded-lg p-4 my-3 shadow-sm">
-              <p><strong>Nome:</strong> ${r.Nome}</p>
-              <p><strong>Telefone:</strong> ${r.Telefone}</p>
-              <p><strong>Status:</strong> <span class="${cor} font-semibold">${status}</span></p>
-              <p><strong>Data:</strong> ${r.Timestamp || "-"}</p>
-              <div class="mt-2 text-sm text-gray-700">
-                ${[1,2,3,4,5].map(n => r["Jogo " + n] ? `<p><strong>Jogo ${n}:</strong> ${r["Jogo " + n]}</p>` : "").join("")}
-              </div>
-              ${r.ReceiptID ? `
-              <div class="mt-4 text-center">
-                <a href="comprovante.html?id=${r.ReceiptID}" target="_blank"
-                  class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded text-sm">
-                  Baixar Comprovante
-                </a>
-              </div>` : ""}
-            </div>
-          `;
-        });
-
-        resultadoDiv.innerHTML = html;
-
-      } catch (err) {
-        resultadoDiv.innerHTML = `<p class="text-red-600 text-center">Erro ao buscar: ${err.message}</p>`;
-      }
-    });
-  </script>
+      } catch (err) {
+        resultadoDiv.innerHTML = `<p class="center" style="color:red">Erro ao buscar dados: ${err.message}</p>`;
+      }
+    });
+  </script>
 
 </body>
 </html>
