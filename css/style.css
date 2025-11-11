@@ -1,25 +1,64 @@
-:root{--maxw:980px;--accent:#0b87e7}
-*{box-sizing:border-box}
-body{font-family:Inter,Arial,Helvetica,sans-serif;margin:0;background:#fff;color:#111}
-.container{max-width:var(--maxw);margin:18px auto;padding:12px}
-h1{text-align:center;font-size:34px;margin:6px 0 18px}
-.row{display:flex;align-items:center;gap:10px;margin:8px 0}
-.row label{min-width:150px;font-weight:600}
-input[type=text],input[type=tel],input{padding:8px;border:1px solid #ccc;border-radius:6px;flex:1}
-hr{margin:18px 0;border:0;border-top:1px solid #eee}
-#jogos-area{display:block;margin:12px auto;max-width:900px}
-.grade{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:12px}
-.num-btn{padding:10px;border-radius:6px;border:1px solid #bdbdbd;background:#fafafa;cursor:pointer;text-align:center;font-weight:600}
-.num-btn.selecionado{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 2px 0 rgba(0,0,0,0.06)}
-.controles{text-align:center;margin:12px 0;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-button{cursor:pointer}
-button.primary{background:var(--accent);color:#fff;border:0;padding:10px 18px;border-radius:8px}
-button.muted{background:#efefef;border:1px solid #ddd;padding:8px 12px;border-radius:6px}
-.observacao-box{max-width:900px;margin:18px auto}
-.center{text-align:center}
-.observacao-text{border:2px solid #eee;padding:16px;border-radius:8px;background:#fff}
-.consultar{max-width:900px;margin:12px auto;text-align:center}
-#lista-jogos{margin-top:10px;text-align:left}
-.small{font-size:0.95rem}
-.resumo{max-width:900px;margin:12px auto;padding:12px;border-radius:8px;border:1px solid #eee}
-.submit-area{text-align:center;margin:18px 0}
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #0057b7;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+main {
+  max-width: 600px;
+  margin: 20px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.numeros-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.numeros-grid button {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.numeros-grid button.selected {
+  background: #007bff;
+  color: white;
+}
+
+button {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#adminBtn, #consultarBtn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: #333;
+  color: white;
+}
+
+.observacao {
+  text-align: center;
+  margin-bottom: 20px;
+}
