@@ -12,6 +12,7 @@ function gerarNumeros() {
   numerosContainer.innerHTML = "";
   for (let i = 1; i <= 60; i++) {
     const btn = document.createElement("button");
+    btn.type = "button"; // <--- ESSENCIAL: evita submit ao clicar
     btn.textContent = i.toString().padStart(2, "0");
     btn.onclick = () => {
       btn.classList.toggle("selected");
@@ -20,6 +21,7 @@ function gerarNumeros() {
     numerosContainer.appendChild(btn);
   }
 }
+
 gerarNumeros();
 
 function validarSelecao() {
@@ -87,3 +89,4 @@ form.onsubmit = async (e) => {
     alert("Erro ao enviar, tente novamente.");
   }
 };
+
