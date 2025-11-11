@@ -1,89 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Consulta de Jogos</title>
-<link rel="stylesheet" href="css/style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta de Jogos - Bolão Mega da Virada</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<main class="container">
-  <h1>Consultar Jogos</h1>
-  <div class="form-row">
-    <input type="text" id="nome" placeholder="Nome completo">
-    <input type="text" id="ultimos4" placeholder="Últimos 4 números do telefone">
-    <button id="buscar" class="primary">Buscar</button>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col items-center p-4">
+
+  <div class="bg-white rounded-xl shadow-lg p-6 max-w-lg w-full mt-10">
+    <h1 class="text-2xl font-bold text-indigo-700 text-center mb-4">Consultar Jogos</h1>
+    <p class="text-gray-600 text-center mb-6">
+      Informe o seu <strong>primeiro nome</strong> e os <strong>4 últimos dígitos</strong> do seu telefone.
+    </p>
+
+    <div class="space-y-4">
+      <input id="nome" type="text" placeholder="Primeiro nome" class="w-full border rounded px-4 py-2 focus:ring focus:ring-indigo-300">
+      <input id="ultimos4" type="text" maxlength="4" placeholder="Últimos 4 dígitos do telefone" class="w-full border rounded px-4 py-2 focus:ring focus:ring-indigo-300">
+      <button id="btnConsultar" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 w-full rounded">Consultar</button>
+    </div>
+
+    <div id="resultado" class="mt-6"></div>
   </div>
-  <div id="resultado"></div>
-</main>
 
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-document.getElementById("buscar").onclick = async () => {
-  const nomeInput = document.getElementById("nome").value.trim();
-  const ult4 = document.getElementById("ultimos4").value.trim();
-  if (!nomeInput || !ult4) return alert("Informe o primeiro nome e os 4 últimos números do telefone.");
+    document.getElementById("btnConsultar").addEventListener("click", async () => {
+      const nome = document.getElementById("nome").value.trim().toLowerCase();
+      const ultimos4 = document.getElementById("ultimos4").value.trim();
 
-  const primeiroNome = nomeInput.split(/\s+/)[0].toLowerCase();
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.innerHTML = `<p class="text-center text-gray-600">Buscando...</p>`;
 
-  try {
-    const res = await fetch(SCRIPT_URL + "?action=get");
-    const data = await res.json();
+      if (!nome || !ultimos4) {
+        resultadoDiv.innerHTML = `<p class="text-red-600 text-center">Preencha todos os campos.</p>`;
+        return;
+      }
 
-    const matches = data.filter(r => {
-      const rNome = String(r.nome || "").trim().split(/\s+/)[0].toLowerCase();
-      const rTelLast4 = String(r.telefone || "").slice(-4);
-      return rNome === primeiroNome && rTelLast4 === String(ult4);
+      try {
+        const res = await fetch(SCRIPT_URL + "?action=get");
+        const data = await res.json();
+
+        // Normaliza e filtra participantes
+        const encontrados = data.filter(r => {
+          const nomeSplit = String(r.Nome || "").trim().toLowerCase().split(" ")[0];
+          const telefone = String(r.Telefone || "");
+          return nomeSplit === nome && telefone.slice(-4) === ultimos4;
+        });
+
+        if (encontrados.length === 0) {
+          resultadoDiv.innerHTML = `<p class="text-center text-red-600">Nenhum jogo encontrado.</p>`;
+          return;
+        }
+
+        // Exibe lista
+        let html = "";
+        encontrados.forEach((r, i) => {
+          const status = r.Pago === "SIM" ? "Pago" : "Aguardando pagamento";
+          const cor = r.Pago === "SIM" ? "text-green-600" : "text-red-600";
+
+          html += `
+            <div class="border rounded-lg p-4 my-3 shadow-sm">
+              <p><strong>Nome:</strong> ${r.Nome}</p>
+              <p><strong>Telefone:</strong> ${r.Telefone}</p>
+              <p><strong>Status:</strong> <span class="${cor} font-semibold">${status}</span></p>
+              <p><strong>Data:</strong> ${r.Timestamp || "-"}</p>
+              <div class="mt-2 text-sm text-gray-700">
+                ${[1,2,3,4,5].map(n => r["Jogo " + n] ? `<p><strong>Jogo ${n}:</strong> ${r["Jogo " + n]}</p>` : "").join("")}
+              </div>
+              ${r.ReceiptID ? `
+              <div class="mt-4 text-center">
+                <a href="comprovante.html?id=${r.ReceiptID}" target="_blank"
+                  class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded text-sm">
+                  Baixar Comprovante
+                </a>
+              </div>` : ""}
+            </div>
+          `;
+        });
+
+        resultadoDiv.innerHTML = html;
+
+      } catch (err) {
+        resultadoDiv.innerHTML = `<p class="text-red-600 text-center">Erro ao buscar: ${err.message}</p>`;
+      }
     });
+  </script>
 
-    const div = document.getElementById("resultado");
-    div.innerHTML = "";
-    if (matches.length === 0) {
-      div.innerHTML = "<p>Nenhuma aposta encontrada.</p>";
-      return;
-    }
-
-    matches.forEach(m => {
-      const status = (String(m.pago || m.Pago || "").toLowerCase() === "sim" || String(m.pago || m.Pago || "").toLowerCase() === "true") ? "Pago" : "Aguardando Pagamento";
-      const jogos = (m.jogos || m["Jogo 1"] || []).length ? (m.jogos || [m["Jogo 1"], m["Jogo 2"], m["Jogo 3"], m["Jogo 4"], m["Jogo 5"]]) : [];
-      const jogosHTML = (Array.isArray(jogos) ? jogos : []).filter(Boolean).map((j,i)=>`<p><b>Jogo ${i+1}:</b> ${j}</p>`).join("");
-      const receipt = m.receipt || m.ReceiptID || "";
-      div.innerHTML += `
-        <div class="card">
-          <p><b>Nome:</b> ${m.nome || m.Nome} <br><b>Telefone:</b> ${m.telefone || m.Telefone} <br><b>Status:</b> ${status}</p>
-          ${jogosHTML}
-          <button class="muted" onclick='gerarPDFConsulta(${JSON.stringify(m)})'>Baixar Comprovante</button>
-        </div>
-      `;
-    });
-
-  } catch (err) {
-    alert("Erro ao consultar: " + err.message);
-  }
-};
-
-
-function gerarPDF(m) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const status = (String(m.pago || m.Pago || "").toLowerCase() === "sim" || String(m.pago || m.Pago || "").toLowerCase() === "true") ? "Pago" : "Aguardando Pagamento";
-  const timestamp = m.Timestamp || m.timestamp || m.Timestamp || new Date().toISOString();
-  const data = new Date(timestamp).toLocaleString("pt-BR");
-  let y = 15;
-  doc.setFontSize(16); doc.text("Comprovante - Bolão Mega da Virada", 12, y); y+=10;
-  doc.setFontSize(11); doc.text(`Receipt: ${m.receipt || m.ReceiptID || ""}`, 12, y); y+=8;
-  doc.text(`Nome: ${m.nome || m.Nome}`, 12, y); y+=8;
-  doc.text(`Telefone: ${m.telefone || m.Telefone}`, 12, y); y+=8;
-  doc.text(`Status: ${status}`, 12, y); y+=8;
-  doc.text(`Data/Hora: ${data}`, 12, y); y+=10;
-  doc.text("Jogos:", 12, y); y+=6;
-  const jogos = m.jogos || [m["Jogo 1"], m["Jogo 2"], m["Jogo 3"], m["Jogo 4"], m["Jogo 5"]];
-  (Array.isArray(jogos) ? jogos : []).filter(Boolean).forEach((j,i)=>{ doc.text(`${i+1}: ${j}`, 12, y); y+=7; if (y>270){ doc.addPage(); y=12;} });
-  doc.save(`comprovante_${m.receipt || m.ReceiptID || "unknown"}.pdf`);
-}
-
-
-</script>
 </body>
 </html>
