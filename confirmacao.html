@@ -32,15 +32,56 @@ document.getElementById("info").innerHTML = `<p><strong>Nome:</strong> ${pending
 document.getElementById("jogos").innerHTML = pending.jogos.map((j,i)=>`<p><b>Jogo ${i+1}:</b> ${j}</p>`).join("");
 
 document.getElementById("btnBaixar").onclick = async () => {
-  if (!document.getElementById("aceito2").checked) return alert("Você precisa aceitar os termos.");
-  const resp = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(pending) });
-  const json = await resp.json();
-  if (json.status === "OK" && json.receipt) {
-    gerarPDF(pending, json.receipt, "Aguardando Pagamento");
-    localStorage.removeItem("pendingAposta");
-    alert("Aposta enviada!");
-  } else {
-    alert("Erro ao enviar aposta.");
+  if (!document.getElementById("aceito2").checked) { alert("Você precisa aceitar os termos."); return; }
+  try {
+    const resp = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(pending) });
+    const text = await resp.text();
+    let json = null;
+    try { json = JSON.parse(text); } catch(e){ json = null; }
+
+    // Caso padrão: JSON com receipt
+    if (json && (json.status === "OK" || json.status === "ok") && json.receipt) {
+      const receipt = json.receipt;
+      localStorage.setItem("lastReceiptData", JSON.stringify({ payload: pending, receipt }));
+      localStorage.removeItem("pendingAposta");
+      gerarPDF(pending, receipt, "Aguardando Pagamento");
+      alert("Aposta enviada com sucesso. Receipt: " + receipt);
+      return;
+    }
+
+    // Caso resposta textual "OK" (legacy) -> tentar recuperar último registro por nome+telefone
+    if (typeof text === "string" && text.trim().toUpperCase() === "OK") {
+      const q = await fetch(SCRIPT_URL + "?action=get");
+      const all = await q.json();
+      const matches = all.filter(r => String(r.nome).trim().toLowerCase() === String(pending.nome).trim().toLowerCase()
+        && String(r.telefone).trim() === String(pending.telefone).trim());
+      if (matches.length > 0) {
+        const recent = matches[matches.length - 1];
+        const receipt = recent.receipt || ("NO_RECEIPT");
+        localStorage.setItem("lastReceiptData", JSON.stringify({ payload: pending, receipt }));
+        localStorage.removeItem("pendingAposta");
+        gerarPDF(pending, receipt, "Aguardando Pagamento");
+        alert("Aposta enviada com sucesso. Receipt: " + receipt);
+        return;
+      } else {
+        alert("Envio retornou 'OK' mas não foi possível localizar o receipt automaticamente. Verifique a planilha.");
+        return;
+      }
+    }
+
+    // Caso JSON com status ok mas sem receipt
+    if (json && (json.status === "ok" || json.status === "OK")) {
+      localStorage.setItem("lastReceiptData", JSON.stringify({ payload: pending, receipt: ("NO_RECEIPT") }));
+      localStorage.removeItem("pendingAposta");
+      gerarPDF(pending, "NO_RECEIPT", "Aguardando Pagamento");
+      alert("Aposta enviada (sem receipt retornado).");
+      return;
+    }
+
+    // fallback: mostrar texto bruto
+    alert("Resposta inesperada do servidor: " + text);
+  } catch (err) {
+    alert("Erro ao enviar: " + err.message);
   }
 };
 
