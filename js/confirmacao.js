@@ -84,6 +84,21 @@ btnConfirmar.addEventListener("click", async () => {
 function gerarProtocolo() {
   const now = new Date();
   const pad = n => n.toString().padStart(2, '0');
-  const random = () => Math.random().toString(36).substring(2, 4).toUpperCase();
-  return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${random()}`;
+
+  const ano = now.getFullYear();
+  const mes = pad(now.getMonth() + 1);
+  const dia = pad(now.getDate());
+  const hora = pad(now.getHours());
+  const min = pad(now.getMinutes());
+  const seg = pad(now.getSeconds());
+
+  // Funções auxiliares para gerar letras e números aleatórios
+  const letra = () => String.fromCharCode(65 + Math.floor(Math.random() * 26)); // A–Z
+  const numero = () => Math.floor(Math.random() * 10); // 0–9
+
+  // Monta o protocolo no formato: AAAAMMDDHHMMSS-XX00X0
+  const parteRandom = `${letra()}${letra()}${numero()}${numero()}${letra()}${numero()}`;
+
+  return `${ano}${mes}${dia}${hora}${min}${seg}-${parteRandom}`;
 }
+
