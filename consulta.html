@@ -6,105 +6,112 @@
   <title>Consulta - Bolão da Sorte</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <header class="site-header">Consulta de Jogos - Bolão da Sorte</header>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col items-center p-4">
+  <header class="site-header" style="width: 100%;">
+    <h1>Consulta de Jogos</h1>
+  </header>
 
   <main class="container">
-    <!-- Consulta -->
-    <section class="consulta-box">
-      <h2>Consultar Jogos</h2>
-      <div class="form-row">
-        <input type="text" id="nomeConsulta" placeholder="Primeiro nome">
-        <input type="text" id="telefoneConsulta" placeholder="Últimos dígitos do telefone">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg w-full mt-10 mx-auto">
+      <h2 class="text-xl font-bold text-center mb-4">Consultar por Protocolo</h2>
+      <p class="text-gray-600 text-center mb-6">
+        Informe o seu <b>Número de Protocolo</b> para consultar seus dados e jogos.
+      </p>
+
+      <div class="space-y-4">
+        <input id="protocoloInput" type="text" placeholder="Número de Protocolo" class="w-full border rounded px-4 py-2">
+        <button id="btnConsultar" class="primary w-full">Consultar</button>
       </div>
-      <button id="btnConsultar" class="primary">Consultar</button>
-    </section>
 
-    <hr>
-
-    <!-- Estatísticas do Bolão -->
-    <section id="estatisticas" class="stats-container hidden">
-      <div class="stats-card">
-        <h4>Total de Jogos</h4>
-        <p id="totalJogos">0</p>
-      </div>
-      <div class="stats-card">
-        <h4>Participantes</h4>
-        <p id="totalParticipantes">0</p>
-      </div>
-    </section>
-
-    <!-- Jogo da Sorte -->
-    <section id="jogoSorte" class="jogo-sorte-box hidden">
-      <h2>🎯 Jogo da Sorte</h2>
-      <div id="numerosSorte" class="jogo-sorte-numeros"></div>
-    </section>
-
-    <!-- Lista de Jogos -->
-    <section id="todosJogos" class="todos-jogos hidden"></section>
+      <div id="resultado" class="mt-6"></div>
+    </div>
   </main>
 
   <script>
-    document.getElementById('btnConsultar').addEventListener('click', async () => {
-      const nome = document.getElementById('nomeConsulta').value.trim().toLowerCase();
-      const telefone = document.getElementById('telefoneConsulta').value.trim();
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-      if (!nome || !telefone) {
-        alert('Por favor, preencha o nome e os últimos dígitos do telefone.');
+    document.getElementById("btnConsultar").addEventListener("click", async () => {
+      const protocolo = document.getElementById("protocoloInput").value.trim();
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.innerHTML = `<p class="center" style="color:#555">Buscando...</p>`;
+
+      if (!protocolo) {
+        resultadoDiv.innerHTML = `<p class="center" style="color:red">Preencha o número de Protocolo.</p>`;
         return;
       }
 
       try {
-        const resp = await fetch(
-          'https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec?acao=consultar&nome=' +
-          encodeURIComponent(nome) + '&telefone=' + encodeURIComponent(telefone)
-        );
-        const dados = await resp.json();
+        // Busca dados completos do bolão
+        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
+        const data = await res.json();
 
-        if (!dados || dados.length === 0) {
-          alert('Nenhum jogo encontrado para esse participante.');
-          return;
-        }
+        const participante = data.participantes.find(p => p.Protocolo === protocolo);
+        const totalParticipantes = data.participantes.length;
+        const totalJogos = data.participantes.reduce((acc, p) => acc + (p.Jogos.split('|').length), 0);
 
-        // Mostra estatísticas e seções
-        document.getElementById('estatisticas').classList.remove('hidden');
-        document.getElementById('jogoSorte').classList.remove('hidden');
-        document.getElementById('todosJogos').classList.remove('hidden');
+        let html = "";
 
         // Estatísticas
-        document.getElementById('totalJogos').textContent = dados.length;
-        const participantesUnicos = new Set(dados.map(j => j.nome));
-        document.getElementById('totalParticipantes').textContent = participantesUnicos.size;
+        html += `
+          <h3 class="center" style="margin-top:20px;">Estatísticas do Bolão</h3>
+          <div class="stats-grid card">
+            <p><strong>Participantes:</strong> ${totalParticipantes}</p>
+            <p><strong>Total de Jogos:</strong> ${totalJogos}</p>
+          </div>`;
 
-        // Jogo da Sorte (exemplo fixo — pode ser substituído pela API)
-        const numerosSorte = [3, 12, 22, 35, 44, 56];
-        const numerosDiv = document.getElementById('numerosSorte');
-        numerosDiv.innerHTML = '';
-        numerosSorte.forEach(num => {
-          const span = document.createElement('span');
-          span.textContent = num.toString().padStart(2, '0');
-          numerosDiv.appendChild(span);
-        });
+        // Jogo da Sorte (obtido dinamicamente do Apps Script)
+        if (data.jogoDaSorte && data.jogoDaSorte.trim() !== "") {
+          const sorteNumerosHtml = data.jogoDaSorte.split(' ').map(n => `<span>${n}</span>`).join('');
+          html += `
+            <div class="jogo-sorte-box">
+              <strong>Jogo da Sorte (9 Números)</strong><br><br>
+              <div class="jogo-sorte-numeros">${sorteNumerosHtml}</div>
+            </div>`;
+        } else {
+          html += `<div class="jogo-sorte-box"><strong>Jogo da Sorte:</strong><br><em>Ainda não cadastrado.</em></div>`;
+        }
 
-        // Lista de jogos
-        const lista = document.getElementById('todosJogos');
-        lista.innerHTML = '';
+        // Dados do participante
+        if (participante) {
+          const statusPago = participante.Status === "PAGO";
+          const statusClass = statusPago ? "color:green" : "color:red";
+          const statusText = statusPago ? "Pago" : "Aguardando Pagamento";
 
-        dados.forEach(jogo => {
-          const div = document.createElement('div');
-          div.className = 'jogo-item';
-          div.innerHTML = `
-            <h4>${jogo.nome}</h4>
-            <div class="jogo-card">${[jogo.jogo1, jogo.jogo2, jogo.jogo3, jogo.jogo4, jogo.jogo5]
-              .filter(Boolean)
-              .map((nums, i) => `<p><strong>Jogo ${i+1}:</strong> ${nums}</p>`)
-              .join('')}</div>
-          `;
-          lista.appendChild(div);
-        });
-      } catch (e) {
-        console.error(e);
-        alert('Erro ao consultar os jogos. Verifique sua conexão.');
+          const jogosParticipante = participante.Jogos
+            .split('|')
+            .map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`)
+            .join('');
+
+          html += `
+            <h3 class="center" style="margin-top:20px;">Seus Dados e Jogos</h3>
+            <div class="card">
+              <p><strong>Nome:</strong> ${participante.Nome}</p>
+              <p><strong>Telefone:</strong> ${participante.Telefone}</p>
+              <p><strong>Protocolo:</strong> ${participante.Protocolo}</p>
+              <p><strong>Status:</strong> <span style="${statusClass}">${statusText}</span></p>
+              <hr style="margin: 8px 0;">
+              ${jogosParticipante}
+              <div class="controles" style="margin-top:15px;">
+                <button onclick="window.location.href='comprovante.html?protocolo=${protocolo}'" class="primary small">Baixar Comprovante</button>
+              </div>
+            </div>`;
+        } else {
+          html += `<p class="center" style="color:red">Protocolo não encontrado.</p>`;
+        }
+
+        // Lista de todos os jogos do bolão
+        if (data.todosJogos?.length > 0) {
+          html += `
+            <h3 class="center" style="margin-top:20px;">Todos os Jogos do Bolão</h3>
+            <div class="card" style="font-size: 0.9em;">
+              ${data.todosJogos.map(j => `<p>${j}</p>`).join('')}
+            </div>`;
+        }
+
+        resultadoDiv.innerHTML = html;
+
+      } catch (err) {
+        resultadoDiv.innerHTML = `<p class="center" style="color:red">Erro ao buscar dados: ${err.message}</p>`;
       }
     });
   </script>
