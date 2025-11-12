@@ -26,6 +26,7 @@ const resultadoRateio = el("resultadoRateio");
 
 let todosDados = [];
 let jogoSorteAtual = [];
+let accessToken = null; // 🚨 NOVO: Variável para armazenar o token de segurança
 
 // --- NOVO CÓDIGO DE LOGIN SEGURO ---
 // === LOGIN ===
@@ -49,7 +50,9 @@ el("btnLogin")?.addEventListener("click", async () => {
     const data = await res.json();
 
     if (data.success) {
-      // Sucesso: Esconde login, mostra área admin
+      // 🚨 NOVO: SALVA O TOKEN RETORNADO AQUI
+      accessToken = data.accessToken; 
+      
       loginArea.classList.add("hidden");
       adminArea.classList.remove("hidden");
       carregarParticipantes();
@@ -74,6 +77,7 @@ el("btnLogout")?.addEventListener("click", () => {
   el("adminUser").value = "";
   el("adminPass").value = "";
   loginMsg.classList.add("hidden");
+  accessToken = null; // 🚨 NOVO: LIMPA O TOKEN AO FAZER LOGOUT
 });
 
 // === CONSULTA PRINCIPAL ===
@@ -138,10 +142,20 @@ window.excluirParticipante = async (protocolo) => {
   await postAction("excluir", { protocolo });
 };
 
-// --- CORREÇÃO DA postAction para tratar a resposta JSON (success/message) ---
+// --- postAction (AGORA ENVIA O TOKEN) ---
 async function postAction(action, params) {
+  // 🚨 NOVO: Checa se o token existe antes de tentar a ação administrativa
+  if (!accessToken) {
+      alert("Acesso negado: Token de segurança ausente. Faça login novamente.");
+      // Força a volta para a tela de login
+      adminArea.classList.add("hidden");
+      loginArea.classList.remove("hidden");
+      return;
+  }
+
   try {
-    const body = new URLSearchParams({ action, ...params });
+    // 🚨 NOVO: Inclui o token no corpo da requisição
+    const body = new URLSearchParams({ action, accessToken, ...params });
     const res = await fetch(SCRIPT_URL, { method: "POST", body });
     const data = await res.json();
     
@@ -151,6 +165,10 @@ async function postAction(action, params) {
     } else {
       // Exibe a mensagem de erro que vem do Apps Script
       alert("Falha na ação: " + (data.message || data.error || "Erro desconhecido."));
+      // Se o token falhou, force o logout para que o usuário renove o acesso
+      if (data.message && data.message.includes("Token de segurança inválido")) {
+           el("btnLogout")?.click();
+      }
     }
     
     carregarParticipantes();
