@@ -1,318 +1,283 @@
-// /js/admin.js - CÓDIGO CORRIGIDO E COMPLETO
+// === /js/admin.js ===
+// Painel administrativo com Jogo da Sorte editável e exclusão total.
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // Use sua URL de Implantação CORRETA
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-// 5.1 - Login simples
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "12345";
 
-// Elementos (Verifique se esses IDs estão no seu admin.html)
-const loginArea = document.getElementById("loginArea");
-const adminArea = document.getElementById("adminArea");
-const listaParticipantes = document.getElementById("listaParticipantes");
-const loginMsg = document.getElementById("loginMsg");
+const el = id => document.getElementById(id);
 
-// Elementos de Estatística e Gestão
-const countParticipantes = document.getElementById("countParticipantes");
-const countJogos = document.getElementById("countJogos");
-const jogoSorteAtual = document.getElementById("jogoSorteAtual");
-const inputJogoSorte = document.getElementById("inputJogoSorte");
-const btnSalvarJogoSorte = document.getElementById("btnSalvarJogoSorte");
-const inputSorteados = document.getElementById("inputSorteados");
-const btnConferir = document.getElementById("btnConferir");
-const resultadoConferencia = document.getElementById("resultadoConferencia");
-const areaRateio = document.getElementById("areaRateio");
-const inputValorPremio = document.getElementById("valorPremio");
-const btnCalcularRateio = document.getElementById("btnCalcularRateio");
-const resultadoRateio = document.getElementById("resultadoRateio");
+const loginArea = el("loginArea");
+const adminArea = el("adminArea");
+const loginMsg = el("loginMsg");
+const listaParticipantes = el("listaParticipantes");
+const countParticipantes = el("countParticipantes");
+const countJogos = el("countJogos");
+const jogoSorteContainer = el("jogoSorteContainer");
+const jogoSorteInputs = el("jogoSorteInputs");
+const btnSalvarJogoSorte = el("btnSalvarJogoSorte");
+const btnApagarJogoSorte = el("btnApagarJogoSorte");
+const inputSorteados = el("inputSorteados");
+const resultadoConferencia = el("resultadoConferencia");
+const areaRateio = el("areaRateio");
+const inputValorPremio = el("valorPremio");
+const resultadoRateio = el("resultadoRateio");
 
-let todosDados = []; // Armazena todos os dados para conferência
+let todosDados = [];
+let jogoSorteAtual = [];
 
-// --- LOGIN/LOGOUT (Área Corrigida para Robustez) ---
+// === LOGIN ===
+el("btnLogin")?.addEventListener("click", () => {
+  const user = el("adminUser").value.trim();
+  const pass = el("adminPass").value.trim();
 
-const btnLogin = document.getElementById("btnLogin");
-const adminUser = document.getElementById("adminUser");
-const adminPass = document.getElementById("adminPass");
-const btnLogout = document.getElementById("btnLogout");
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    loginArea.classList.add("hidden");
+    adminArea.classList.remove("hidden");
+    carregarParticipantes();
+  } else {
+    loginMsg.textContent = "Usuário ou senha inválidos.";
+    loginMsg.classList.remove("hidden");
+  }
+});
 
-if (btnLogin && adminUser && adminPass) {
-    btnLogin.addEventListener("click", () => {
-        const user = adminUser.value.trim();
-        const pass = adminPass.value.trim();
+el("btnLogout")?.addEventListener("click", () => {
+  adminArea.classList.add("hidden");
+  loginArea.classList.remove("hidden");
+  el("adminUser").value = "";
+  el("adminPass").value = "";
+  loginMsg.classList.add("hidden");
+});
 
-        if (user === ADMIN_USER && pass === ADMIN_PASS) {
-            // Apenas executa se os elementos de transição existirem
-            if (loginArea && adminArea) {
-                loginArea.classList.add("hidden");
-                adminArea.classList.remove("hidden");
-                carregarParticipantes();
-            }
-        } else {
-            if (loginMsg) {
-                loginMsg.textContent = "Usuário ou senha inválidos.";
-                loginMsg.classList.remove("hidden");
-            }
-        }
-    });
-} else {
-    // Caso de falha: um ou mais IDs de login estão incorretos no admin.html
-    console.error("ERRO: Elementos de Login (btnLogin, adminUser, adminPass) não encontrados no HTML.");
-}
-
-if (btnLogout) {
-    btnLogout.addEventListener("click", () => {
-        if (adminArea && loginArea) {
-            adminArea.classList.add("hidden");
-            loginArea.classList.remove("hidden");
-            adminUser.value = "";
-            adminPass.value = "";
-        }
-    });
-}
-
-const btnAtualizar = document.getElementById("btnAtualizar");
-if (btnAtualizar) {
-    btnAtualizar.addEventListener("click", carregarParticipantes);
-}
-
-// --- 5.2 - CARREGAR DADOS E ESTATÍSTICAS ---
-
+// === CONSULTA PRINCIPAL ===
 async function carregarParticipantes() {
-    if (listaParticipantes) {
-        listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Carregando...</td></tr>`;
-    }
-    try {
-        // Usa a ação correta para o Apps Script (doGet)
-        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
-        const data = await res.json();
-        
-        // Armazena dados do bolão para conferência
-        todosDados = data.participantes || []; 
+  listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Carregando...</td></tr>`;
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
+    const data = await res.json();
+    todosDados = data.participantes || [];
 
-        // 5.2 - Atualiza Estatísticas
-        const totalParticipantes = todosDados.length;
-        const totalJogos = todosDados.reduce((acc, p) => acc + (p.Jogos?.split('|').length || 0), 0);
-        
-        if (countParticipantes) countParticipantes.textContent = totalParticipantes;
-        if (countJogos) countJogos.textContent = totalJogos;
+    countParticipantes.textContent = todosDados.length;
+    countJogos.textContent = todosDados.reduce((acc, p) => acc + (p.Jogos?.split('|').length || 0), 0);
 
-        // 5.4 - Atualiza Jogo da Sorte
-        if (jogoSorteAtual) jogoSorteAtual.textContent = `Jogo atual: ${data.jogoDaSorte || "N/A"}`;
-        
-        renderTabela(todosDados);
-    } catch (err) {
-        if (listaParticipantes) {
-            listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center text-red-500 py-4">Erro ao carregar: ${err.message}</td></tr>`;
-        }
-    }
+    renderTabela(todosDados);
+
+    // --- Jogo da Sorte ---
+    if (data.jogoDaSorte) {
+      // Garante que os números sejam únicos (embora o admin devesse garantir isso)
+      const numerosUnicos = new Set(data.jogoDaSorte.split(/\s+/).filter(Boolean));
+      jogoSorteAtual = Array.from(numerosUnicos);
+    } else {
+      jogoSorteAtual = [];
+    }
+
+    renderizarJogoSorte();
+    renderizarInputs();
+  } catch (err) {
+    listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center text-red-500">Erro: ${err.message}</td></tr>`;
+  }
 }
 
-// --- 5.2 - RENDERIZAR TABELA ---
+el("btnAtualizar")?.addEventListener("click", carregarParticipantes);
 
+// === TABELA ===
 function renderTabela(dados) {
-    if (!listaParticipantes) return;
+  if (!dados.length) {
+    listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Nenhum participante encontrado.</td></tr>`;
+    return;
+  }
 
-    if (!Array.isArray(dados) || dados.length === 0) {
-        listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Nenhum participante encontrado.</td></tr>`;
-        return;
-    }
-
-    listaParticipantes.innerHTML = dados.map((p) => {
-        const jogosParticipante = p.Jogos
-  .split('|')
-  .map((j, i) => `<div>Jogo ${i + 1}: ${j}</div>`)
-  .join('');
-
-        const status = p.Status || "AGUARDANDO"; 
-
-        return `
-            <tr>
-    <td class="py-2 px-3 border border-gray-300">
-        ${p.Nome}<br>
-        <span style="font-size:0.8em; color:#555;">${jogosParticipante}</span>
-    </td>
-    <td class="py-2 px-3 border border-gray-300 text-center">${p.Protocolo}</td>
-    <td class="py-2 px-3 border border-gray-300 text-center font-semibold ${status === "PAGO" ? "text-green-600" : "text-red-500"}">${status}</td>
-    <td class="py-2 px-3 border border-gray-300 text-center">
-        <button class="primary small mb-1" onclick="confirmarPagamento('${p.Protocolo}')">Confirmar Pagamento</button><br>
-        <button class="danger small" onclick="excluirParticipante('${p.Protocolo}')">Excluir</button>
-    </td>
-</tr>
-
-        `;
-    }).join("");
+  listaParticipantes.innerHTML = dados.map(p => `
+    <tr>
+      <td class="py-2 px-3 border">${p.Nome}<br><small>${p.Jogos?.split('|').join('<br>')}</small></td>
+      <td class="py-2 px-3 border text-center">${p.Protocolo}</td>
+      <td class="py-2 px-3 border text-center ${p.Status === "PAGO" ? "text-green-600" : "text-red-500"}">${p.Status || "AGUARDANDO"}</td>
+      <td class="py-2 px-3 border text-center">
+        <button class="primary small" onclick="confirmarPagamento('${p.Protocolo}')">💰 Confirmar</button><br>
+        <button class="danger small" onclick="excluirParticipante('${p.Protocolo}')">🗑 Excluir</button>
+      </td>
+    </tr>
+  `).join("");
 }
 
-// --- 5.3 - AÇÕES DE GERENCIAMENTO ---
-
+// === CONFIRMAR / EXCLUIR ===
 window.confirmarPagamento = async (protocolo) => {
-    if (!confirm(`Confirmar pagamento para o protocolo ${protocolo}?`)) return;
-
-    try {
-        const res = await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, 
-            body: `action=setPago&protocolo=${protocolo}`
-        });
-        const data = await res.json();
-        alert(data.message || "Status de pagamento atualizado.");
-        carregarParticipantes();
-    } catch (err) {
-        alert("Erro ao atualizar pagamento: " + err.message);
-    }
-}
+  if (!confirm(`Confirmar pagamento do protocolo ${protocolo}?`)) return;
+  await postAction("setPago", { protocolo });
+};
 
 window.excluirParticipante = async (protocolo) => {
-    if (!confirm(`Tem certeza que deseja EXCLUIR o participante com protocolo ${protocolo}? Esta ação é IRREVERSÍVEL.`)) return;
+  if (!confirm(`Excluir participante ${protocolo}? Esta ação é irreversível.`)) return;
+  await postAction("excluir", { protocolo });
+};
 
-    try {
-        const res = await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `action=excluir&protocolo=${protocolo}`
-        });
-        const data = await res.json();
-        alert(data.message || "Participante excluído.");
-        carregarParticipantes();
-    } catch (err) {
-        alert("Erro ao excluir: " + err.message);
-    }
+async function postAction(action, params) {
+  try {
+    const body = new URLSearchParams({ action, ...params });
+    const res = await fetch(SCRIPT_URL, { method: "POST", body });
+    const data = await res.json();
+    alert(data.message || "Ação concluída.");
+    carregarParticipantes();
+  } catch (err) {
+    alert("Erro: " + err.message);
+  }
 }
 
-// --- 5.4 - JOGO DA SORTE ---
+// === JOGO DA SORTE ===
 
-if (btnSalvarJogoSorte) {
-    btnSalvarJogoSorte.onclick = async () => {
-        const numeros = inputJogoSorte.value.trim();
-        const numerosArray = numeros.split(/\s+/).filter(n => n.length > 0);
-        
-        if (numerosArray.length !== 9 || numerosArray.some(n => isNaN(parseInt(n)) || parseInt(n) < 1 || parseInt(n) > 60)) {
-            alert("Por favor, insira exatamente 9 números válidos (entre 01 e 60) separados por espaço.");
-            return;
-        }
+// Renderiza bolinhas
+function renderizarJogoSorte() {
+  jogoSorteContainer.innerHTML = "";
 
-        try {
-            const res = await fetch(SCRIPT_URL, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `action=salvarJogoSorte&jogo=${numeros}` 
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert("Jogo da Sorte salvo com sucesso!");
-                carregarParticipantes(); 
-            } else {
-                throw new Error(data.message || "Erro desconhecido.");
-            }
-        } catch (err) {
-            alert("Erro ao salvar Jogo da Sorte: " + err.message);
-        }
-    }
+  if (jogoSorteAtual.length === 0) {
+    jogoSorteContainer.innerHTML = `<p style="color:#999;">Nenhum jogo da sorte cadastrado.</p>`;
+    return;
+  }
+
+  jogoSorteAtual.forEach(num => {
+    const div = document.createElement("div");
+    div.className = "jogo-numero";
+    div.textContent = num;
+    jogoSorteContainer.appendChild(div);
+  });
 }
 
-// --- 5.5 / 5.6 - CONFERÊNCIA DE PRÊMIOS (Funcionalidades de Conferência e Rateio) ---
-
-if (btnConferir) {
-    btnConferir.onclick = () => {
-        const sorteadosStr = inputSorteados.value.trim();
-        const sorteadosArray = sorteadosStr.split(/\s+/).filter(n => n.length > 0).map(n => n.padStart(2, '0')).sort();
-        
-        if (sorteadosArray.length !== 6) {
-            alert("Por favor, insira exatamente 6 números sorteados separados por espaço.");
-            return;
-        }
-        
-        resultadoConferencia.innerHTML = "Conferindo...";
-        if (areaRateio) areaRateio.classList.add('hidden');
-        
-        let premiados = { sena: [], quina: [], quadra: [] };
-        let totalJogosPremiados = 0;
-
-        // Itera sobre os participantes e seus jogos
-        todosDados.forEach(participante => {
-            const jogos = participante.Jogos.split('|');
-            jogos.forEach((jogoStr, index) => {
-                const jogoParticipante = jogoStr.split(' ').map(n => n.padStart(2, '0'));
-                let acertos = 0;
-                
-                jogoParticipante.forEach(num => {
-                    if (sorteadosArray.includes(num)) {
-                        acertos++;
-                    }
-                });
-
-                if (acertos >= 4) {
-                    const premio = acertos === 6 ? 'sena' : acertos === 5 ? 'quina' : 'quadra';
-                    premiados[premio].push({
-                        nome: participante.Nome,
-                        protocolo: participante.Protocolo,
-                        jogo: jogoStr,
-                        acertos: acertos,
-                        numJogo: index + 1 
-                    });
-                    totalJogosPremiados++;
-                }
-            });
-        });
-
-        // Exibe resultados
-        let resultadoHtml = `<h4>Resultado da Conferência:</h4>`;
-        resultadoHtml += `<p><strong>Números Sorteados:</strong> ${sorteadosArray.join(' ')}</p><hr>`;
-        
-        if (totalJogosPremiados === 0) {
-            resultadoHtml += `<p style="color:red; font-weight:bold;">Nenhum jogo premiado (Sena, Quina ou Quadra) encontrado.</p>`;
-        } else {
-            const renderPremios = (lista, titulo) => {
-                if (lista.length > 0) {
-                    resultadoHtml += `<h5>🎉 **${titulo} (${lista.length} jogos):**</h5>`;
-                    lista.forEach(p => {
-                        resultadoHtml += `<p style="margin-left:15px; font-size:0.9em;">
-                            ${p.nome} (${p.protocolo}) acertou ${p.acertos} números no Jogo ${p.numJogo}: <strong>${p.jogo}</strong>
-                        </p>`;
-                    });
-                }
-            };
-
-            renderPremios(premiados.sena, 'SENA (6 Acertos)');
-            renderPremios(premiados.quina, 'QUINA (5 Acertos)');
-            renderPremios(premiados.quadra, 'QUADRA (4 Acertos)');
-            
-            if (areaRateio) areaRateio.classList.remove('hidden'); 
-        }
-        
-        resultadoConferencia.innerHTML = resultadoHtml;
-        
-        document.rateioData = {
-            totalParticipantesPagos: todosDados.filter(p => p.Status === 'PAGO').length,
-            premiados: premiados
-        };
-    };
+// Renderiza os 9 inputs para novo jogo
+function renderizarInputs() {
+  jogoSorteInputs.innerHTML = "";
+  for (let i = 0; i < 9; i++) {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = 1;
+    input.max = 60;
+    input.className = "input-numero";
+    input.value = jogoSorteAtual[i] || "";
+    jogoSorteInputs.appendChild(input);
+  }
 }
 
+// Salvar novo jogo da sorte
+btnSalvarJogoSorte?.addEventListener("click", async () => {
+  const numeros = Array.from(jogoSorteInputs.querySelectorAll("input"))
+    .map(i => i.value.trim())
+    .filter(v => v !== "")
+    // Mapeia para número e adiciona padding para validação de duplicidade
+    .map(n => parseInt(n).toString().padStart(2, '0')); 
 
-// --- 5.6 - CÁLCULO DE RATEIO ---
+  if (numeros.length !== 9) {
+    alert("Informe exatamente 9 números.");
+    return;
+  }
 
-if (btnCalcularRateio) {
-    btnCalcularRateio.onclick = () => {
-        const valorTotal = parseFloat(inputValorPremio.value);
-        // Garante que o objeto rateioData exista
-        const totalParticipantesPagos = document.rateioData?.totalParticipantesPagos || 0;
-        
-        if (isNaN(valorTotal) || valorTotal <= 0) {
-            resultadoRateio.textContent = "Insira um valor de prêmio válido.";
-            resultadoRateio.style.color = "red";
-            return;
-        }
-        
-        if (totalParticipantesPagos === 0) {
-            resultadoRateio.textContent = "Não há participantes com status 'PAGO' para rateio.";
-            resultadoRateio.style.color = "red";
-            return;
-        }
-        
-        const valorPorParticipante = valorTotal / totalParticipantesPagos;
-        
-        resultadoRateio.textContent = `O valor de R$ ${valorTotal.toFixed(2).replace('.', ',')} será dividido igualmente entre ${totalParticipantesPagos} participantes PAGOS. Cada participante receberá R$ ${valorPorParticipante.toFixed(2).replace('.', ',')}.`;
-        resultadoRateio.style.color = "green";
-    };
+  // ⚠️ VERIFICAÇÃO DE DUPLICIDADE (NOVA VALIDAÇÃO)
+  const numerosUnicos = new Set(numeros);
+  if (numerosUnicos.size !== 9) {
+    alert("Não é permitido números repetidos no Jogo da Sorte.");
+    return;
+  }
+
+  // Validação de faixa (mantida)
+  const invalidos = numeros.some(n => isNaN(parseInt(n)) || parseInt(n) < 1 || parseInt(n) > 60);
+  if (invalidos) {
+    alert("Os números devem estar entre 01 e 60.");
+    return;
+  }
+
+  // A conversão para string formatada de dois dígitos é feita aqui para o script do Sheets
+  const jogoFormatado = Array.from(numerosUnicos).map(n => n.padStart(2, '0')).join(" ");
+  
+  try {
+    const body = new URLSearchParams({
+      action: "salvarJogoSorte",
+      jogo: jogoFormatado // Usa o jogo formatado e validado
+    });
+    const res = await fetch(SCRIPT_URL, { method: "POST", body });
+    const data = await res.json();
+    alert(data.message || "Jogo da Sorte salvo!");
+    carregarParticipantes();
+  } catch (err) {
+    alert("Erro ao salvar Jogo da Sorte: " + err.message);
+  }
+});
+
+// Apagar jogo da sorte
+btnApagarJogoSorte?.addEventListener("click", async () => {
+  if (!confirm("Deseja realmente apagar todos os números do Jogo da Sorte?")) return;
+
+  try {
+    const body = new URLSearchParams({
+      action: "salvarJogoSorte",
+      jogo: "" // Limpa o campo na planilha
+    });
+    const res = await fetch(SCRIPT_URL, { method: "POST", body });
+    const data = await res.json();
+    alert(data.message || "Jogo da Sorte apagado!");
+    jogoSorteAtual = [];
+    renderizarJogoSorte();
+    renderizarInputs();
+  } catch (err) {
+    alert("Erro ao apagar Jogo da Sorte: " + err.message);
+  }
+});
+
+// === CONFERÊNCIA E RATEIO (com validação de duplicidade) ===
+el("btnConferir")?.addEventListener("click", () => {
+  const sorteados_brutos = inputSorteados.value.trim().split(/\s+/).filter(Boolean);
+  
+  if (sorteados_brutos.length !== 6) return alert("Informe exatamente 6 números sorteados.");
+
+  // ⚠️ VERIFICAÇÃO DE DUPLICIDADE E FAIXA (NOVA VALIDAÇÃO)
+  const sorteados_numericos = sorteados_brutos.map(n => parseInt(n));
+  const sorteados_unicos = new Set(sorteados_numericos.filter(n => !isNaN(n) && n >= 1 && n <= 60));
+
+  if (sorteados_unicos.size !== 6) {
+    return alert("Os números sorteados devem ser 6 números únicos entre 1 e 60.");
+  }
+
+  // Formata os números únicos para comparação (ex: '05')
+  const sorteados = Array.from(sorteados_unicos).map(n => n.toString().padStart(2, '0')); 
+
+  resultadoConferencia.innerHTML = `<p class="loading">Conferindo resultados...</p>`;
+  areaRateio.classList.add("hidden");
+
+  const premiados = { sena: [], quina: [], quadra: [] };
+  todosDados.forEach(p => {
+    p.Jogos.split('|').forEach((jogo, idx) => {
+      const acertos = jogo.split(' ').filter(n => sorteados.includes(n.padStart(2, '0'))).length;
+      if (acertos >= 4)
+        premiados[acertos === 6 ? 'sena' : acertos === 5 ? 'quina' : 'quadra']
+          .push({ ...p, acertos, idx: idx + 1, jogo });
+    });
+  });
+
+  let html = `<h4>Resultado da Conferência</h4><p><strong>Números:</strong> ${sorteados.join(' ')}</p><hr>`;
+  ["sena", "quina", "quadra"].forEach(tipo => {
+    if (premiados[tipo].length) {
+      html += `<h5>🎉 ${tipo.toUpperCase()} (${premiados[tipo].length})</h5>`;
+      premiados[tipo].forEach(j => html += `<p>${j.Nome} (${j.Protocolo}) - Jogo ${j.idx}: <strong>${j.jogo}</strong></p>`);
+    }
+  });
+  if (!premiados.sena.length && !premiados.quina.length && !premiados.quadra.length)
+    html += `<p style="color:red;">Nenhum premiado.</p>`;
+
+  resultadoConferencia.innerHTML = html;
+  areaRateio.classList.remove("hidden");
+  document.rateioData = { totalPagos: todosDados.filter(p => p.Status === 'PAGO').length };
+});
+
+el("btnCalcularRateio")?.addEventListener("click", () => {
+  const total = parseFloat(inputValorPremio.value);
+  const pagos = document.rateioData?.totalPagos || 0;
+
+  if (!total || total <= 0) return mostrarRateio("Insira um valor válido.", "red");
+  if (pagos === 0) return mostrarRateio("Nenhum participante pago.", "red");
+
+  const porPessoa = total / pagos;
+  mostrarRateio(`💵 R$ ${total.toFixed(2).replace('.', ',')} / ${pagos} → R$ ${porPessoa.toFixed(2).replace('.', ',')} por participante.`, "green");
+});
+
+function mostrarRateio(msg, cor) {
+  resultadoRateio.textContent = msg;
+  resultadoRateio.style.color = cor;
 }
