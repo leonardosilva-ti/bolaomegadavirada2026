@@ -7,121 +7,27 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col items-center p-4">
-  <header class="site-header" style="width: 100%;">
-    <h1>Consulta de Jogos</h1>
-  </header>
+  <header class="site-header" style="width: 100%;">
+    <h1>Consulta de Jogos</h1>
+  </header>
 
-  <main class="container">
-    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg w-full mt-10 mx-auto">
-      <h2 class="text-xl font-bold text-center mb-4">Consultar por Protocolo</h2>
-      <p class="text-gray-600 text-center mb-6">
-        Informe o seu <b>Número de Protocolo</b> para consultar seus dados e jogos.
-      </p>
+  <main class="container">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg w-full mt-10 mx-auto">
+      <h2 class="text-xl font-bold text-center mb-4">Consultar por Protocolo</h2>
+      <p class="text-gray-600 text-center mb-6">
+        Informe o seu <b>Número de Protocolo</b> para consultar seus dados e jogos.
+      </p>
 
-      <div class="space-y-4">
-        <input id="protocoloInput" type="text" placeholder="Número de Protocolo" class="w-full border rounded px-4 py-2">
-        <button id="btnConsultar" class="primary w-full">Consultar</button>
-      </div>
+      <div class="space-y-4">
+        <input id="protocoloInput" type="text" placeholder="Número de Protocolo" class="w-full border rounded px-4 py-2">
+        <button id="btnConsultar" class="primary w-full">Consultar</button>
+      </div>
 
-      <div id="resultado" class="mt-6"></div>
-    </div>
-  </main>
+      <div id="resultado" class="mt-6"></div>
+    </div>
+  </main>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
-
-    document.getElementById("btnConsultar").addEventListener("click", async () => {
-      const protocolo = document.getElementById("protocoloInput").value.trim();
-      const resultadoDiv = document.getElementById("resultado");
-      resultadoDiv.innerHTML = `<p class="center" style="color:#555">Buscando...</p>`;
-
-      if (!protocolo) {
-        resultadoDiv.innerHTML = `<p class="center" style="color:red">Preencha o número de Protocolo.</p>`;
-        return;
-      }
-
-      try {
-        // Busca dados completos do bolão
-        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
-        const data = await res.json();
-
-        const participante = data.participantes.find(p => p.Protocolo === protocolo);
-
-        let html = "";
-
-        // --- MUDANÇA DE LÓGICA: Exibir dados APENAS se o protocolo for válido ---
-        if (participante) {
-            
-            const totalParticipantes = data.participantes.length;
-            const totalJogos = data.participantes.reduce((acc, p) => acc + (p.Jogos.split('|').length), 0);
-
-            // 1. Estatísticas
-            html += `
-                <h3 class="center" style="margin-top:20px;">Estatísticas do Bolão</h3>
-                <div class="stats-grid card">
-                        <p><strong>Participantes:</strong> ${totalParticipantes}</p>
-                        <p><strong>Total de Jogos:</strong> ${totalJogos}</p>
-                </div>`;
-
-            // 2. Jogo da Sorte
-            if (data.jogoDaSorte && data.jogoDaSorte.trim() !== "") {
-                const sorteNumerosHtml = data.jogoDaSorte.split(' ').map(n => `<span>${n}</span>`).join('');
-                html += `
-                    <div class="jogo-sorte-box">
-                      <strong>Jogo da Sorte (9 Números)</strong><br><br>
-                      <div class="jogo-sorte-numeros">${sorteNumerosHtml}</div>
-                    </div>`;
-            } else {
-                html += `<div class="jogo-sorte-box"><strong>Jogo da Sorte:</strong><br><em>Ainda não cadastrado.</em></div>`;
-            }
-
-            // 3. Dados do participante (Seus Jogos)
-            const statusPago = participante.Status === "PAGO";
-            const statusClass = statusPago ? "color:green" : "color:red";
-            const statusText = statusPago ? "Pago" : "Aguardando Pagamento";
-
-            const jogosParticipante = participante.Jogos
-                .split('|')
-                .map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`)
-                .join('');
-
-            html += `
-                <h3 class="center" style="margin-top:20px;">Seus Dados e Jogos</h3>
-                <div class="card">
-                    <p><strong>Nome:</strong> ${participante.Nome}</p>
-                    <p><strong>Telefone:</strong> ${participante.Telefone}</p>
-                    <p><strong>Protocolo:</strong> ${participante.Protocolo}</p>
-                    <p><strong>Status:</strong> <span style="${statusClass}">${statusText}</span></p>
-                    <hr style="margin: 8px 0;">
-                    ${jogosParticipante}
-                    <div class="controles" style="margin-top:15px;">
-                      <button onclick="window.location.href='comprovante.html?protocolo=${protocolo}'" class="primary small">Baixar Comprovante</button>
-                    </div>
-                </div>`;
-            
-            // 4. Lista de todos os jogos do bolão
-            if (data.todosJogos?.length > 0) {
-                html += `
-                  <h3 class="text-center" style="margin-top:20px;">Todos os Jogos do Bolão</h3>
-
-                  <div class="card jogos-grid" style="font-size: 0.9em;">
-  ${data.todosJogos.map(j => `<div class="jogo-card">${j}</div>`).join('')}
-</div>
-`;
-            }
-
-
-        } else {
-            // Se o protocolo não for encontrado
-            html += `<p class="center" style="color:red">Protocolo não encontrado.</p>`;
-        }
-
-        resultadoDiv.innerHTML = html;
-
-      } catch (err) {
-        resultadoDiv.innerHTML = `<p class="center" style="color:red">Erro ao buscar dados: ${err.message}</p>`;
-      }
-    });
-  </script>
+  <!-- Carrega o script externo -->
+  <script src="/js/consulta.js"></script>
 </body>
 </html>
