@@ -28,20 +28,19 @@ if (!lastAposta) {
   // Status inicial
   atualizarStatusVisual(lastAposta.status);
 
-  // Exibir bloco PIX se ainda não pago
+  // Exibir PIX se ainda não pago
   if (lastAposta.status === "AGUARDANDO PAGAMENTO") {
     const pixBox = document.createElement("div");
     pixBox.className = "pix-box";
     pixBox.innerHTML = `
       <p>Chave PIX para pagamento:</p>
-      <span class="pix-key">88f77025-40bc-4364-9b64-02ad88443cc4</span>
+      <span class="pix-key">${PIX_KEY}</span>
       <button id="btnCopiarPix">Copiar</button>
     `;
     jogosDiv.after(pixBox);
 
-    // Copiar PIX
     document.getElementById("btnCopiarPix").addEventListener("click", () => {
-      navigator.clipboard.writeText("88f77025-40bc-4364-9b64-02ad88443cc4");
+      navigator.clipboard.writeText(PIX_KEY);
       const btn = document.getElementById("btnCopiarPix");
       btn.textContent = "Copiado!";
       btn.style.background = "#16a34a";
@@ -53,7 +52,7 @@ if (!lastAposta) {
   }
 }
 
-// ===== Função para atualizar o status visualmente =====
+// ===== Atualiza o status visualmente =====
 function atualizarStatusVisual(status) {
   statusSpan.textContent = status;
   statusSpan.className = "status " + (status === "PAGO" ? "pago" : "aguardando");
@@ -64,9 +63,13 @@ btnAtualizar.addEventListener("click", async () => {
   statusSpan.textContent = "Atualizando...";
   statusSpan.className = "status aguardando";
   btnAtualizar.disabled = true;
+  btnAtualizar.textContent = "Verificando...";
 
   try {
-    const response = await fetch(`https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec?action=consultarStatus&protocolo=${lastAposta.protocolo}`);
+    // 🔧 Correção principal: action=getStatus
+    const response = await fetch(
+      `https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec?action=getStatus&protocolo=${encodeURIComponent(lastAposta.protocolo)}`
+    );
     const data = await response.json();
 
     if (data && data.status) {
@@ -75,12 +78,12 @@ btnAtualizar.addEventListener("click", async () => {
       localStorage.setItem("lastAposta", JSON.stringify(lastAposta));
     } else {
       statusSpan.textContent = "Erro ao atualizar status.";
-      statusSpan.className = "status aguardando";
     }
   } catch (err) {
-    statusSpan.textContent = "Falha na conexão.";
-    statusSpan.className = "status aguardando";
+    console.error(err);
+    statusSpan.textContent = "Falha na conexão com o servidor.";
   } finally {
     btnAtualizar.disabled = false;
+    btnAtualizar.textContent = "Atualizar";
   }
 });
