@@ -118,19 +118,27 @@ function renderTabela(dados) {
     }
 
     listaParticipantes.innerHTML = dados.map((p) => {
-        const jogosParticipante = p.Jogos.split('|').map((j, i) => `Jogo ${i + 1}: ${j}`).join(' | ');
+        const jogosParticipante = p.Jogos
+  .split('|')
+  .map((j, i) => `<div>Jogo ${i + 1}: ${j}</div>`)
+  .join('');
+
         const status = p.Status || "AGUARDANDO"; 
 
         return `
             <tr>
-                <td class="py-2 px-3">${p.Nome}<br><span style="font-size:0.8em; color:#555;">${jogosParticipante}</span></td>
-                <td class="py-2 px-3">${p.Protocolo}</td>
-                <td class="py-2 px-3 font-semibold ${status === "PAGO" ? "text-green-600" : "text-red-500"}">${status}</td>
-                <td class="py-2 px-3 text-center">
-                    <button class="primary small mb-1" onclick="confirmarPagamento('${p.Protocolo}')">Confirmar Pagamento</button>
-                    <button class="danger small" onclick="excluirParticipante('${p.Protocolo}')">Excluir</button>
-                </td>
-            </tr>
+    <td class="py-2 px-3 border border-gray-300">
+        ${p.Nome}<br>
+        <span style="font-size:0.8em; color:#555;">${jogosParticipante}</span>
+    </td>
+    <td class="py-2 px-3 border border-gray-300 text-center">${p.Protocolo}</td>
+    <td class="py-2 px-3 border border-gray-300 text-center font-semibold ${status === "PAGO" ? "text-green-600" : "text-red-500"}">${status}</td>
+    <td class="py-2 px-3 border border-gray-300 text-center">
+        <button class="primary small mb-1" onclick="confirmarPagamento('${p.Protocolo}')">Confirmar Pagamento</button><br>
+        <button class="danger small" onclick="excluirParticipante('${p.Protocolo}')">Excluir</button>
+    </td>
+</tr>
+
         `;
     }).join("");
 }
