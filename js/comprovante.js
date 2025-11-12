@@ -1,63 +1,86 @@
 // js/comprovante.js
 
-document.addEventListener("DOMContentLoaded", () => {
-  const aposta = JSON.parse(localStorage.getItem("lastAposta"));
-  const dadosDiv = document.getElementById("dadosComprovante");
-  const jogosDiv = document.getElementById("jogosComprovante");
-  const pixDiv = document.getElementById("pixComprovante");
+const dadosDiv = document.getElementById("dadosComprovante");
+const jogosDiv = document.getElementById("jogosComprovante");
+const statusSpan = document.getElementById("statusAposta");
+const btnAtualizar = document.getElementById("btnAtualizarStatus");
+const PIX_KEY = "00020126360014BR.GOV.BCB.PIX0114CHAVE-ALEATORIA5204000053039865802BR5920MEGA DA VIRADA6009SAO PAULO62070503***6304ABCD";
 
-  if (!aposta) {
-    dadosDiv.innerHTML = `<p style="color:red;">Nenhuma aposta encontrada.</p>`;
-    return;
-  }
+const lastAposta = JSON.parse(localStorage.getItem("lastAposta"));
 
-  // === DADOS PRINCIPAIS ===
+if (!lastAposta) {
+  dadosDiv.innerHTML = "<p style='color:red'>Nenhuma aposta encontrada.</p>";
+} else {
+  // Exibir dados da aposta
   dadosDiv.innerHTML = `
-    <p><b>Nome:</b> ${aposta.nome || "—"}</p>
-    <p><b>Telefone (WhatsApp):</b> ${aposta.telefone || "—"}</p>
-    <p><b>Protocolo:</b> ${aposta.protocolo || "—"}</p>
-    <p><b>Status:</b> 
-      <span style="color:${aposta.status === "PAGO" ? "green" : "red"}; font-weight:600;">
-        ${aposta.status}
-      </span>
-    </p>
-    <p><b>Data/Hora:</b> ${aposta.dataHora || new Date().toLocaleString("pt-BR")}</p>
+    <p><b>Nome:</b> ${lastAposta.nome}</p>
+    <p><b>Telefone:</b> ${lastAposta.telefone}</p>
+    <p><b>Protocolo:</b> ${lastAposta.protocolo}</p>
+    <p><b>Data/Hora:</b> ${lastAposta.dataHora}</p>
   `;
 
-  // === JOGOS FORMATADOS ===
-  const jogosFormatados = Array.isArray(aposta.jogos)
-    ? aposta.jogos.map((j, i) => `<div>Jogo ${i + 1}: <b>${j}</b></div>`).join("")
-    : `<p style="color:red;">Nenhum jogo encontrado.</p>`;
-
+  // Exibir jogos
   jogosDiv.innerHTML = `
     <h3>Jogos Selecionados</h3>
-    ${jogosFormatados}
+    ${lastAposta.jogos.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
   `;
 
-  // === CHAVE PIX ===
-  const chavePix = "sua.chave.pix@exemplo.com"; // 🔁 coloque aqui sua chave real
+  // Status inicial
+  atualizarStatusVisual(lastAposta.status);
 
-  if (aposta.status !== "PAGO") {
-    pixDiv.innerHTML = `
-      <p><b>Chave PIX para pagamento:</b></p>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <span id="chavePixText" style="font-weight:600;">${chavePix}</span>
-        <button id="btnCopiarPix" class="small primary">Copiar</button>
-        <a href="https://wa.me/55${aposta.telefone.replace(/\D/g,'')}" target="_blank" class="whatsapp-link">
-          Enviar Comprovante no WhatsApp
-        </a>
-      </div>
-      <p style="margin-top:8px;font-size:0.9em;">
-        Após o pagamento, envie o comprovante via WhatsApp para confirmação.
-      </p>
+  // Exibir bloco PIX se ainda não pago
+  if (lastAposta.status === "AGUARDANDO PAGAMENTO") {
+    const pixBox = document.createElement("div");
+    pixBox.className = "pix-box";
+    pixBox.innerHTML = `
+      <p>Chave PIX para pagamento:</p>
+      <span class="pix-key">chave-aleatoria-exemplo@pix.com.br</span>
+      <button id="btnCopiarPix">Copiar</button>
     `;
+    jogosDiv.after(pixBox);
 
-    // Botão copiar PIX
+    // Copiar PIX
     document.getElementById("btnCopiarPix").addEventListener("click", () => {
-      navigator.clipboard.writeText(chavePix);
-      alert("Chave PIX copiada com sucesso!");
+      navigator.clipboard.writeText("chave-aleatoria-exemplo@pix.com.br");
+      const btn = document.getElementById("btnCopiarPix");
+      btn.textContent = "Copiado!";
+      btn.style.background = "#16a34a";
+      setTimeout(() => {
+        btn.textContent = "Copiar";
+        btn.style.background = "";
+      }, 2000);
     });
-  } else {
-    pixDiv.innerHTML = `<p style="color:green;font-weight:600;">Pagamento confirmado ✅</p>`;
+  }
+}
+
+// ===== Função para atualizar o status visualmente =====
+function atualizarStatusVisual(status) {
+  statusSpan.textContent = status;
+  statusSpan.className = "status " + (status === "PAGO" ? "pago" : "aguardando");
+}
+
+// ===== Atualizar status manualmente =====
+btnAtualizar.addEventListener("click", async () => {
+  statusSpan.textContent = "Atualizando...";
+  statusSpan.className = "status aguardando";
+  btnAtualizar.disabled = true;
+
+  try {
+    const response = await fetch(`https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec?action=consultarStatus&protocolo=${lastAposta.protocolo}`);
+    const data = await response.json();
+
+    if (data && data.status) {
+      atualizarStatusVisual(data.status);
+      lastAposta.status = data.status;
+      localStorage.setItem("lastAposta", JSON.stringify(lastAposta));
+    } else {
+      statusSpan.textContent = "Erro ao atualizar status.";
+      statusSpan.className = "status aguardando";
+    }
+  } catch (err) {
+    statusSpan.textContent = "Falha na conexão.";
+    statusSpan.className = "status aguardando";
+  } finally {
+    btnAtualizar.disabled = false;
   }
 });
