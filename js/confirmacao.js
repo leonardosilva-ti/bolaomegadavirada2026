@@ -92,13 +92,17 @@ function gerarProtocolo() {
   const min = pad(now.getMinutes());
   const seg = pad(now.getSeconds());
 
-  // Funções auxiliares para gerar letras e números aleatórios
+  // Funções auxiliares
   const letra = () => String.fromCharCode(65 + Math.floor(Math.random() * 26)); // A–Z
   const numero = () => Math.floor(Math.random() * 10); // 0–9
 
-  // Monta o protocolo no formato: AAAAMMDDHHMMSS-XX00X0
-  const parteRandom = `${letra()}${letra()}${numero()}${numero()}${letra()}${numero()}`;
+  // Parte aleatória EXATA: XX00X0 (dois zeros fixos)
+  const parteRandom = `${letra()}${letra()}00${letra()}${numero()}`;
 
-  return `${ano}${mes}${dia}${hora}${min}${seg}-${parteRandom}`;
+  // Retorna o formato: AAAAMMDDHHMMSS-XX00X0
+  const protocolo = `${ano}${mes}${dia}${hora}${min}${seg}-${parteRandom}`;
+  console.log("Protocolo gerado:", protocolo); // 👈 ajuda a testar no console
+  return protocolo;
 }
+
 
