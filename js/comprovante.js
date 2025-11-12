@@ -14,10 +14,28 @@ if (aposta) {
     <p><b>Data:</b> ${aposta.Data || new Date().toLocaleDateString()}</p>
   `;
 
-  const jogosFormatados = aposta.Jogos
-    .split('|')
-    .map((j, i) => `<div>Jogo ${i + 1}: <b>${j}</b></div>`)
-    .join('');
+  const aposta = JSON.parse(localStorage.getItem("lastAposta"));
+const dadosDiv = document.getElementById("dadosComprovante");
+const jogosDiv = document.getElementById("jogosComprovante");
+
+if (!aposta) {
+  dadosDiv.innerHTML = `<p style="color:red;">Nenhuma aposta encontrada.</p>`;
+} else {
+  dadosDiv.innerHTML = `
+    <p><b>Nome:</b> ${aposta.nome || "—"}</p>
+    <p><b>Telefone:</b> ${aposta.telefone || "—"}</p>
+    <p><b>Protocolo:</b> ${aposta.protocolo || "—"}</p>
+    <p><b>Status:</b> <span style="color:${aposta.status === "PAGO" ? "green" : "red"};">${aposta.status}</span></p>
+  `;
+
+  const jogosFormatados = Array.isArray(aposta.jogos)
+    ? aposta.jogos.map((j, i) => `<div>Jogo ${i + 1}: <b>${j}</b></div>`).join('')
+    : `<p style="color:red;">Nenhum jogo encontrado.</p>`;
+
+  jogosDiv.innerHTML = `<h3>Jogos Selecionados</h3>${jogosFormatados}`;
+}
+
+
 
   jogosDiv.innerHTML = `<h3>Jogos Escolhidos</h3>${jogosFormatados}`;
   buscarStatus(aposta.Protocolo);
