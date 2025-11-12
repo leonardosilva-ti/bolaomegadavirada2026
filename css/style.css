@@ -22,6 +22,17 @@ body {
   font-size: 24px;
 }
 
+/* Grade na lista de participantes na tela admin */
+
+table, th, td {
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 8px;
+}
+
+
 .container {
   max-width: var(--maxw);
   background: #fff;
