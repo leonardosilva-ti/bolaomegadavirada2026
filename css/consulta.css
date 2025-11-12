@@ -132,13 +132,16 @@ button.primary:hover {
   color: white;
   font-weight: 600;
   margin: 2px;
-  padding: 5px 8px;
-  border-radius: 50%;
-  display: inline-block;
   width: 28px;
   height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;     /* Centraliza verticalmente */
+  justify-content: center; /* Centraliza horizontalmente */
   text-align: center;
+  font-size: 0.95rem;
 }
+
 
 /* --- Responsividade --- */
 @media (max-width: 768px) {
