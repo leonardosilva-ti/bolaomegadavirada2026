@@ -4,6 +4,7 @@
   --red: #ef4444;
   --gray: #6b7280;
   --bg-light: #f3f6fb;
+  --border: #e5e7eb;
 }
 
 /* ===== Layout geral ===== */
@@ -35,7 +36,7 @@ body {
   padding: 24px;
   margin-top: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .comprovante h2 {
@@ -51,6 +52,46 @@ body {
   padding: 15px;
   margin-bottom: 15px;
   line-height: 1.5;
+}
+
+/* ===== Bloco PIX ===== */
+.pix-box {
+  background: #f9fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pix-box p {
+  margin: 0;
+  font-size: 0.95em;
+  color: #333;
+}
+
+.pix-key {
+  font-weight: 600;
+  color: var(--accent);
+  word-break: break-all;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.pix-box button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.pix-box button:hover {
+  background: #1d4ed8;
 }
 
 /* ===== Status ===== */
@@ -128,6 +169,17 @@ button.small {
 @media (max-width: 600px) {
   .comprovante {
     padding: 16px;
+  }
+
+  .pix-box {
+    font-size: 0.9em;
+    padding: 12px;
+  }
+
+  .pix-box button {
+    margin-top: 8px;
+    display: block;
+    width: 100%;
   }
 
   .controles {
