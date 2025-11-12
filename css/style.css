@@ -87,6 +87,29 @@ th, td {
   flex: 1;
 }
 
+#infoBolao {
+  color: #444;
+  text-align: justify;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+#infoBolao strong {
+  color: #222;
+}
+
+.whatsapp-link {
+  color: #16a34a; /* verde tipo WhatsApp */
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.whatsapp-link:hover {
+  text-decoration: underline;
+  color: #128c7e; /* tom de verde mais escuro ao passar o mouse */
+}
+
+
 button {
   cursor: pointer;
   border: none;
