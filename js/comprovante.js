@@ -4,7 +4,7 @@ const dadosDiv = document.getElementById("dadosComprovante");
 const jogosDiv = document.getElementById("jogosComprovante");
 const statusSpan = document.getElementById("statusAposta");
 const btnAtualizar = document.getElementById("btnAtualizarStatus");
-const PIX_KEY = "00020126360014BR.GOV.BCB.PIX0114CHAVE-ALEATORIA5204000053039865802BR5920MEGA DA VIRADA6009SAO PAULO62070503***6304ABCD";
+const PIX_KEY = "88f77025-40bc-4364-9b64-02ad88443cc4";
 
 const lastAposta = JSON.parse(localStorage.getItem("lastAposta"));
 
@@ -41,7 +41,7 @@ if (!lastAposta) {
 
     // Copiar PIX
     document.getElementById("btnCopiarPix").addEventListener("click", () => {
-      navigator.clipboard.writeText("chave-aleatoria-exemplo@pix.com.br");
+      navigator.clipboard.writeText("88f77025-40bc-4364-9b64-02ad88443cc4");
       const btn = document.getElementById("btnCopiarPix");
       btn.textContent = "Copiado!";
       btn.style.background = "#16a34a";
