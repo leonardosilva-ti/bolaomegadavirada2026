@@ -16,7 +16,7 @@ let jogoAtual = 0; // Começa no Jogo 1
 // Elementos do DOM
 const nomeInput = document.getElementById("nome");
 const telefoneInput = document.getElementById("telefone");
-const tituloJogo = document.getElementById("titulo-jogo");
+//const tituloJogo = document.getElementById("titulo-jogo");
 const numerosContainer = document.getElementById("numerosContainer");
 const statusJogosContainer = document.getElementById("statusJogosContainer");
 const btnAnterior = document.getElementById("btnAnterior");
@@ -71,34 +71,32 @@ function toggleNumero(num, button) {
 }
 
 function updateControles() {
-    const numerosSelecionados = aposta.jogos[jogoAtual].split(' ').filter(n => n !== "").length;
-    
-    // Título do Jogo
-    tituloJogo.textContent = `Jogo ${jogoAtual + 1} de ${JOGOS_MAXIMO} (${numerosSelecionados}/${NUMEROS_POR_JOGO})`;
+  const numerosSelecionados = aposta.jogos[jogoAtual].split(' ').filter(n => n !== "").length;
 
-    // Navegação
-    btnAnterior.disabled = jogoAtual === 0;
-    
-    // Habilitar e mudar cor do botão quando todos os jogos estiverem completos
-    const todosCompletos = aposta.jogos.every(j => j.split(' ').filter(n => n !== "").length === NUMEROS_POR_JOGO);
-    
-    if (jogoAtual < JOGOS_MAXIMO - 1 && numerosSelecionados === NUMEROS_POR_JOGO) {
-        btnProximo.disabled = false;
-        btnProximo.classList.remove("muted");
-        btnProximo.classList.add("primary");
-        btnProximo.textContent = "Próximo Jogo";
-    } else if (jogoAtual === JOGOS_MAXIMO - 1 && todosCompletos) {
-        btnProximo.disabled = false; // Habilitado
-        btnProximo.classList.remove("muted");
-        btnProximo.classList.add("primary"); // Fica azul
-        btnProximo.textContent = "Confirmar Aposta";
-    } else {
-        btnProximo.disabled = (jogoAtual < JOGOS_MAXIMO - 1 && numerosSelecionados < NUMEROS_POR_JOGO);
-        btnProximo.classList.remove("primary");
-        btnProximo.classList.add("muted");
-        btnProximo.textContent = (jogoAtual === JOGOS_MAXIMO - 1) ? "Confirmar Aposta" : "Próximo Jogo";
-    }
+  // Navegação
+  btnAnterior.disabled = jogoAtual === 0;
+
+  // Estado dos botões
+  const todosCompletos = aposta.jogos.every(j => j.split(' ').filter(n => n !== "").length === NUMEROS_POR_JOGO);
+
+  if (jogoAtual < JOGOS_MAXIMO - 1 && numerosSelecionados === NUMEROS_POR_JOGO) {
+    btnProximo.disabled = false;
+    btnProximo.classList.remove("muted");
+    btnProximo.classList.add("primary");
+    btnProximo.textContent = "Próximo Jogo";
+  } else if (jogoAtual === JOGOS_MAXIMO - 1 && todosCompletos) {
+    btnProximo.disabled = false;
+    btnProximo.classList.remove("muted");
+    btnProximo.classList.add("primary");
+    btnProximo.textContent = "Confirmar Aposta";
+  } else {
+    btnProximo.disabled = (jogoAtual < JOGOS_MAXIMO - 1 && numerosSelecionados < NUMEROS_POR_JOGO);
+    btnProximo.classList.remove("primary");
+    btnProximo.classList.add("muted");
+    btnProximo.textContent = (jogoAtual === JOGOS_MAXIMO - 1) ? "Confirmar Aposta" : "Próximo Jogo";
+  }
 }
+
 
 function renderStatusJogos() {
     statusJogosContainer.innerHTML = "";
@@ -241,3 +239,4 @@ inputs.forEach(input => {
         localStorage.setItem("pendingAposta", JSON.stringify(aposta));
     });
 });
+
