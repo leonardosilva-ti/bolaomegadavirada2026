@@ -56,7 +56,7 @@
 
       try {
         const resp = await fetch(
-          'https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec?acao=consultar&nome=' +
+          'https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec?acao=consultar&nome=' +
           encodeURIComponent(nome) + '&telefone=' + encodeURIComponent(telefone)
         );
         const dados = await resp.json();
