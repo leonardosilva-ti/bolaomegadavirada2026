@@ -1,223 +1,260 @@
 :root {
-  --accent: #0072e3;
-  --muted: #f2f2f2;
-  --danger: #c62828;
-  --text: #222;
-  --maxw: 950px;
+  --primary: #007bff;
+  --accent: #ff9800;
+  --success: #28a745;
+  --danger: #dc3545;
+  --muted: #6c757d;
+  --bg: #f8f9fa;
+  --text: #212529;
 }
 
-* { box-sizing: border-box; }
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f5f7fb;
-  margin: 0;
+  background: var(--bg);
   color: var(--text);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-.site-header {
-  background: var(--accent);
-  color: #fff;
-  padding: 16px;
+h1, h2, h3 {
   text-align: center;
-  font-size: 24px;
 }
 
 .container {
-  max-width: var(--maxw);
+  max-width: 800px;
+  margin: 20px auto;
   background: #fff;
-  margin: 24px auto;
-  padding: 22px;
   border-radius: 10px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-}
-
-/* Ajuste do bloco de informações do bolão */
-.admin-card {
-  background: #fff;
-  padding: 12px 18px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  line-height: 1.4;
-}
-
-.admin-card h2 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  font-size: 18px;
-}
-
-.admin-card p {
-  margin: 2px 0;       /* Reduz o espaçamento entre parágrafos */
-  font-size: 14.5px;   /* Texto levemente menor e mais compacto */
-  line-height: 1.3;    /* Menor espaçamento entre linhas */
-}
-
-.admin-card hr {
-  margin: 10px 0;
-}
-
-
-.center { text-align: justify; }
-
-.form-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-.form-row input, .form-row select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  flex: 1;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-}
-button.primary {
-  background: var(--accent);
-  color: #fff;
-  padding: 10px 16px;
-}
-button.muted {
-  background: var(--muted);
-  color: #333;
-  padding: 8px 12px;
-}
-button.danger {
-  background: var(--danger);
-  color: #fff;
-  padding: 8px 12px;
-}
-button.small {
-  font-size: 13px;
-  margin-top: 5px;
-}
-/* Estado desativado dos botões */
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background: #ddd !important;
-  color: #666 !important;
-  border: 1px solid #ccc !important;
-}
-
-/* /css/style.css */
-.hidden {
-    display: none !important;
-}
-/* ... (Seu código CSS anterior) ... */
-
-.status-jogos-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
-}
-/* --- Seção de botões dos jogos --- */
-.status-jogos-grid {
-  display: flex;
-  justify-content: center;
-  gap: 1cm; /* separação de 1 cm */
-  margin: 15px 0 25px 0;
-  flex-wrap: wrap;
-}
-
-.status-jogo-btn {
-  background: #6c757d; /* Cinza padrão */
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.status-jogo-btn:hover {
-  transform: scale(1.05);
-}
-
-/* Jogo selecionado (ativo) → laranja */
-.status-jogo-btn.ativo {
-  background: #ff9800;
-  color: #fff;
-}
-
-/* Jogo completo → verde */
-.status-jogo-btn.preenchido {
-  background: #28a745;
-  color: #fff;
-}
-
-
-.numeros-grid {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 8px;
-  margin: 14px 0;
-}
-.numeros-grid button {
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 10px 0;
-  border-radius: 8px;
-  font-weight: bold;
-}
-.numeros-grid button.selected {
-  background: var(--accent);
-  color: #fff;
-}
-
-.controles {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 10px;
-  flex-wrap: wrap;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card {
-  background: var(--muted);
-  padding: 12px;
+  background: #fafafa;
   border-radius: 10px;
-  margin-bottom: 12px;
-  box-shadow: inset 0 0 3px rgba(0,0,0,0.08);
+  padding: 15px;
+  margin: 15px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.login-box {
-  text-align: center;
-  max-width: 300px;
-  margin: 0 auto;
-  background: #fff;
-  padding: 20px;
+/* ===============================
+   BOTÕES DE JOGOS (Jogo 1 a Jogo 5)
+================================== */
+#jogosTabs {
+  display: flex;
+  justify-content: center;
+  gap: 1cm;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.jogo-tab {
+  padding: 6px 14px;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.login-box input {
-  display: block;
-  width: 100%;
-  margin: 8px 0;
-  padding: 8px;
   border: 1px solid #ccc;
-  border-radius: 6px;
-}
-.login-box button {
-  width: 100%;
+  background-color: #f4f4f4;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-@media (max-width: 700px) {
-  .numeros-grid {
-    grid-template-columns: repeat(6, 1fr);
+.jogo-tab:hover {
+  background-color: #e9e9e9;
+}
+
+.jogo-tab.ativo {
+  background-color: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.jogo-tab.completo {
+  background-color: var(--success);
+  color: #fff;
+  border-color: var(--success);
+}
+
+/* ===============================
+   BOTÕES GERAIS
+================================== */
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+button.primary {
+  background: var(--primary);
+  color: white;
+}
+
+button.primary:hover {
+  background: #0056b3;
+}
+
+button.muted {
+  background: #e0e0e0;
+  color: #555;
+}
+
+button.muted:hover {
+  background: #d6d6d6;
+}
+
+button.small {
+  padding: 5px 10px;
+  font-size: 0.85em;
+}
+
+/* ===============================
+   TABELAS DE NÚMEROS DOS JOGOS
+================================== */
+.grid-numeros {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+  justify-items: center;
+  margin-top: 15px;
+}
+
+.grid-numeros button {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.grid-numeros button:hover {
+  background: #f0f0f0;
+}
+
+.grid-numeros button.selecionado {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* ===============================
+   MENSAGENS E ALERTAS
+================================== */
+.mensagem {
+  text-align: center;
+  font-size: 0.95em;
+  margin-top: 15px;
+}
+
+.center {
+  text-align: center;
+}
+
+/* ===============================
+   ESTATÍSTICAS DO BOLÃO
+================================== */
+.stats-container {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 30px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.stats-card {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 25px 30px;
+  text-align: center;
+  min-width: 160px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card h4 {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.stats-card p {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* ===============================
+   JOGO DA SORTE
+================================== */
+.jogo-sorte-box {
+  border: 2px solid var(--accent);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  margin: 20px auto;
+  max-width: 420px;
+  background: #fff8e1;
+}
+
+.jogo-sorte-box h3 {
+  margin-bottom: 10px;
+}
+
+.jogo-sorte-numeros {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.jogo-sorte-numeros span {
+  display: inline-block;
+  background: #333;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 50%;
+  font-weight: bold;
+  min-width: 36px;
+  text-align: center;
+}
+
+/* ===============================
+   LISTAGEM DE TODOS OS JOGOS
+================================== */
+.todos-jogos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.todos-jogos p {
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+/* ===============================
+   RESPONSIVIDADE
+================================== */
+@media (max-width: 600px) {
+  .grid-numeros {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  #jogosTabs {
+    gap: 0.5cm;
+  }
+  .stats-container {
+    gap: 20px;
+  }
+  .stats-card {
+    padding: 15px;
   }
 }
-
-
-
-
-
-
