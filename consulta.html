@@ -1,283 +1,87 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Jogos - Bolão Mega da Virada</title>
-  <link rel="stylesheet" href="css/style.css">   <style>
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .jogo-sorte-box {
-      border: 2px solid var(--accent);
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    .jogo-sorte-numeros {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 5px;
-      margin-top: 10px;
-    }
-    .jogo-sorte-numeros span {
-      background: #333;
-      color: #fff;
-      padding: 5px 8px;
-      border-radius: 50%;
-      font-weight: bold;
-      min-width: 30px;
-      text-align: center;
-    }
-  </style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Jogos - Bolão Mega da Virada</title>
+  <title>Consulta - Mega da Virada</title>
   <link rel="stylesheet" href="css/style.css">
-
-  <style>
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .jogo-sorte-box {
-      border: 2px solid var(--accent);
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    .jogo-sorte-numeros {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 5px;
-      margin-top: 10px;
-    }
-    .jogo-sorte-numeros span {
-      background: #333;
-      color: #fff;
-      padding: 5px 8px;
-      border-radius: 50%;
-      font-weight: bold;
-      min-width: 30px;
-      text-align: center;
-    }
-  </style>
 </head>
-
-<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col items-center p-4">
-  <header class="site-header" style="width: 100%;">
-    <h1>Consulta de Jogos</h1>
-  </header>
-
-  <main class="container">
-    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg w-full mt-10 mx-auto">
-      <h2 class="text-xl font-bold text-center mb-4">Consultar por Protocolo</h2>
-      <p class="text-gray-600 text-center mb-6">
-        Informe o seu <b>Número de Protocolo</b> para consultar seus dados e jogos.
-      </p>
-
-            <div class="space-y-4">
-        <input id="protocoloInput" type="text" placeholder="Número de Protocolo" class="w-full border rounded px-4 py-2">
-        <button id="btnConsultar" class="primary w-full">Consultar</button>
-      </div>
-
-      <div id="resultado" class="mt-6"></div>
-    </div>
-  </main>
-
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
-
-    document.getElementById("btnConsultar").addEventListener("click", async () => {
-      const protocolo = document.getElementById("protocoloInput").value.trim();
-      const resultadoDiv = document.getElementById("resultado");
-      
-      resultadoDiv.innerHTML = `<p class="center" style="color:#555">Buscando...</p>`;
-
-      if (!protocolo) {
-        resultadoDiv.innerHTML = `<p class="center" style="color:red">Preencha o número de Protocolo.</p>`;
-        return;
-      }
-
-      try {
-        // 4.1 - Busca o protocolo do participante e todos os dados
-        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
-        const data = await res.json();
-        
-        const participante = data.participantes.find(p => p.Protocolo === protocolo);
-        const totalParticipantes = data.participantes.length;
-        const totalJogos = data.participantes.reduce((acc, p) => acc + (p.Jogos.split('|').length), 0);
-        const jogoDaSorte = data.jogoDaSorte || "Não cadastrado";
-        
-        let html = "";
-
-        // 4.2 - Estatísticas do Bolão
-        html += `<h3 class="center" style="margin-top:20px;">Estatísticas do Bolão</h3>
-          <div class="stats-grid card">
-            <p><strong>Participantes:</strong> ${totalParticipantes}</p>
-            <p><strong>Total de Jogos:</strong> ${totalJogos}</p>
-          </div>`;
-        
-        // 4.2 - Jogo da Sorte
-        const sorteNumerosHtml = jogoDaSorte.split(' ').map(n => `<span>${n}</span>`).join('');
-        html += `<div class="jogo-sorte-box">
-            <strong>Jogo da Sorte (9 Números)</strong><br>
-            <div class="jogo-sorte-numeros">${sorteNumerosHtml}</div>
-          </div>`;
-
-        // 4.1 - Dados do Participante
-        if (participante) {
-          const status = participante.Status === "PAGO" ? "Pago" : "Aguardando Pagamento";
-          const statusClass = participante.Status === "PAGO" ? "color:green" : "color:red";
-          const jogosParticipante = participante.Jogos.split('|').map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join('');
-
-          html += `<h3 class="center" style="margin-top:20px;">Seus Dados e Jogos</h3>
-            <div class="card">
-              <p><strong>Nome:</strong> ${participante.Nome}</p>
-              <p><strong>Telefone:</strong> ${participante.Telefone}</p>
-              <p><strong>Protocolo:</strong> ${participante.Protocolo}</p>
-              <p><strong>Status:</strong> <span style="${statusClass}">${status}</span></p>
-              <hr style="margin: 8px 0;">
-              ${jogosParticipante}
-              <div class="controles" style="margin-top:15px;">
-                <button onclick="window.location.href='comprovante.html?protocolo=${protocolo}'" class="primary small">Baixar Comprovante</button>
-              </div>
-            </div>`;
-        } else {
-          html += `<p class="center" style="color:red">Protocolo não encontrado.</p>`;
-        }
-        
-        // 4.3 - Lista de todos os jogos
-        html += `<h3 class="center" style="margin-top:20px;">Todos os Jogos do Bolão</h3>
-          <div class="card" style="font-size: 0.9em;">
-            ${data.todosJogos.map(jogo => `<p>${jogo}</p>`).join('')}
-          </div>`;
-        
-        resultadoDiv.innerHTML = html;
-
-      } catch (err) {
-        resultadoDiv.innerHTML = `<p class="center" style="color:red">Erro ao buscar dados: ${err.message}</p>`;
-      }
-    });
-  </script>
-  <header class="site-header" style="width: 100%;">
-    <h1>Consulta de Jogos</h1>
+<body>
+  <header class="site-header">
+    <h1>Consulta de Apostas - Mega da Virada</h1>
   </header>
 
   <main class="container">
-    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg w-full mt-10 mx-auto">
-      <h2 class="text-xl font-bold text-center mb-4">Consultar por Protocolo</h2>
-      <p class="text-gray-600 text-center mb-6">
-        Informe o seu <b>Número de Protocolo</b> para consultar seus dados e jogos.
-      </p>
 
-      <div class="space-y-4">
-        <input id="protocoloInput" type="text" placeholder="Número de Protocolo" class="w-full border rounded px-4 py-2">
-        <button id="btnConsultar" class="primary w-full">Consultar</button>
+    <!-- Estatísticas do Bolão -->
+    <section id="estatisticas">
+      <h2>Estatísticas do Bolão</h2>
+
+      <div class="stats-container">
+        <div class="stats-card">
+          <h4>Participantes</h4>
+          <p id="totalParticipantes">00</p>
+        </div>
+
+        <div class="stats-card">
+          <h4>Jogos Feitos</h4>
+          <p id="totalJogos">00</p>
+        </div>
       </div>
+    </section>
 
-      <div id="resultado" class="mt-6"></div>
-    </div>
+    <!-- Jogo da Sorte -->
+    <section class="jogo-sorte-box">
+      <h3>Jogo da Sorte (9 Números)</h3>
+      <div id="jogoSorteNumeros" class="jogo-sorte-numeros"></div>
+    </section>
+
+    <hr>
+
+    <!-- Lista de Jogos -->
+    <section id="todosJogos">
+      <h3 class="text-center">Jogos dos Participantes</h3>
+      <div id="listaJogos" class="todos-jogos"></div>
+    </section>
+
   </main>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-    document.getElementById("btnConsultar").addEventListener("click", async () => {
-      const protocolo = document.getElementById("protocoloInput").value.trim();
-      const resultadoDiv = document.getElementById("resultado");
-      resultadoDiv.innerHTML = `<p class="center" style="color:#555">Buscando...</p>`;
-
-      if (!protocolo) {
-        resultadoDiv.innerHTML = `<p class="center" style="color:red">Preencha o número de Protocolo.</p>`;
-        return;
-      }
-
+    async function carregarEstatisticas() {
       try {
-        // Busca dados completos do bolão
-        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
-        const data = await res.json();
+        const response = await fetch(`${SCRIPT_URL}?action=consultarEstatisticas`);
+        const data = await response.json();
 
-        const participante = data.participantes.find(p => p.Protocolo === protocolo);
-        const totalParticipantes = data.participantes.length;
-        const totalJogos = data.participantes.reduce((acc, p) => acc + (p.Jogos.split('|').length), 0);
+        // Atualiza estatísticas principais
+        document.getElementById("totalParticipantes").textContent = data.participantes || "00";
+        document.getElementById("totalJogos").textContent = data.jogos || "00";
 
-        let html = "";
+        // Exibe Jogo da Sorte (9 números)
+        const numeros = (data.jogoSorte || "").split(" ").filter(n => n.trim() !== "");
+        const sorteContainer = document.getElementById("jogoSorteNumeros");
+        sorteContainer.innerHTML = numeros.map(num => `<span>${num}</span>`).join("");
 
-        // Estatísticas
-        html += `
-          <h3 class="center" style="margin-top:20px;">Estatísticas do Bolão</h3>
-          <div class="stats-grid card">
-            <p><strong>Participantes:</strong> ${totalParticipantes}</p>
-            <p><strong>Total de Jogos:</strong> ${totalJogos}</p>
-          </div>`;
-
-        // Jogo da Sorte (obtido dinamicamente do Apps Script)
-        if (data.jogoDaSorte && data.jogoDaSorte.trim() !== "") {
-          const sorteNumerosHtml = data.jogoDaSorte.split(' ').map(n => `<span>${n}</span>`).join('');
-          html += `
-            <div class="jogo-sorte-box">
-              <strong>Jogo da Sorte (9 Números)</strong><br>
-              <div class="jogo-sorte-numeros">${sorteNumerosHtml}</div>
-            </div>`;
+        // Lista todos os jogos registrados
+        const listaJogos = document.getElementById("listaJogos");
+        if (Array.isArray(data.lista) && data.lista.length > 0) {
+          listaJogos.innerHTML = data.lista
+            .map((item, i) => `
+              <p><b>${item.nome || "Participante " + (i + 1)}:</b><br>${item.jogos.join("<br>")}</p>
+            `)
+            .join("");
         } else {
-          html += `<div class="jogo-sorte-box"><strong>Jogo da Sorte:</strong><br><em>Ainda não cadastrado.</em></div>`;
+          listaJogos.innerHTML = "<p class='center'>Nenhum jogo registrado ainda.</p>";
         }
 
-        // Dados do participante
-        if (participante) {
-          const statusPago = participante.Status === "PAGO";
-          const statusClass = statusPago ? "color:green" : "color:red";
-          const statusText = statusPago ? "Pago" : "Aguardando Pagamento";
-
-          const jogosParticipante = participante.Jogos
-            .split('|')
-            .map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`)
-            .join('');
-
-          html += `
-            <h3 class="center" style="margin-top:20px;">Seus Dados e Jogos</h3>
-            <div class="card">
-              <p><strong>Nome:</strong> ${participante.Nome}</p>
-              <p><strong>Telefone:</strong> ${participante.Telefone}</p>
-              <p><strong>Protocolo:</strong> ${participante.Protocolo}</p>
-              <p><strong>Status:</strong> <span style="${statusClass}">${statusText}</span></p>
-              <hr style="margin: 8px 0;">
-              ${jogosParticipante}
-              <div class="controles" style="margin-top:15px;">
-                <button onclick="window.location.href='comprovante.html?protocolo=${protocolo}'" class="primary small">Baixar Comprovante</button>
-              </div>
-            </div>`;
-        } else {
-          html += `<p class="center" style="color:red">Protocolo não encontrado.</p>`;
-        }
-
-        // Lista de todos os jogos do bolão
-        if (data.todosJogos?.length > 0) {
-          html += `
-            <h3 class="center" style="margin-top:20px;">Todos os Jogos do Bolão</h3>
-            <div class="card" style="font-size: 0.9em;">
-              ${data.todosJogos.map(j => `<p>${j}</p>`).join('')}
-            </div>`;
-        }
-
-        resultadoDiv.innerHTML = html;
-
-      } catch (err) {
-        resultadoDiv.innerHTML = `<p class="center" style="color:red">Erro ao buscar dados: ${err.message}</p>`;
+      } catch (e) {
+        console.error(e);
+        document.getElementById("listaJogos").innerHTML = "<p class='center' style='color:red;'>Erro ao carregar dados.</p>";
       }
-    });
+    }
+
+    carregarEstatisticas();
   </script>
 </body>
 </html>
