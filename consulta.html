@@ -102,7 +102,8 @@
             // 4. Lista de todos os jogos do bolão
             if (data.todosJogos?.length > 0) {
                 html += `
-                  <h3 class="center" style="margin-top:20px;">Todos os Jogos do Bolão</h3>
+                  <h3 class="text-center" style="margin-top:20px;">Todos os Jogos do Bolão</h3>
+
                   <div class="card jogos-grid" style="font-size: 0.9em;">
   ${data.todosJogos.map(j => `<div class="jogo-card">${j}</div>`).join('')}
 </div>
