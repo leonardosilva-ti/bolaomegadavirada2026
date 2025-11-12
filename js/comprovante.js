@@ -1,64 +1,63 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+// js/comprovante.js
 
-const aposta = JSON.parse(localStorage.getItem("lastAposta"));
-const dadosDiv = document.getElementById("dadosComprovante");
-const jogosDiv = document.getElementById("jogosComprovante");
-const statusEl = document.getElementById("statusAposta");
-const btnAtualizarStatus = document.getElementById("btnAtualizarStatus");
-const btnBaixarPDF = document.getElementById("baixarPDF");
+document.addEventListener("DOMContentLoaded", () => {
+  const aposta = JSON.parse(localStorage.getItem("lastAposta"));
+  const dadosDiv = document.getElementById("dadosComprovante");
+  const jogosDiv = document.getElementById("jogosComprovante");
+  const pixDiv = document.getElementById("pixComprovante");
 
-if (aposta) {
+  if (!aposta) {
+    dadosDiv.innerHTML = `<p style="color:red;">Nenhuma aposta encontrada.</p>`;
+    return;
+  }
+
+  // === DADOS PRINCIPAIS ===
   dadosDiv.innerHTML = `
-    <p><b>Nome:</b> ${aposta.Nome}</p>
-    <p><b>Protocolo:</b> ${aposta.Protocolo}</p>
-    <p><b>Data:</b> ${aposta.Data || new Date().toLocaleDateString()}</p>
+    <p><b>Nome:</b> ${aposta.nome || "—"}</p>
+    <p><b>Telefone (WhatsApp):</b> ${aposta.telefone || "—"}</p>
+    <p><b>Protocolo:</b> ${aposta.protocolo || "—"}</p>
+    <p><b>Status:</b> 
+      <span style="color:${aposta.status === "PAGO" ? "green" : "red"}; font-weight:600;">
+        ${aposta.status}
+      </span>
+    </p>
+    <p><b>Data/Hora:</b> ${aposta.dataHora || new Date().toLocaleString("pt-BR")}</p>
   `;
 
+  // === JOGOS FORMATADOS ===
   const jogosFormatados = Array.isArray(aposta.jogos)
-  ? aposta.jogos.map((j, i) => `<div>Jogo ${i + 1}: <b>${j}</b></div>`).join('')
-  : `<p style="color:red;">Nenhum jogo encontrado.</p>`;
+    ? aposta.jogos.map((j, i) => `<div>Jogo ${i + 1}: <b>${j}</b></div>`).join("")
+    : `<p style="color:red;">Nenhum jogo encontrado.</p>`;
 
+  jogosDiv.innerHTML = `
+    <h3>Jogos Selecionados</h3>
+    ${jogosFormatados}
+  `;
 
+  // === CHAVE PIX ===
+  const chavePix = "sua.chave.pix@exemplo.com"; // 🔁 coloque aqui sua chave real
 
+  if (aposta.status !== "PAGO") {
+    pixDiv.innerHTML = `
+      <p><b>Chave PIX para pagamento:</b></p>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span id="chavePixText" style="font-weight:600;">${chavePix}</span>
+        <button id="btnCopiarPix" class="small primary">Copiar</button>
+        <a href="https://wa.me/55${aposta.telefone.replace(/\D/g,'')}" target="_blank" class="whatsapp-link">
+          Enviar Comprovante no WhatsApp
+        </a>
+      </div>
+      <p style="margin-top:8px;font-size:0.9em;">
+        Após o pagamento, envie o comprovante via WhatsApp para confirmação.
+      </p>
+    `;
 
-  jogosDiv.innerHTML = `<h3>Jogos Escolhidos</h3>${jogosFormatados}`;
-  buscarStatus(aposta.Protocolo);
-} else {
-  dadosDiv.innerHTML = `<p style="color:red;">Nenhuma aposta encontrada.</p>`;
-}
-
-async function buscarStatus(protocolo) {
-  statusEl.textContent = "Verificando...";
-  statusEl.className = "status aguardando";
-  btnAtualizarStatus.disabled = true;
-
-  try {
-    const res = await fetch(`${SCRIPT_URL}?action=getStatus&protocolo=${protocolo}`);
-    const data = await res.json();
-    const status = data.status?.toUpperCase() || "AGUARDANDO PAGAMENTO";
-
-    statusEl.textContent = status;
-    statusEl.className = `status ${status === "PAGO" ? "pago" : "aguardando"}`;
-  } catch (err) {
-    statusEl.textContent = "Erro ao buscar status";
-    statusEl.className = "status aguardando";
-  } finally {
-    btnAtualizarStatus.disabled = false;
+    // Botão copiar PIX
+    document.getElementById("btnCopiarPix").addEventListener("click", () => {
+      navigator.clipboard.writeText(chavePix);
+      alert("Chave PIX copiada com sucesso!");
+    });
+  } else {
+    pixDiv.innerHTML = `<p style="color:green;font-weight:600;">Pagamento confirmado ✅</p>`;
   }
-}
-
-btnAtualizarStatus.addEventListener("click", () => {
-  if (aposta?.Protocolo) buscarStatus(aposta.Protocolo);
-});
-
-btnBaixarPDF.addEventListener("click", async () => {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-  pdf.html(document.getElementById("areaComprovante"), {
-    callback: function (doc) {
-      doc.save(`comprovante_${aposta.Protocolo}.pdf`);
-    },
-    margin: [10, 10, 10, 10],
-    html2canvas: { scale: 0.8 }
-  });
 });
