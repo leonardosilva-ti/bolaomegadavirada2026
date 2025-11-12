@@ -34,7 +34,7 @@ if (!lastAposta) {
     pixBox.className = "pix-box";
     pixBox.innerHTML = `
       <p>Chave PIX para pagamento:</p>
-      <span class="pix-key">chave-aleatoria-exemplo@pix.com.br</span>
+      <span class="pix-key">88f77025-40bc-4364-9b64-02ad88443cc4</span>
       <button id="btnCopiarPix">Copiar</button>
     `;
     jogosDiv.after(pixBox);
