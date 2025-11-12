@@ -240,3 +240,15 @@ inputs.forEach(input => {
     });
 });
 
+document.getElementById("btnCopiarPix").onclick = function() {
+    const chave = document.getElementById("pix-chave").textContent.trim();
+    navigator.clipboard.writeText(chave).then(() => {
+      const btn = document.getElementById("btnCopiarPix");
+      btn.textContent = "Copiado!";
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = "Copiar";
+        btn.disabled = false;
+      }, 2000);
+    });
+  };
