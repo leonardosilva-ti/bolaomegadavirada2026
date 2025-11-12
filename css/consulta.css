@@ -127,20 +127,26 @@ button.primary:hover {
   gap: 10px;
 }
 
+.jogo-sorte-numeros {
+  text-align: center;       /* Mantém as bolinhas centralizadas no bloco */
+  margin-top: 8px;
+}
+
 .jogo-sorte-numeros span {
   background: #4f46e5;
   color: white;
   font-weight: 600;
-  margin: 2px;
+  margin: 3px;
+  padding: 0;
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;     /* Centraliza verticalmente */
-  justify-content: center; /* Centraliza horizontalmente */
+  display: inline-block;     /* Mantém na horizontal */
   text-align: center;
+  line-height: 28px;         /* Centraliza verticalmente o número */
   font-size: 0.95rem;
 }
+
 
 
 /* --- Responsividade --- */
