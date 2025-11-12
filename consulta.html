@@ -16,13 +16,11 @@
     <!-- Estatísticas do Bolão -->
     <section id="estatisticas">
       <h2>Estatísticas do Bolão</h2>
-
       <div class="stats-container">
         <div class="stats-card">
           <h4>Participantes</h4>
           <p id="totalParticipantes">00</p>
         </div>
-
         <div class="stats-card">
           <h4>Jogos Feitos</h4>
           <p id="totalJogos">00</p>
@@ -54,21 +52,21 @@
         const response = await fetch(`${SCRIPT_URL}?action=consultarEstatisticas`);
         const data = await response.json();
 
-        // Atualiza estatísticas principais
         document.getElementById("totalParticipantes").textContent = data.participantes || "00";
         document.getElementById("totalJogos").textContent = data.jogos || "00";
 
-        // Exibe Jogo da Sorte (9 números)
         const numeros = (data.jogoSorte || "").split(" ").filter(n => n.trim() !== "");
         const sorteContainer = document.getElementById("jogoSorteNumeros");
         sorteContainer.innerHTML = numeros.map(num => `<span>${num}</span>`).join("");
 
-        // Lista todos os jogos registrados
         const listaJogos = document.getElementById("listaJogos");
         if (Array.isArray(data.lista) && data.lista.length > 0) {
           listaJogos.innerHTML = data.lista
             .map((item, i) => `
-              <p><b>${item.nome || "Participante " + (i + 1)}:</b><br>${item.jogos.join("<br>")}</p>
+              <div class="jogo-item">
+                <p><b>${item.nome || "Participante " + (i + 1)}</b></p>
+                ${item.jogos.map(j => `<div class="jogo-card">${j}</div>`).join("")}
+              </div>
             `)
             .join("");
         } else {
