@@ -1,170 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmação da Aposta</title>
-    <link rel="stylesheet" href="css/style.css"> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmação da Aposta</title>
+
+  <!-- Estilos globais -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Estilos específicos da tela de confirmação -->
+  <link rel="stylesheet" href="css/confirmacao.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1>Mega da Virada - Confirmação</h1>
-  </header>
+  <header class="site-header">
+    <h1>Mega da Virada - Confirmação</h1>
+  </header>
 
-  <main class="container">
-    <h2 class="text-center">Confirme seus Dados e Jogos</h2>
-    
-        <div id="dadosConfirmacao" class="card"></div>
-    
-        <div id="jogosConfirmacao" class="card"></div>
+  <main class="container">
+    <h2 class="text-center">Confirme seus Dados e Jogos</h2>
 
-    <hr>
+    <div id="dadosConfirmacao" class="card"></div>
+    <div id="jogosConfirmacao" class="card"></div>
 
-        <section class="observacao">
-      <h3>Informação Importante do Bolão</h3>
-      <p style="font-size: 0.9em;">
-        Este bolão <b>NÃO é realizado pela CAIXA</b> como um bolão oficial. Estamos organizando de forma independente — em caso de premiação o valor será rateado entre os participantes e repassado por uma pessoa responsável (organizador). O site registra todos os jogos, quantidade e participantes para validação pública. Após o sorteio será divulgado o número sorteado e se houve ou não jogo ganhador.
-      </p>
-    </section>
+    <hr>
 
-        <div class="termos" style="margin: 15px 0;">
-      <label>
-        <input type="checkbox" id="aceitoTermos" required>
-        Confirmo que li a <b>Informação Importante</b> acima e aceito os termos do bolão.
-      </label>
-    </div>
+    <section class="observacao">
+      <h3>Informação Importante do Bolão</h3>
+      <p>
+        Este bolão <b>NÃO é realizado pela CAIXA</b>. É organizado de forma independente — 
+        em caso de premiação, o valor será rateado entre os participantes e repassado pelo organizador.
+        O site registra todos os jogos e participantes para validação pública. Após o sorteio,
+        será divulgado o número sorteado e eventuais prêmios.
+      </p>
+    </section>
 
-    <div class="controles">
-      <button id="btnVoltar" class="muted">Voltar e Editar</button>
-      <button id="btnConfirmar" class="primary" disabled>Aceito e Confirmo Aposta</button>
-    </div>
+    <div class="termos">
+      <label>
+        <input type="checkbox" id="aceitoTermos" required>
+        Confirmo que li a <b>Informação Importante</b> acima e aceito os termos do bolão.
+      </label>
+    </div>
 
-    <p id="mensagem" class="mensagem"></p>
-  </main>
+    <div class="controles">
+      <button id="btnVoltar" class="muted">Voltar e Editar</button>
+      <button id="btnConfirmar" class="primary" disabled>Aceito e Confirmo Aposta</button>
+    </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // Use sua URL
+    <p id="mensagem" class="mensagem"></p>
+  </main>
 
-    // Funções auxiliares para Protocolo (3.1)
-    function gerarCodigoAleatorio(length = 4) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let result = '';
-      for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return result;
-    }
-    function gerarProtocolo() {
-      const now = new Date();
-      const pad = (n) => n.toString().padStart(2, '0');
-      const ano = now.getFullYear().toString();
-      const mes = pad(now.getMonth() + 1);
-      const dia = pad(now.getDate());
-      const hora = pad(now.getHours());
-      const min = pad(now.getMinutes());
-      const seg = pad(now.getSeconds());
-      const c1 = gerarCodigoAleatorio(2); // XX
-      const c2 = gerarCodigoAleatorio(1); // X
-      return `${ano}${mes}${dia}${hora}${min}${seg}${c1}00${c2}0`; // AAAAMMDDHHMMSSXX00X0 (Ex.: 20251111151115ST85H2)
-    }
-
-    // Elementos
-    const aposta = JSON.parse(localStorage.getItem("pendingAposta"));
-    const dadosDiv = document.getElementById("dadosConfirmacao");
-    const jogosDiv = document.getElementById("jogosConfirmacao");
-    const mensagem = document.getElementById("mensagem");
-    const termosCheckbox = document.getElementById("aceitoTermos");
-    const btnConfirmar = document.getElementById("btnConfirmar");
-
-    // Exibe os dados
-    if (!aposta) {
-      dadosDiv.innerHTML = "<p style='color:red'>Nenhuma aposta pendente encontrada. Retorne à página principal.</p>";
-      btnConfirmar.disabled = true;
-    } else {
-      dadosDiv.innerHTML = `
-        <p><b>Nome Completo:</b> ${aposta.nome}</p>
-        <p><b>Telefone (Whatsapp):</b> ${aposta.telefone}</p>
-      `;
-
-      jogosDiv.innerHTML = `
-        <h3>Jogos Selecionados (5 Jogos de 6 Números)</h3>
-        ${aposta.jogos.map((jogo, i) => `<p><b>Jogo ${i + 1}:</b> ${jogo}</p>`).join("")}
-      `;
-    }
-
-    // Habilita o botão ao flegar
-    termosCheckbox.onchange = () => {
-      btnConfirmar.disabled = !termosCheckbox.checked;
-    }
-
-    document.getElementById("btnVoltar").onclick = () => {
-      window.location.href = "index.html";
-    };
-
-    // 2.2 - Lógica de envio
-    btnConfirmar.onclick = async () => {
-      if (!termosCheckbox.checked) {
-        mensagem.textContent = "Você deve aceitar os termos antes de confirmar.";
-        mensagem.style.color = "red";
-        return;
-      }
-
-      btnConfirmar.disabled = true;
-      mensagem.textContent = "Enviando e registrando aposta...";
-      mensagem.style.color = "blue";
-
-      const protocolo = gerarProtocolo(); // 3.1 - Gera o protocolo
-      const dataHora = new Date().toLocaleString("pt-BR");
-      const statusInicial = "AGUARDANDO PAGAMENTO";
-
-      const apostaCompleta = {
-        ...aposta,
-        dataHora: dataHora,
-        protocolo: protocolo, // Protocolo no formato solicitado
-        status: statusInicial
-      };
-
-      try {
-        const formData = new FormData();
-        // Adiciona os campos base
-        formData.append("action", "registrarAposta"); // Necessário no Apps Script
-        formData.append("nome", apostaCompleta.nome);
-        // Remove todos os caracteres que não são dígitos
-        const telefoneLimpo = (apostaCompleta.telefone || "").replace(/\D/g, "");
-        formData.append("telefone", telefoneLimpo);
-
-        formData.append("protocolo", apostaCompleta.protocolo);
-        formData.append("dataHora", apostaCompleta.dataHora);
-        formData.append("status", apostaCompleta.status);
-        
-        // Adiciona os 5 jogos
-        apostaCompleta.jogos.forEach((jogo, i) => {
-          formData.append(`jogo${i + 1}`, jogo);
-        });
-
-
-        const response = await fetch(SCRIPT_URL, {
-          method: "POST",
-          body: formData
-        });
-
-        const texto = await response.text();
-
-        if (response.ok && texto.includes("Sucesso")) {
-          localStorage.setItem("lastAposta", JSON.stringify(apostaCompleta));
-          localStorage.removeItem("pendingAposta");
-          window.location.href = "comprovante.html"; // Redireciona para o comprovante
-        } else {
-          mensagem.textContent = "Erro ao enviar: " + texto;
-          mensagem.style.color = "red";
-          btnConfirmar.disabled = false;
-        }
-      } catch (err) {
-        mensagem.textContent = "Erro ao enviar: " + err.message;
-        mensagem.style.color = "red";
-        btnConfirmar.disabled = false;
-      }
-    };
-  </script>
+  <script src="js/confirmacao.js"></script>
 </body>
 </html>
