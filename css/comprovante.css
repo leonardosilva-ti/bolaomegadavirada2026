@@ -1,0 +1,141 @@
+:root {
+  --accent: #2563eb;
+  --green: #22c55e;
+  --red: #ef4444;
+  --gray: #6b7280;
+  --bg-light: #f3f6fb;
+}
+
+/* ===== Layout geral ===== */
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background: var(--bg-light);
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.site-header {
+  background: var(--accent);
+  color: #fff;
+  text-align: center;
+  padding: 16px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ===== Bloco do comprovante ===== */
+.comprovante {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.comprovante h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #f9fafc;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+/* ===== Status ===== */
+.status-wrapper {
+  text-align: center;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 20px;
+}
+
+.status {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-left: 6px;
+}
+
+.status.pago { color: var(--green); }
+.status.aguardando { color: var(--red); }
+
+/* ===== Botões ===== */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: 0.25s;
+}
+
+button.primary {
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 20px;
+}
+
+button.primary:hover {
+  background: #1d4ed8;
+}
+
+button.muted {
+  background: #e5e7eb;
+  color: #333;
+  padding: 10px 18px;
+}
+
+button.muted:hover {
+  background: #d1d5db;
+}
+
+button.small {
+  padding: 6px 10px;
+  font-size: 0.85em;
+}
+
+/* ===== Controles ===== */
+.controles {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+/* ===== Aviso ===== */
+.aviso {
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--gray);
+  margin-top: 20px;
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 600px) {
+  .comprovante {
+    padding: 16px;
+  }
+
+  .controles {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  button.primary, button.muted {
+    width: 100%;
+  }
+}
