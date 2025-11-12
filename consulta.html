@@ -28,7 +28,7 @@
   </main>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+    //const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
     document.getElementById("btnConsultar").addEventListener("click", async () => {
       const protocolo = document.getElementById("protocoloInput").value.trim();
@@ -103,9 +103,10 @@
             if (data.todosJogos?.length > 0) {
                 html += `
                   <h3 class="center" style="margin-top:20px;">Todos os Jogos do Bolão</h3>
-                  <div class="card" style="font-size: 0.9em;">
-                    ${data.todosJogos.map(j => `<p>${j}</p>`).join('')}
-                  </div>`;
+                  <div class="card jogos-grid" style="font-size: 0.9em;">
+  ${data.todosJogos.map(j => `<div class="jogo-card">${j}</div>`).join('')}
+</div>
+`;
             }
 
 
