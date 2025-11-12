@@ -129,7 +129,10 @@
         // Adiciona os campos base
         formData.append("action", "registrarAposta"); // Necessário no Apps Script
         formData.append("nome", apostaCompleta.nome);
-        formData.append("telefone", apostaCompleta.telefone);
+        // Remove todos os caracteres que não são dígitos
+        const telefoneLimpo = (apostaCompleta.telefone || "").replace(/\D/g, "");
+        formData.append("telefone", telefoneLimpo);
+
         formData.append("protocolo", apostaCompleta.protocolo);
         formData.append("dataHora", apostaCompleta.dataHora);
         formData.append("status", apostaCompleta.status);
