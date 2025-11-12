@@ -84,7 +84,6 @@
       dadosDiv.innerHTML = `
         <p><b>Nome Completo:</b> ${aposta.nome}</p>
         <p><b>Telefone (Whatsapp):</b> ${aposta.telefone}</p>
-        <p><b>É chave PIX?:</b> ${aposta.pix}</p>
       `;
 
       jogosDiv.innerHTML = `
@@ -131,7 +130,6 @@
         formData.append("action", "registrarAposta"); // Necessário no Apps Script
         formData.append("nome", apostaCompleta.nome);
         formData.append("telefone", apostaCompleta.telefone);
-        formData.append("pix", apostaCompleta.pix);
         formData.append("protocolo", apostaCompleta.protocolo);
         formData.append("dataHora", apostaCompleta.dataHora);
         formData.append("status", apostaCompleta.status);
