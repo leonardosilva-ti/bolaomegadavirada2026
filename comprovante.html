@@ -122,7 +122,6 @@
         <p><b>Protocolo de Registro:</b> ${aposta.protocolo}</p>
         <p><b>Nome:</b> ${aposta.nome}</p>
         <p><b>Telefone:</b> ${aposta.telefone}</p>
-        <p><b>É chave PIX?:</b> ${aposta.pix}</p>
         <p><b>Data e Hora:</b> ${aposta.dataHora}</p>
       `;
 
@@ -152,7 +151,6 @@
       doc.text(`Status de Pagamento: ${aposta.status}`, 20, y); y += 6;
       doc.text(`Nome: ${aposta.nome}`, 20, y); y += 6;
       doc.text(`Telefone: ${aposta.telefone}`, 20, y); y += 6;
-      doc.text(`É chave PIX?: ${aposta.pix}`, 20, y); y += 6;
       doc.text(`Data e Hora: ${aposta.dataHora}`, 20, y); y += 10;
       
       // Jogos
