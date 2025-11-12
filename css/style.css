@@ -106,29 +106,6 @@ button:disabled {
   border: 1px solid #ccc !important;
 }
 
-/* ==== Estilo para o Jogo da Sorte ==== */
-#jogoDaSorte {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.jogo-sorte-numero {
-  width: 45px;
-  height: 45px;
-  border: 2px solid #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2em;
-  font-weight: bold;
-  border-radius: 4px;
-  background-color: white;
-}
-
-
 /* /css/style.css */
 .hidden {
     display: none !important;
@@ -238,6 +215,7 @@ button:disabled {
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
 
 
 
