@@ -113,10 +113,10 @@ button:disabled {
 /* ... (Seu código CSS anterior) ... */
 
 .status-jogos-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
 }
 /* --- Seção de botões dos jogos --- */
 .status-jogos-grid {
@@ -216,7 +216,100 @@ button:disabled {
   }
 }
 
+/* ======= ADIÇÕES PARA A TELA CONSULTA ======= */
 
+/* Estatísticas do Bolão */
+.stats-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
 
+.stats-card {
+  background-color: #f4f4f4;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 20px 40px;
+  text-align: center;
+  min-width: 160px;
+}
 
+.stats-card h4 {
+  margin: 0;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
+.stats-card p {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin: 10px 0 0 0;
+}
+
+/* Jogo da Sorte */
+.jogo-sorte-box {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.jogo-sorte-numeros {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.jogo-sorte-numeros span {
+  display: inline-block;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  width: 45px;
+  text-align: center;
+}
+
+/* Lista de Jogos dos Participantes */
+.todos-jogos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.jogo-item {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 15px;
+  text-align: center;
+}
+
+.jogo-card {
+  background-color: #f8f9fb;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+  margin: 6px 0;
+  font-weight: 500;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .stats-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .jogo-sorte-numeros span {
+    width: 40px;
+    padding: 8px 10px;
+  }
+}
