@@ -361,3 +361,41 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- PIX Box --- */
+.pix-box {
+  background: var(--muted);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  margin: 20px auto;
+  max-width: 600px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.pix-line {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+#pix-chave {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 14px;
+  user-select: all;
+  overflow-wrap: anywhere;
+}
+
+.pix-info {
+  font-size: 13px;
+  color: #555;
+  margin-top: 8px;
+}
