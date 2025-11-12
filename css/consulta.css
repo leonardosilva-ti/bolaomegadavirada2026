@@ -1,0 +1,193 @@
+/* ======= CONSULTA DE JOGOS - MOBILE FIRST ======= */
+
+body {
+  background-color: #f3f4f6;
+  color: #1f2937;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+header.site-header {
+  width: 100%;
+  background: #4f46e5;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 1rem auto;
+}
+
+.bg-white {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+}
+
+h2 {
+  text-align: center;
+  color: #1e3a8a;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+p {
+  line-height: 1.5;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+button.primary {
+  width: 100%;
+  background: #4f46e5;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button.primary:hover {
+  background: #4338ca;
+}
+
+/* --- Resultado e Cartões --- */
+.card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+}
+
+.center {
+  text-align: center;
+}
+
+/* --- PIX Box --- */
+.pix-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+#pix-chave {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: #2563eb;
+  display: inline-block;
+  margin: 0.5rem 0;
+  word-break: break-all;
+}
+
+.btn-copiar {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-copiar:hover {
+  background-color: #1d4ed8;
+}
+
+/* --- Jogos e Estatísticas --- */
+.stats-grid, .jogos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.jogo-sorte-numeros span {
+  background: #4f46e5;
+  color: white;
+  font-weight: 600;
+  margin: 2px;
+  padding: 5px 8px;
+  border-radius: 50%;
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+  header.site-header {
+    font-size: 1.3rem;
+    padding: 0.8rem;
+  }
+
+  .bg-white {
+    padding: 1rem;
+  }
+
+  .stats-grid, .jogos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  input[type="text"], button.primary {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .card {
+    padding: 0.8rem;
+  }
+
+  #pix-chave {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  body {
+    padding: 0.8rem;
+  }
+
+  button.primary {
+    padding: 10px;
+  }
+
+  .pix-box {
+    padding: 0.8rem;
+  }
+
+  .btn-copiar {
+    width: 100%;
+    margin-top: 6px;
+  }
+}
