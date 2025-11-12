@@ -3,83 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta - Mega da Virada</title>
+  <title>Consulta - Bolão da Sorte</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1>Consulta de Apostas - Mega da Virada</h1>
-  </header>
+  <header class="site-header">Consulta de Jogos - Bolão da Sorte</header>
 
   <main class="container">
-
-    <!-- Estatísticas do Bolão -->
-    <section id="estatisticas">
-      <h2>Estatísticas do Bolão</h2>
-      <div class="stats-container">
-        <div class="stats-card">
-          <h4>Participantes</h4>
-          <p id="totalParticipantes">00</p>
-        </div>
-        <div class="stats-card">
-          <h4>Jogos Feitos</h4>
-          <p id="totalJogos">00</p>
-        </div>
+    <!-- Consulta -->
+    <section class="consulta-box">
+      <h2>Consultar Jogos</h2>
+      <div class="form-row">
+        <input type="text" id="nomeConsulta" placeholder="Primeiro nome">
+        <input type="text" id="telefoneConsulta" placeholder="Últimos dígitos do telefone">
       </div>
-    </section>
-
-    <!-- Jogo da Sorte -->
-    <section class="jogo-sorte-box">
-      <h3>Jogo da Sorte (9 Números)</h3>
-      <div id="jogoSorteNumeros" class="jogo-sorte-numeros"></div>
+      <button id="btnConsultar" class="primary">Consultar</button>
     </section>
 
     <hr>
 
-    <!-- Lista de Jogos -->
-    <section id="todosJogos">
-      <h3 class="text-center">Jogos dos Participantes</h3>
-      <div id="listaJogos" class="todos-jogos"></div>
+    <!-- Estatísticas do Bolão -->
+    <section id="estatisticas" class="stats-container hidden">
+      <div class="stats-card">
+        <h4>Total de Jogos</h4>
+        <p id="totalJogos">0</p>
+      </div>
+      <div class="stats-card">
+        <h4>Participantes</h4>
+        <p id="totalParticipantes">0</p>
+      </div>
     </section>
 
+    <!-- Jogo da Sorte -->
+    <section id="jogoSorte" class="jogo-sorte-box hidden">
+      <h2>🎯 Jogo da Sorte</h2>
+      <div id="numerosSorte" class="jogo-sorte-numeros"></div>
+    </section>
+
+    <!-- Lista de Jogos -->
+    <section id="todosJogos" class="todos-jogos hidden"></section>
   </main>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+    document.getElementById('btnConsultar').addEventListener('click', async () => {
+      const nome = document.getElementById('nomeConsulta').value.trim().toLowerCase();
+      const telefone = document.getElementById('telefoneConsulta').value.trim();
 
-    async function carregarEstatisticas() {
+      if (!nome || !telefone) {
+        alert('Por favor, preencha o nome e os últimos dígitos do telefone.');
+        return;
+      }
+
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=consultarEstatisticas`);
-        const data = await response.json();
+        const resp = await fetch(
+          'https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec?acao=consultar&nome=' +
+          encodeURIComponent(nome) + '&telefone=' + encodeURIComponent(telefone)
+        );
+        const dados = await resp.json();
 
-        document.getElementById("totalParticipantes").textContent = data.participantes || "00";
-        document.getElementById("totalJogos").textContent = data.jogos || "00";
-
-        const numeros = (data.jogoSorte || "").split(" ").filter(n => n.trim() !== "");
-        const sorteContainer = document.getElementById("jogoSorteNumeros");
-        sorteContainer.innerHTML = numeros.map(num => `<span>${num}</span>`).join("");
-
-        const listaJogos = document.getElementById("listaJogos");
-        if (Array.isArray(data.lista) && data.lista.length > 0) {
-          listaJogos.innerHTML = data.lista
-            .map((item, i) => `
-              <div class="jogo-item">
-                <p><b>${item.nome || "Participante " + (i + 1)}</b></p>
-                ${item.jogos.map(j => `<div class="jogo-card">${j}</div>`).join("")}
-              </div>
-            `)
-            .join("");
-        } else {
-          listaJogos.innerHTML = "<p class='center'>Nenhum jogo registrado ainda.</p>";
+        if (!dados || dados.length === 0) {
+          alert('Nenhum jogo encontrado para esse participante.');
+          return;
         }
 
+        // Mostra estatísticas e seções
+        document.getElementById('estatisticas').classList.remove('hidden');
+        document.getElementById('jogoSorte').classList.remove('hidden');
+        document.getElementById('todosJogos').classList.remove('hidden');
+
+        // Estatísticas
+        document.getElementById('totalJogos').textContent = dados.length;
+        const participantesUnicos = new Set(dados.map(j => j.nome));
+        document.getElementById('totalParticipantes').textContent = participantesUnicos.size;
+
+        // Jogo da Sorte (exemplo fixo — pode ser substituído pela API)
+        const numerosSorte = [3, 12, 22, 35, 44, 56];
+        const numerosDiv = document.getElementById('numerosSorte');
+        numerosDiv.innerHTML = '';
+        numerosSorte.forEach(num => {
+          const span = document.createElement('span');
+          span.textContent = num.toString().padStart(2, '0');
+          numerosDiv.appendChild(span);
+        });
+
+        // Lista de jogos
+        const lista = document.getElementById('todosJogos');
+        lista.innerHTML = '';
+
+        dados.forEach(jogo => {
+          const div = document.createElement('div');
+          div.className = 'jogo-item';
+          div.innerHTML = `
+            <h4>${jogo.nome}</h4>
+            <div class="jogo-card">${[jogo.jogo1, jogo.jogo2, jogo.jogo3, jogo.jogo4, jogo.jogo5]
+              .filter(Boolean)
+              .map((nums, i) => `<p><strong>Jogo ${i+1}:</strong> ${nums}</p>`)
+              .join('')}</div>
+          `;
+          lista.appendChild(div);
+        });
       } catch (e) {
         console.error(e);
-        document.getElementById("listaJogos").innerHTML = "<p class='center' style='color:red;'>Erro ao carregar dados.</p>";
+        alert('Erro ao consultar os jogos. Verifique sua conexão.');
       }
-    }
-
-    carregarEstatisticas();
+    });
   </script>
 </body>
 </html>
