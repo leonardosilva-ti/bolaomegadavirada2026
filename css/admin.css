@@ -30,14 +30,14 @@ body {
 .bg-gray-100 { background-color: #f3f4f6; }
 .text-gray-900 { color: #111827; }
 .container {
-    max-width: 950px; /* Baseado no maxw do style.css original */
+    max-width: 950px;
     background: #fff;
     margin: 24px auto;
     padding: 22px;
     border-radius: 10px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.05);
 }
-.max-w-4xl { max-width: 950px; } /* Ajuste */
+.max-w-4xl { max-width: 950px; }
 .mx-auto { margin-left: auto; margin-right: auto; }
 .p-6 { padding: 1.5rem; }
 .max-w-md { max-width: 28rem; }
@@ -103,9 +103,9 @@ button.danger:hover {
 }
 button.small {
     font-size: 13px;
-    padding: 6px 10px; /* Ajuste para ser menor */
+    padding: 6px 10px;
     margin-top: 5px;
-    line-height: 1; /* Ajuste para melhor alinhamento */
+    line-height: 1;
 }
 button:disabled {
     opacity: 0.6;
@@ -118,10 +118,10 @@ button:disabled {
 /* Área de Card Administrativo */
 .admin-card {
     background: #fff;
-    padding: 18px; /* Ajuste para ter mais espaço */
+    padding: 18px;
     border-radius: 12px;
-    margin-bottom: 20px; /* Ajuste para ter mais separação */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra suave */
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     line-height: 1.4;
 }
 
@@ -170,24 +170,19 @@ button:disabled {
     font-size: 2rem;
 }
 
-.resumo-info {
-    text-align: left;
-}
-
+.resumo-info { text-align: left; }
 .resumo-label {
     font-size: 0.9rem;
     opacity: 0.9;
     display: block;
 }
-
 .resumo-numero {
     font-size: 1.6rem;
     font-weight: bold;
     line-height: 1.2;
 }
 
-/* admin.css - SEÇÃO DE JOGO DA SORTE */
-
+/* Jogo da Sorte */
 .jogo-sorte-card {
     background: #ffffff;
     border-radius: 16px;
@@ -197,34 +192,31 @@ button:disabled {
     text-align: center;
 }
 
-/* O contêiner dos números (jogoSorteContainer) deve centralizar o conteúdo */
 #jogoSorteContainer {
-    display: flex; /* Garante que o flex do HTML original funcione */
-    justify-content: center; /* CENTRALIZA os números */
+    display: flex;
+    justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 1rem;
 }
 
-/* Os inputs (jogoSorteInputs) devem ser visualmente menores e centralizados */
 #jogoSorteInputs {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px; /* Reduzi o gap para ficarem mais próximos */
-    max-width: 300px; /* Limita a largura do grid para inputs menores */
-    margin: 1rem auto; /* Centraliza o grid de inputs */
+    gap: 8px;
+    max-width: 300px;
+    margin: 1rem auto;
 }
 
 .input-numero {
     width: 100%;
-    padding: 8px 0; /* Padding vertical para parecer mais quadrado */
+    padding: 8px 0;
     border: 1px solid #d1d5db;
     border-radius: 8px;
     text-align: center;
-    font-size: 1.1rem; /* Aumenta um pouco a fonte */
+    font-size: 1.1rem;
     font-weight: bold;
 }
-/* Oculta as setas (spinners) dos inputs de número */
 .input-numero::-webkit-outer-spin-button,
 .input-numero::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -248,16 +240,9 @@ button:disabled {
     cursor: default;
     transition: transform 0.15s ease;
 }
+.jogo-numero:hover { transform: scale(1.1); }
 
-.jogo-numero:hover {
-    transform: scale(1.1);
-}
-
-/* admin.css - Adição da classe de utilidade */
-
-.justify-between {
-    justify-content: space-between;
-}
+.justify-between { justify-content: space-between; }
 
 /* Conferência */
 .resultado-premio {
@@ -266,47 +251,74 @@ button:disabled {
     border-radius: 6px;
     margin-top: 10px;
 }
-
 .resultado-premio h4 {
     margin-top: 0;
     margin-bottom: 5px;
     color: #0072e3;
 }
-
 .resultado-premio h5 {
     margin-bottom: 5px;
     color: #16a34a;
 }
-
 .resultado-premio hr {
     margin: 8px 0;
 }
-
 .loading {
     color: #666;
     font-style: italic;
 }
 
-/* Tabela de Participantes */
-table {
-    width: 100%;
-    border-collapse: collapse;
+/* Jogos excedentes Adm */
+.jogo-adm-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+.input-numero-adm {
+    width: 50px;
+    padding: 6px 0;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
 }
 
+/* 🔹 Removendo as setas dos inputs numéricos (spinners) */
+.input-numero-adm::-webkit-outer-spin-button,
+.input-numero-adm::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.input-numero-adm {
+    -moz-appearance: textfield;
+}
+
+.jogo-adm-row strong { width: 80px; }
+.jogo-adm-row button.add-jogo {
+    background: var(--accent);
+    color: #fff;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+.jogo-adm-row button.add-jogo:hover { background: #005bb5; }
+
+/* Tabela de Participantes */
+table { width: 100%; border-collapse: collapse; }
 th, td {
     border: 1px solid #ccc;
     padding: 8px 12px;
     line-height: 1.3;
 }
-
 thead {
     background-color: #4f46e5;
     color: white;
 }
 
-.bg-indigo-600 { background-color: #4f46e5; } /* Reutilizando cor do resumo */
+.bg-indigo-600 { background-color: #4f46e5; }
 .text-white { color: #fff; }
-
 .text-green-600 { color: #16a34a; }
 
 /* Responsividade */
