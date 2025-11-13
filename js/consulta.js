@@ -16,9 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const [resParticipante, resGeral] = await Promise.all([
+      // Busca participante, jogos do bolão e jogos excedentes da planilha Jogos-adm
+      const [resParticipante, resGeral, resJogosAdm] = await Promise.all([
         fetch(`${SCRIPT_URL}?action=getComprovante&protocolo=${protocolo}`).then((r) => r.json()),
         fetch(`${SCRIPT_URL}?action=consultarBolao`).then((r) => r.json()),
+        fetch(`${SCRIPT_URL}?action=getJogosAdm`).then((r) => r.json()),
       ]);
 
       if (!resParticipante.success) {
@@ -31,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const participante = resParticipante.participante;
       const dadosGerais = resGeral || {};
       const todosJogos = dadosGerais.todosJogos || [];
+      const jogosAdm = resJogosAdm?.jogosAdm || [];
 
       /* ======= ESTATÍSTICAS ======= */
       let html = `
@@ -92,12 +95,21 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
 
       /* ======= TODOS OS JOGOS DO BOLÃO ======= */
-      if (todosJogos.length > 0) {
+      const jogosCompletos = [...todosJogos, ...jogosAdm].filter(Boolean);
+
+      if (jogosCompletos.length > 0) {
         html += `
           <div class="jogos-bolao-container">
+            <div class="aviso-bolao">
+              ⚠️ Os jogos abaixo são de todos os participantes cadastrados. Caso algum participante não realize o pagamento,
+              seus jogos serão excluídos no dia <strong>28/12/2025</strong>.<br><br>
+              A partir do dia <strong>29/12/2025</strong>, todos os jogos exibidos abaixo serão os que serão cadastrados nas
+              lotéricas para a <strong>Mega Sena da Virada</strong>.
+            </div>
+
             <h3>Todos os Jogos do Bolão</h3>
             <div class="jogos-grid">
-              ${todosJogos
+              ${jogosCompletos
                 .map(
                   (j) => `
                 <div class="jogo-card">
