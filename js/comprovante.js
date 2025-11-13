@@ -176,64 +176,94 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== GERAR PDF DO COMPROVANTE =====
     btnBaixarPDF.addEventListener("click", () => {
-        if (!apostaData) {
-            alert("Nenhuma aposta encontrada para gerar o comprovante.");
-            return;
+    if (!apostaData) {
+        alert("Nenhuma aposta encontrada para gerar o comprovante.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+    // ===== Cabeçalho =====
+    doc.setFontSize(16);
+    doc.setTextColor(0, 114, 227);
+    doc.text("🎫 Comprovante Oficial do Bolão - Mega da Virada", 105, 20, { align: "center" });
+    doc.setDrawColor(200);
+    doc.line(20, 25, 190, 25);
+
+    // ===== Dados principais =====
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    let y = 38;
+    doc.text(`Nome: ${apostaData.nome}`, 20, y);
+    y += 8;
+    doc.text(`Telefone: ${apostaData.telefone}`, 20, y);
+    y += 8;
+    doc.text(`Protocolo: ${apostaData.protocolo}`, 20, y);
+    y += 8;
+    doc.text(`Data/Hora: ${apostaData.dataHora}`, 20, y);
+
+    // ===== Status =====
+    y += 12;
+    doc.setFontSize(13);
+    doc.setTextColor(80, 80, 80);
+    doc.text("Status do Pagamento:", 20, y);
+    doc.setFontSize(13);
+    doc.setTextColor(apostaData.status === "PAGO" ? 22 : 220, apostaData.status === "PAGO" ? 197 : 50, apostaData.status === "PAGO" ? 94 : 50);
+    doc.text(apostaData.status, 75, y);
+    doc.setTextColor(0, 0, 0);
+
+    // ===== Jogos =====
+    y += 12;
+    doc.setFontSize(13);
+    doc.setTextColor(0, 114, 227);
+    doc.text("Jogos Selecionados", 20, y);
+    doc.setDrawColor(220);
+    doc.line(20, y + 2, 80, y + 2);
+
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    y += 8;
+    apostaData.jogos.forEach((j, i) => {
+        doc.text(`Jogo ${i + 1}: ${j}`, 25, y);
+        y += 8;
+        if (y > 260) { // quebra de página automática
+            doc.addPage();
+            y = 30;
         }
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        // Título
-        doc.setFontSize(16);
-        doc.text("Comprovante Oficial do Bolão - Mega da Virada", 105, 15, { align: "center" });
-
-        // Dados principais
-        doc.setFontSize(12);
-        doc.text(`Nome: ${apostaData.nome}`, 20, 35);
-        doc.text(`Telefone: ${apostaData.telefone}`, 20, 45);
-        doc.text(`Protocolo: ${apostaData.protocolo}`, 20, 55);
-        doc.text(`Data/Hora: ${apostaData.dataHora}`, 20, 65);
-
-        // Status
-        doc.setFontSize(12);
-        const statusColor = apostaData.status === "PAGO" ? [0, 150, 0] : [200, 0, 0];
-        doc.setTextColor(...statusColor);
-        doc.text(`Status: ${apostaData.status}`, 20, 75);
-        doc.setTextColor(0, 0, 0);
-
-        // Título dos jogos
-        doc.setFontSize(13);
-        doc.text("Jogos Selecionados:", 20, 90);
-
-        // Lista de jogos
-        doc.setFontSize(12);
-        let y = 100;
-        apostaData.jogos.forEach((j, i) => {
-            doc.text(`Jogo ${i + 1}: ${j}`, 25, y);
-            y += 10;
-        });
-
-        // PIX se ainda não pago
-        if (apostaData.status === "AGUARDANDO PAGAMENTO") {
-            y += 10;
-            doc.setFontSize(13);
-            doc.text("Chave PIX para pagamento:", 20, y);
-            y += 8;
-            doc.setFontSize(12);
-            doc.text(PIX_KEY, 20, y);
-        }
-
-        // Rodapé
-        y += 20;
-        doc.setFontSize(10);
-        doc.text("Guarde este comprovante e o número de protocolo para futuras consultas.", 20, y);
-        doc.text("Página gerada automaticamente.", 20, y + 8);
-
-        // Nome do arquivo
-        const nomeArquivo = `Comprovante_${apostaData.protocolo}.pdf`;
-        doc.save(nomeArquivo);
     });
+
+    // ===== PIX =====
+    if (apostaData.status === "AGUARDANDO PAGAMENTO") {
+        y += 12;
+        doc.setFontSize(13);
+        doc.setTextColor(0, 114, 227);
+        doc.text("Pagamento via PIX", 20, y);
+        doc.line(20, y + 2, 80, y + 2);
+
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+        y += 8;
+        doc.text("Chave PIX (copie e cole no app do seu banco):", 20, y);
+        y += 7;
+        doc.setFont("courier", "bold");
+        doc.text(PIX_KEY, 20, y);
+        doc.setFont("helvetica", "normal");
+    }
+
+    // ===== Rodapé =====
+    doc.setDrawColor(200);
+    doc.line(20, 275, 190, 275);
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Guarde este comprovante e o número de protocolo para futuras consultas.", 105, 282, { align: "center" });
+    doc.text("Página gerada automaticamente pelo sistema do bolão.", 105, 288, { align: "center" });
+
+    // ===== Salvar =====
+    const nomeArquivo = `Comprovante_${apostaData.protocolo}.pdf`;
+    doc.save(nomeArquivo);
+});
+
     
     // Inicia o carregamento dos dados
     carregarComprovante(protocolo);
