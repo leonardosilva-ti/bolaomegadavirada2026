@@ -82,12 +82,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const statusText = statusPago ? "Pago" : "Aguardando Pagamento";
 
         const pixInfo = !statusPago
-          ? `<div style="margin-top:8px; font-size:0.9em; color:#333;">
-               <strong>Chave PIX para pagamento:</strong><br><br>
-               <span id="pix-chave" style="user-select:all;">${chavePix}</span>
-               <button id="btnCopiarPix" class="small" style="margin-left:8px;">Copiar</button>
-             </div>`
-          : "";
+  ? `
+    <div class="pix-box">
+      <label>Chave PIX para pagamento:</label>
+      <div id="pix-chave">${chavePix}</div>
+      <button id="btnCopiarPix" class="btn-copiar">Copiar</button>
+      <p class="pix-info">Use esta chave para realizar o pagamento da sua aposta.</p>
+    </div>
+  `
+  : "";
+
 
         const jogosParticipante = participante.Jogos
           .split('|')
