@@ -3,10 +3,7 @@
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-// 🚨 VERSÃO ORIGINAL: CREDENCIAIS EXPOSTAS NO FRONT-END
-const ADMIN_USER = "admin"; // MUDE AQUI
-const ADMIN_PASS = "12345"; // MUDE AQUI
-// 🚨 (Substitua pelos seus valores reais)
+// 🚨 ADMIN_USER e ADMIN_PASS REMOVIDOS DESTE ARQUIVO! 🚨
 
 const el = id => document.getElementById(id);
 
@@ -28,22 +25,47 @@ const resultadoRateio = el("resultadoRateio");
 
 let todosDados = [];
 let jogoSorteAtual = [];
-// let accessToken = null; // Token não existia
+// Variáveis para armazenar credenciais temporariamente
+let storedUser = ""; 
+let storedPass = ""; 
 
-// === LOGIN SIMPLES NO FRONT-END ===
-el("btnLogin")?.addEventListener("click", () => {
+// === LOGIN CENTRALIZADO NO APPS SCRIPT ===
+el("btnLogin")?.addEventListener("click", async () => {
     const user = el("adminUser").value.trim();
     const pass = el("adminPass").value.trim();
 
     loginMsg.classList.add("hidden");
+
+    if (!user || !pass) {
+        loginMsg.textContent = "Preencha usuário e senha.";
+        loginMsg.classList.remove("hidden");
+        return;
+    }
     
-    // 🚨 VERIFICAÇÃO SIMPLES NO FRONT-END
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        loginArea.classList.add("hidden");
-        adminArea.classList.remove("hidden");
-        carregarParticipantes();
-    } else {
-        loginMsg.textContent = "Usuário ou senha inválidos.";
+    // 💡 ENVIA CREDENCIAIS PARA O Apps Script PARA VERIFICAÇÃO SEGURA
+    try {
+        const body = new URLSearchParams({ 
+            action: "checkLogin", // Nova ação no Apps Script
+            user: user, 
+            pass: pass 
+        });
+        const res = await fetch(SCRIPT_URL, { method: "POST", body });
+        const data = await res.json();
+        
+        if (data.success) {
+            // Guarda credenciais temporariamente para uso em postAction
+            storedUser = user;
+            storedPass = pass;
+            
+            loginArea.classList.add("hidden");
+            adminArea.classList.remove("hidden");
+            carregarParticipantes();
+        } else {
+            loginMsg.textContent = data.message || "Usuário ou senha inválidos.";
+            loginMsg.classList.remove("hidden");
+        }
+    } catch (err) {
+        loginMsg.textContent = "Erro de conexão com o servidor. Tente novamente.";
         loginMsg.classList.remove("hidden");
     }
 });
@@ -54,14 +76,15 @@ el("btnLogout")?.addEventListener("click", () => {
     el("adminUser").value = "";
     el("adminPass").value = "";
     loginMsg.classList.add("hidden");
-    // accessToken = null; // Não precisava limpar token
+    // Limpa as credenciais armazenadas
+    storedUser = ""; 
+    storedPass = "";
 });
 
 // === CONSULTA PRINCIPAL ===
 async function carregarParticipantes() {
     listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Carregando...</td></tr>`;
     try {
-        // Ação CONSULTAR BOLÃO (sem token)
         const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
         const data = await res.json();
         todosDados = data.participantes || [];
@@ -119,31 +142,32 @@ window.excluirParticipante = async (protocolo) => {
     await postAction("excluir", { protocolo });
 };
 
-// --- postAction (SEM TOKEN) ---
+// --- postAction (COM CREDENCIAIS ARMAZENADAS) ---
 async function postAction(action, params) {
-    // 🚨 SEM VERIFICAÇÃO DE SEGURANÇA NO FRONT-END
-    
-    // Requer as credenciais no Apps Script (o Apps Script precisa fazer a validação)
-    const adminUser = el("adminUser").value.trim(); 
-    const adminPass = el("adminPass").value.trim();
-
-    // 🚨 OS PARÂMETROS DE LOGIN E SENHA ERAM ENVIADOS JUNTO COM A AÇÃO
-    if (!adminUser || !adminPass) {
-        alert("Erro: Preencha usuário e senha antes de executar a ação.");
+    if (!storedUser || !storedPass) {
+        alert("Erro: Faça login novamente.");
+        el("btnLogout")?.click(); // Força logout
         return;
     }
 
     try {
-        const body = new URLSearchParams({ action, user: adminUser, pass: adminPass, ...params });
+        // ✅ ENVIA CREDENCIAIS ARMAZENADAS PARA CADA AÇÃO ADMIN
+        const body = new URLSearchParams({ 
+            action, 
+            user: storedUser, 
+            pass: storedPass, 
+            ...params 
+        });
         const res = await fetch(SCRIPT_URL, { method: "POST", body });
         const data = await res.json();
         
-        // Alerta de sucesso/falha baseado na resposta JSON do Apps Script
         if (data.success) {
             alert(data.message || "Ação concluída.");
         } else {
-            // Exibe a mensagem de erro que vem do Apps Script
             alert("Falha na ação: " + (data.message || data.error || "Erro desconhecido."));
+            if (data.message && data.message.includes("Acesso negado")) {
+                el("btnLogout")?.click(); // Força logout se o acesso for negado
+            }
         }
         
         carregarParticipantes();
@@ -173,7 +197,14 @@ function renderizarJogoSorte() {
 
 // Renderiza os 9 inputs para novo jogo
 function renderizarInputs() {
-    jogoSorteInputs.innerHTML = "";
+    // 💡 CORREÇÃO DE BUG: Busca o elemento novamente para evitar TypeError
+    const inputContainer = el("jogoSorteInputs");
+    if (!inputContainer) {
+        console.error("Erro HTML: Elemento 'jogoSorteInputs' não encontrado.");
+        return;
+    }
+
+    inputContainer.innerHTML = "";
     for (let i = 0; i < 9; i++) {
         const input = document.createElement("input");
         input.type = "number";
@@ -181,13 +212,17 @@ function renderizarInputs() {
         input.max = 60;
         input.className = "input-numero";
         input.value = jogoSorteAtual[i] || "";
-        jogoSorteInputs.appendChild(input);
+        inputContainer.appendChild(input);
     }
 }
 
 // Salvar novo jogo da sorte
 btnSalvarJogoSorte?.addEventListener("click", async () => {
-    const numeros = Array.from(jogoSorteInputs.querySelectorAll("input"))
+    // 💡 CORREÇÃO DE BUG: Busca o elemento novamente
+    const inputContainer = el("jogoSorteInputs");
+    if (!inputContainer) return alert("Erro interno: Container de inputs não encontrado.");
+
+    const numeros = Array.from(inputContainer.querySelectorAll("input"))
         .map(i => i.value.trim())
         .filter(v => v !== "")
         .map(n => parseInt(n).toString().padStart(2, '0')); 
@@ -197,24 +232,20 @@ btnSalvarJogoSorte?.addEventListener("click", async () => {
         return;
     }
 
-    // ⚠️ VERIFICAÇÃO DE DUPLICIDADE (mantida no front)
     const numerosUnicos = new Set(numeros);
     if (numerosUnicos.size !== 9) {
         alert("Não é permitido números repetidos no Jogo da Sorte.");
         return;
     }
 
-    // Validação de faixa (mantida)
     const invalidos = numeros.some(n => isNaN(parseInt(n)) || parseInt(n) < 1 || parseInt(n) > 60);
     if (invalidos) {
         alert("Os números devem estar entre 01 e 60.");
         return;
     }
 
-    // A conversão para string formatada de dois dígitos é feita aqui para o script do Sheets
     const jogoFormatado = Array.from(numerosUnicos).map(n => n.padStart(2, '0')).join(" ");
     
-    // 🚨 Chamada de Ação sem Token
     await postAction("salvarJogoSorte", { jogo: jogoFormatado });
 });
 
@@ -222,17 +253,15 @@ btnSalvarJogoSorte?.addEventListener("click", async () => {
 btnApagarJogoSorte?.addEventListener("click", async () => {
     if (!confirm("Deseja realmente apagar todos os números do Jogo da Sorte?")) return;
 
-    // 🚨 Chamada de Ação sem Token
     await postAction("salvarJogoSorte", { jogo: "" });
 });
 
-// === CONFERÊNCIA E RATEIO (com validação de duplicidade) ===
+// === CONFERÊNCIA E RATEIO ===
 el("btnConferir")?.addEventListener("click", () => {
     const sorteados_brutos = inputSorteados.value.trim().split(/\s+/).filter(Boolean);
     
     if (sorteados_brutos.length !== 6) return alert("Informe exatamente 6 números sorteados.");
 
-    // ⚠️ VERIFICAÇÃO DE DUPLICIDADE E FAIXA (NOVA VALIDAÇÃO)
     const sorteados_numericos = sorteados_brutos.map(n => parseInt(n));
     const sorteados_unicos = new Set(sorteados_numericos.filter(n => !isNaN(n) && n >= 1 && n <= 60));
 
@@ -240,7 +269,6 @@ el("btnConferir")?.addEventListener("click", () => {
         return alert("Os números sorteados devem ser 6 números únicos entre 1 e 60.");
     }
 
-    // Formata os números únicos para comparação (ex: '05')
     const sorteados = Array.from(sorteados_unicos).map(n => n.toString().padStart(2, '0')); 
 
     resultadoConferencia.innerHTML = `<p class="loading">Conferindo resultados...</p>`;
@@ -248,7 +276,6 @@ el("btnConferir")?.addEventListener("click", () => {
 
     const premiados = { sena: [], quina: [], quadra: [] };
     todosDados.forEach(p => {
-        // Garantir que p.Jogos existe e é uma string
         if (p.Jogos) {
             p.Jogos.split('|').forEach((jogo, idx) => {
                 const acertos = jogo.split(' ').filter(n => sorteados.includes(n.padStart(2, '0'))).length;
