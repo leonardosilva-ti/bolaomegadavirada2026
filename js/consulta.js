@@ -1,7 +1,7 @@
 // --- Lógica da página de consulta de jogos ---
 
 document.addEventListener("DOMContentLoaded", () => {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrg0DzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
     const chavePix = "88f77025-40bc-4364-9b64-02ad88443cc4"; // 👉 substitua pela sua chave real
 
     const btnConsultar = document.getElementById("btnConsultar");
