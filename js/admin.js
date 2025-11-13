@@ -55,7 +55,8 @@ el("btnLogin")?.addEventListener("click", async () => {
             
             loginArea.classList.add("hidden");
             adminArea.classList.remove("hidden");
-            carregarParticipantes();
+            // 🔑 Carrega dados com o token após o login
+            carregarParticipantes(); 
         } else {
             loginMsg.textContent = data.message || "Usuário ou senha inválidos.";
             loginMsg.classList.remove("hidden");
@@ -76,13 +77,31 @@ el("btnLogout")?.addEventListener("click", () => {
     accessToken = null; 
 });
 
-// === CONSULTA PRINCIPAL (GET SEM TOKEN) ===
+// === CONSULTA PRINCIPAL (AGORA PROTEGIDA COM TOKEN) ===
 async function carregarParticipantes() {
+    // ⚠️ Verifica se o token existe antes de tentar carregar os dados
+    if (!accessToken) {
+        alert("Erro: Sessão expirada. Faça login novamente.");
+        el("btnLogout")?.click(); 
+        return;
+    }
+
     listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Carregando...</td></tr>`;
     try {
-        // GET (consultarBolao) não precisa de token, pois não é uma ação administrativa
-        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`); 
+        // 🔑 ENVIA O TOKEN PARA ACESSAR A ROTA PROTEGIDA 'getAdminData'
+        const body = new URLSearchParams({ 
+            action: "getAdminData", // Novo endpoint de administrador
+            token: accessToken      
+        });
+        const res = await fetch(SCRIPT_URL, { method: "POST", body });
         const data = await res.json();
+        
+        if (data.message && data.message.includes("negado")) {
+            alert(data.message);
+            el("btnLogout")?.click(); 
+            return;
+        }
+
         todosDados = data.participantes || [];
 
         countParticipantes.textContent = todosDados.length;
@@ -101,7 +120,7 @@ async function carregarParticipantes() {
         renderizarJogoSorte();
         renderizarInputs();
     } catch (err) {
-        listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center text-red-500">Erro: ${err.message}</td></tr>`;
+        listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center text-red-500">Erro ao carregar dados: ${err.message}</td></tr>`;
     }
 }
 
@@ -167,7 +186,8 @@ async function postAction(action, params) {
             }
         }
         
-        carregarParticipantes();
+        // Chama a função PROTEGIDA para recarregar os dados
+        carregarParticipantes(); 
     } catch (err) {
         alert("Erro de conexão ao executar ação: " + err.message);
     }
@@ -279,6 +299,7 @@ el("btnConferir")?.addEventListener("click", () => {
     ["sena", "quina", "quadra"].forEach(tipo => {
         if (premiados[tipo].length) {
             html += `<h5>🎉 ${tipo.toUpperCase()} (${premiados[tipo].length})</h5>`;
+            // p.Nome está disponível aqui porque a função 'carregarParticipantes' agora retorna todos os dados
             premiados[tipo].forEach(j => html += `<p>${j.Nome} (${j.Protocolo}) - Jogo ${j.idx}: <strong>${j.jogo}</strong></p>`);
         }
     });
