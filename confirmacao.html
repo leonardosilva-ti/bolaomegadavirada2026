@@ -10,34 +10,33 @@
 </head>
 <body>
   <header class="site-header">
-    <h1>Mega da Virada - Confirmação</h1>
+    <h1>Confirmação da Aposta</h1>
   </header>
 
   <main class="container">
-    <h2 class="text-center">Confirme seus Dados e Jogos</h2>
+    <h2>Revise e Confirme seus Dados</h2>
 
-    <div id="dadosConfirmacao" class="card"></div>
-    <div id="jogosConfirmacao" class="card"></div>
+    <div id="dadosConfirmacao" class="card compact"></div>
+    <div id="jogosConfirmacao" class="card compact"></div>
 
-    <section class="observacao">
-      <h3>Informação Importante</h3>
+    <section class="observacao compact">
+      <h3>Atenção</h3>
       <p>
-        Este bolão <b>não é realizado pela CAIXA</b>. É organizado de forma independente —
-        em caso de premiação, o valor será dividido entre os participantes e repassado
-        pelo organizador. O site registra todos os jogos e participantes para validação pública.
+        Este bolão <b>não é oficial da CAIXA</b>. É uma organização particular — 
+        os jogos são reais, mas registrados em nome do organizador.
+        Em caso de prêmio, o valor será dividido entre os participantes
+        conforme os registros deste site.
       </p>
     </section>
 
-    <div class="termos">
-      <label for="aceitoTermos">
-        <input type="checkbox" id="aceitoTermos" required>
-        Confirmo que li a <b>Informação Importante</b> acima e aceito os termos do bolão.
-      </label>
-    </div>
+    <label class="termos compact">
+      <input type="checkbox" id="aceitoTermos" required>
+      Confirmo que li e aceito os termos acima.
+    </label>
 
-    <div class="controles">
-      <button id="btnVoltar" class="muted">Voltar e Editar</button>
-      <button id="btnConfirmar" class="primary" disabled>Aceito e Confirmo Aposta</button>
+    <div class="controles compact">
+      <button id="btnVoltar" class="muted">Voltar</button>
+      <button id="btnConfirmar" class="primary" disabled>Confirmar Aposta</button>
     </div>
 
     <p id="mensagem" class="mensagem"></p>
