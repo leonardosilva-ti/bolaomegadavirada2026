@@ -1,6 +1,6 @@
 // js/confirmacao.js
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // Certifique-se de que esta URL está atualizada
 
 const aposta = JSON.parse(localStorage.getItem("pendingAposta"));
 const dadosDiv = document.getElementById("dadosConfirmacao");
@@ -65,20 +65,21 @@ btnConfirmar.addEventListener("click", async () => {
     const response = await fetch(SCRIPT_URL, { method: "POST", body: formData });
     const texto = await response.text();
 
+    // ✅ CORREÇÃO: A linha de redirecionamento está correta.
     if (response.ok && texto.includes("Sucesso")) {
       localStorage.setItem("lastAposta", JSON.stringify(apostaCompleta));
       localStorage.removeItem("pendingAposta");
       
-        // 🚀 CORREÇÃO PRINCIPAL AQUI: Passar o protocolo na URL
+      // Redireciona para o comprovante, enviando o protocolo na URL
       window.location.href = `comprovante.html?protocolo=${protocolo}`; 
 
     } else {
-      mensagem.textContent = "Erro ao enviar: " + texto;
+      mensagem.textContent = `Erro ao enviar. Resposta do servidor: ${texto}`;
       mensagem.style.color = "red";
       btnConfirmar.disabled = false;
     }
   } catch (err) {
-    mensagem.textContent = "Erro ao enviar: " + err.message;
+    mensagem.textContent = "Falha na conexão com o Apps Script. A aposta não foi registrada.";
     mensagem.style.color = "red";
     btnConfirmar.disabled = false;
   }
