@@ -1,4 +1,4 @@
-/* ======= BASE MOBILE FIRST ======= */
+/* ======= VARIÁVEIS ======= */
 :root {
   --accent: #4f46e5;
   --text: #1f2937;
@@ -15,11 +15,12 @@
   padding: 0;
 }
 
+/* ======= BASE ======= */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  padding: 0.8rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -32,11 +33,10 @@ header.site-header {
   background: var(--accent);
   color: #fff;
   text-align: center;
-  padding: 0.9rem;
-  border-radius: 0.6rem;
+  padding: 1rem;
+  border-radius: 10px;
   font-size: 1.3rem;
   font-weight: 700;
-  line-height: 1.4;
   margin-bottom: 1rem;
 }
 
@@ -45,29 +45,22 @@ header.site-header {
   width: 100%;
   max-width: 600px;
   background: var(--white);
-  border-radius: 0.8rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border-radius: 10px;
   padding: 1rem;
 }
 
-/* ======= TÍTULOS E TEXTOS ======= */
+/* ======= TÍTULOS ======= */
 h2 {
   text-align: center;
   color: var(--accent);
-  font-weight: 700;
   font-size: 1.1rem;
+  font-weight: 700;
   margin-bottom: 0.8rem;
-}
-
-p {
-  line-height: 1.4;
-  font-size: 0.95rem;
-  color: #374151;
 }
 
 .center { text-align: center; }
 
-/* ======= CAMPOS DE ENTRADA ======= */
+/* ======= INPUT ======= */
 input[type="text"] {
   width: 100%;
   padding: 10px 12px;
@@ -75,7 +68,6 @@ input[type="text"] {
   border-radius: 8px;
   font-size: 1rem;
   margin-bottom: 1rem;
-  background: #fff;
 }
 
 /* ======= BOTÕES ======= */
@@ -90,7 +82,7 @@ button {
 button.primary {
   width: 100%;
   background: var(--accent);
-  color: white;
+  color: #fff;
   padding: 10px;
   font-size: 1rem;
 }
@@ -104,85 +96,65 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ======= RESULTADOS E CARTÕES ======= */
+/* ======= CARD ======= */
 .card {
   background: var(--muted);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0.8rem;
+  padding: 0.9rem 1rem;
   margin-top: 1rem;
   text-align: left;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-/* ======= ESTATÍSTICAS ======= */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
+/* ======= DADOS DO PARTICIPANTE ======= */
+.card p {
+  font-size: 0.95rem;
+  color: #333;
+  margin: 3px 0;
 }
 
-.stats-card {
-  background: #f4f4f4;
-  border-radius: 10px;
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.stats-card h4 {
-  margin: 0;
-  color: var(--accent);
-  font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-}
-
-.stats-card p {
-  font-size: 1.6rem;
-  font-weight: bold;
-  margin-top: 0.5rem;
-  color: var(--text);
+/* ======= STATUS ======= */
+.card p strong {
+  color: #111;
 }
 
 /* ======= PIX BOX ======= */
 .pix-box {
-  background: var(--muted);
+  background: var(--white);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 1rem;
+  padding: 0.8rem 1rem;
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 0.8rem;
 }
 
-.pix-line {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 6px;
+.pix-box label {
+  font-weight: 600;
+  color: #374151;
+  display: block;
+  margin-bottom: 6px;
 }
 
 #pix-chave {
+  display: inline-block;
   background: #fff;
-  border: 1px solid #ccc;
-  padding: 6px 10px;
-  border-radius: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
   font-family: monospace;
   font-size: 0.9rem;
   color: #2563eb;
-  user-select: all;
   word-break: break-all;
 }
 
 .btn-copiar {
+  display: inline-block;
   background-color: #2563eb;
   color: white;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 6px 12px;
   font-size: 0.9rem;
+  margin-top: 8px;
 }
 
 .btn-copiar:hover {
@@ -192,14 +164,21 @@ button:disabled {
 .pix-info {
   font-size: 0.85rem;
   color: #555;
-  margin-top: 6px;
+  margin-top: 8px;
+  text-align: center;
 }
 
-/* ======= JOGOS ======= */
+/* ======= JOGOS PARTICIPANTE ======= */
+.card .jogo-lista p {
+  margin: 3px 0;
+  font-size: 0.95rem;
+}
+
+/* ======= JOGOS GERAIS ======= */
 .jogos-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
   margin-top: 1rem;
 }
 
@@ -207,14 +186,10 @@ button:disabled {
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  text-align: left;
-}
-
-.jogo-card p {
-  margin: 3px 0;
-  font-size: 0.95rem;
+  padding: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.3;
 }
 
 /* ======= JOGO DA SORTE ======= */
@@ -230,47 +205,30 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
   margin-top: 8px;
 }
 
 .jogo-sorte-numeros span {
   background: var(--accent);
   color: #fff;
-  font-weight: bold;
+  font-weight: 600;
   border-radius: 50%;
   width: 28px;
   height: 28px;
-  line-height: 28px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.95rem;
 }
 
-/* ======= UTILITÁRIOS ======= */
-.space-y-4 > * + * { margin-top: 1rem; }
-.mt-6 { margin-top: 1.5rem; }
-
-/* ======= DESKTOP ======= */
+/* ======= RESPONSIVO ======= */
 @media (min-width: 768px) {
-  header.site-header {
-    font-size: 1.5rem;
-    padding: 1.2rem;
-  }
-
   .container {
     padding: 1.5rem;
-    border-radius: 1rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 
   .jogos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  }
-
-  #pix-chave {
-    font-size: 1rem;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
