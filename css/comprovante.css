@@ -167,8 +167,22 @@ button.small {
 
 /* ===== Responsividade ===== */
 @media (max-width: 600px) {
+  .container {
+    padding: 12px;
+  }
+
   .comprovante {
     padding: 16px;
+    margin-top: 12px;
+  }
+
+  .comprovante h2 {
+    font-size: 1.2em;
+  }
+
+  .card {
+    font-size: 0.95em;
+    padding: 12px;
   }
 
   .pix-box {
@@ -180,14 +194,28 @@ button.small {
     margin-top: 8px;
     display: block;
     width: 100%;
+    font-size: 0.9em;
+  }
+
+  .status-wrapper {
+    font-size: 0.9em;
+    padding: 10px;
   }
 
   .controles {
     flex-direction: column;
     gap: 10px;
+    margin-top: 20px;
   }
 
   button.primary, button.muted {
     width: 100%;
+    font-size: 1em;
+  }
+
+  .aviso {
+    font-size: 0.85em;
+    padding: 0 10px;
   }
 }
+
