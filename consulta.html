@@ -7,28 +7,33 @@
   <!-- <link rel="stylesheet" href="css/style.css"> -->
   <link rel="stylesheet" href="css/consulta.css">
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col items-center p-4">
-  <header class="site-header" style="width: 100%;">
+<body>
+  <header class="site-header">
     <h1>Consulta de Jogos</h1>
   </header>
 
   <main class="container">
-    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg w-full mt-10 mx-auto">
-      <h2 class="text-xl font-bold text-center mb-4">Consultar por Protocolo</h2>
-      <p class="text-gray-600 text-center mb-6">
-        Informe o seu <b>Número de Protocolo</b> para consultar seus dados e jogos.
+    <!-- Seção de consulta -->
+    <section class="admin-card">
+      <h2>Consultar por Protocolo</h2>
+      <p>
+        Informe o seu <strong>Número de Protocolo</strong> para consultar seus dados e jogos.
       </p>
 
-      <div class="space-y-4">
-        <input id="protocoloInput" type="text" placeholder="Número de Protocolo" class="w-full border rounded px-4 py-2">
-        <button id="btnConsultar" class="primary w-full">Consultar</button>
+      <div class="form-row">
+        <input id="protocoloInput" type="text" placeholder="Número de Protocolo">
+        <button id="btnConsultar" class="primary">Consultar</button>
       </div>
+    </section>
 
-      <div id="resultado" class="mt-6"></div>
-    </div>
+    <!-- Resultado da consulta -->
+    <div id="resultado" class="resultado"></div>
   </main>
 
-  <!-- Carrega o script externo -->
+  <div class="bottom-buttons">
+    <button onclick="window.location.href='index.html'">Voltar</button>
+  </div>
+
   <script src="js/consulta.js"></script>
 </body>
 </html>
