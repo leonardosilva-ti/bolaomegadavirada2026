@@ -41,9 +41,9 @@
     <!-- ÁREA ADMIN -->
     <section id="adminArea" class="hidden">
 
+      <!-- Resumo do Bolão -->
       <div class="resumo-card">
         <h2 class="titulo-resumo">Resumo do Bolão</h2>
-
         <div class="resumo-grid">
           <div class="resumo-item">
             <div class="resumo-icone">👥</div>
@@ -52,7 +52,6 @@
               <span class="resumo-numero" id="countParticipantes">0</span>
             </div>
           </div>
-
           <div class="resumo-item">
             <div class="resumo-icone">🎫</div>
             <div class="resumo-info">
@@ -63,6 +62,7 @@
         </div>
       </div>
 
+      <!-- Jogo da Sorte -->
       <div class="jogo-sorte-card">
         <h3>🎲 Jogo da Sorte</h3>
         <div id="jogoSorteContainer"></div>
@@ -73,12 +73,21 @@
         </div>
       </div>
 
+      <!-- Jogos Excedentes -->
+      <div class="jogo-sorte-card">
+        <h3>🎲 Jogos Excedentes</h3>
+        <div id="excedentesContainer"></div>
+        <div class="flex justify-between mt-2">
+          <button id="btnAddExcedente" class="primary small">➕ Adicionar Jogo</button>
+          <button id="btnSalvarExcedentes" class="primary">💾 Salvar Excedentes</button>
+        </div>
+      </div>
+
+      <!-- Conferência -->
       <div class="admin-card">
         <h2 class="text-xl font-semibold mb-3">Conferência de Sorteio</h2>
-        <div class="flex gap-2 flex-wrap mb-3">
-          <input type="text" id="inputSorteados" placeholder="6 números sorteados" class="border p-2 flex-1 rounded" />
-          <button id="btnConferir" class="primary">Conferir</button>
-        </div>
+        <div id="conferenciaContainer" class="flex gap-2 flex-wrap mb-3"></div>
+        <button id="btnConferir" class="primary mb-3">Conferir</button>
         <div id="resultadoConferencia" class="resultado-premio"></div>
 
         <div id="areaRateio" class="hidden mt-4 pt-3 border-t">
@@ -89,16 +98,7 @@
         </div>
       </div>
 
-      <!-- NOVA SEÇÃO: Jogos Excedentes -->
-      <div class="admin-card">
-        <h2 class="text-xl font-semibold text-indigo-700 mb-3">Cadastrar jogos excedentes:</h2>
-        <div id="containerJogosAdm"></div>
-        <div class="flex justify-between mt-3">
-          <button id="btnConfirmarJogosAdm" class="primary">💾 Confirmar</button>
-          <button id="btnCancelarJogosAdm" class="danger">🗑 Cancelar</button>
-        </div>
-      </div>
-
+      <!-- Lista de Participantes -->
       <div class="admin-card">
         <h2 class="text-xl font-semibold text-indigo-700 mb-3">Lista de Participantes</h2>
         <button id="btnAtualizar" class="muted small mb-3">🔄 Atualizar Lista</button>
