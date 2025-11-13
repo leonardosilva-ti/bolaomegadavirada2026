@@ -3,8 +3,6 @@
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
-// 🚨 ADMIN_USER e ADMIN_PASS REMOVIDOS DESTE ARQUIVO! 🚨
-
 const el = id => document.getElementById(id);
 
 const loginArea = el("loginArea");
@@ -25,11 +23,10 @@ const resultadoRateio = el("resultadoRateio");
 
 let todosDados = [];
 let jogoSorteAtual = [];
-// Variáveis para armazenar credenciais temporariamente
-let storedUser = ""; 
-let storedPass = ""; 
+// 💡 VARIÁVEL PARA ARMAZENAR O TOKEN JWT
+let accessToken = null; 
 
-// === LOGIN CENTRALIZADO NO APPS SCRIPT ===
+// === LOGIN CENTRALIZADO NO APPS SCRIPT (COM GERAÇÃO DE TOKEN) ===
 el("btnLogin")?.addEventListener("click", async () => {
     const user = el("adminUser").value.trim();
     const pass = el("adminPass").value.trim();
@@ -42,20 +39,19 @@ el("btnLogin")?.addEventListener("click", async () => {
         return;
     }
     
-    // 💡 ENVIA CREDENCIAIS PARA O Apps Script PARA VERIFICAÇÃO SEGURA
+    // 💡 AÇÃO: SOLICITAR TOKEN (POST)
     try {
         const body = new URLSearchParams({ 
-            action: "checkLogin", // Nova ação no Apps Script
+            action: "login", // Nova ação para gerar o token
             user: user, 
             pass: pass 
         });
         const res = await fetch(SCRIPT_URL, { method: "POST", body });
         const data = await res.json();
         
-        if (data.success) {
-            // Guarda credenciais temporariamente para uso em postAction
-            storedUser = user;
-            storedPass = pass;
+        if (data.success && data.token) { // 🔑 Verifica se recebeu o token
+            // ✅ ARMAZENA O TOKEN
+            accessToken = data.token;
             
             loginArea.classList.add("hidden");
             adminArea.classList.remove("hidden");
@@ -76,16 +72,16 @@ el("btnLogout")?.addEventListener("click", () => {
     el("adminUser").value = "";
     el("adminPass").value = "";
     loginMsg.classList.add("hidden");
-    // Limpa as credenciais armazenadas
-    storedUser = ""; 
-    storedPass = "";
+    // 🗑 LIMPA O TOKEN ARMAZENADO
+    accessToken = null; 
 });
 
-// === CONSULTA PRINCIPAL ===
+// === CONSULTA PRINCIPAL (GET SEM TOKEN) ===
 async function carregarParticipantes() {
     listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Carregando...</td></tr>`;
     try {
-        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`);
+        // GET (consultarBolao) não precisa de token, pois não é uma ação administrativa
+        const res = await fetch(`${SCRIPT_URL}?action=consultarBolao`); 
         const data = await res.json();
         todosDados = data.participantes || [];
 
@@ -111,7 +107,7 @@ async function carregarParticipantes() {
 
 el("btnAtualizar")?.addEventListener("click", carregarParticipantes);
 
-// === TABELA ===
+// === TABELA (SEM MUDANÇAS) ===
 function renderTabela(dados) {
     if (!dados.length) {
         listaParticipantes.innerHTML = `<tr><td colspan="4" class="text-center py-4">Nenhum participante encontrado.</td></tr>`;
@@ -131,7 +127,7 @@ function renderTabela(dados) {
     `).join("");
 }
 
-// === CONFIRMAR / EXCLUIR ===
+// === CONFIRMAR / EXCLUIR (CHAMA postAction) ===
 window.confirmarPagamento = async (protocolo) => {
     if (!confirm(`Confirmar pagamento do protocolo ${protocolo}?`)) return;
     await postAction("setPago", { protocolo });
@@ -142,20 +138,20 @@ window.excluirParticipante = async (protocolo) => {
     await postAction("excluir", { protocolo });
 };
 
-// --- postAction (COM CREDENCIAIS ARMAZENADAS) ---
+// --- postAction (COM TOKEN) ---
 async function postAction(action, params) {
-    if (!storedUser || !storedPass) {
-        alert("Erro: Faça login novamente.");
-        el("btnLogout")?.click(); // Força logout
+    // ⚠️ Usa o Token armazenado!
+    if (!accessToken) { 
+        alert("Erro: Faça login novamente. Token ausente.");
+        el("btnLogout")?.click(); 
         return;
     }
 
     try {
-        // ✅ ENVIA CREDENCIAIS ARMAZENADAS PARA CADA AÇÃO ADMIN
+        // 🔑 ENVIA O TOKEN JUNTO COM A AÇÃO
         const body = new URLSearchParams({ 
             action, 
-            user: storedUser, 
-            pass: storedPass, 
+            token: accessToken, // <-- Novo parâmetro
             ...params 
         });
         const res = await fetch(SCRIPT_URL, { method: "POST", body });
@@ -165,8 +161,9 @@ async function postAction(action, params) {
             alert(data.message || "Ação concluída.");
         } else {
             alert("Falha na ação: " + (data.message || data.error || "Erro desconhecido."));
-            if (data.message && data.message.includes("Acesso negado")) {
-                el("btnLogout")?.click(); // Força logout se o acesso for negado
+            // Se o token for inválido, forçamos o logout
+            if (data.message && data.message.includes("Token")) {
+                el("btnLogout")?.click(); 
             }
         }
         
@@ -176,9 +173,8 @@ async function postAction(action, params) {
     }
 }
 
-// === JOGO DA SORTE ===
+// === JOGO DA SORTE, CONFERÊNCIA E RATEIO (SEM MUDANÇAS) ===
 
-// Renderiza bolinhas
 function renderizarJogoSorte() {
     jogoSorteContainer.innerHTML = "";
 
@@ -195,9 +191,7 @@ function renderizarJogoSorte() {
     });
 }
 
-// Renderiza os 9 inputs para novo jogo
 function renderizarInputs() {
-    // 💡 CORREÇÃO DE BUG: Busca o elemento novamente para evitar TypeError
     const inputContainer = el("jogoSorteInputs");
     if (!inputContainer) {
         console.error("Erro HTML: Elemento 'jogoSorteInputs' não encontrado.");
@@ -216,9 +210,7 @@ function renderizarInputs() {
     }
 }
 
-// Salvar novo jogo da sorte
 btnSalvarJogoSorte?.addEventListener("click", async () => {
-    // 💡 CORREÇÃO DE BUG: Busca o elemento novamente
     const inputContainer = el("jogoSorteInputs");
     if (!inputContainer) return alert("Erro interno: Container de inputs não encontrado.");
 
@@ -249,14 +241,11 @@ btnSalvarJogoSorte?.addEventListener("click", async () => {
     await postAction("salvarJogoSorte", { jogo: jogoFormatado });
 });
 
-// Apagar jogo da sorte
 btnApagarJogoSorte?.addEventListener("click", async () => {
     if (!confirm("Deseja realmente apagar todos os números do Jogo da Sorte?")) return;
-
     await postAction("salvarJogoSorte", { jogo: "" });
 });
 
-// === CONFERÊNCIA E RATEIO ===
 el("btnConferir")?.addEventListener("click", () => {
     const sorteados_brutos = inputSorteados.value.trim().split(/\s+/).filter(Boolean);
     
