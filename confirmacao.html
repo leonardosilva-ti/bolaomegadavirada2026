@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Confirmação da Aposta</title>
 
-  <!-- Estilos globais -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- Estilos específicos da tela de confirmação -->
+  <link rel="stylesheet" href="css/index.css">
   <link rel="stylesheet" href="css/confirmacao.css">
 </head>
 <body>
@@ -21,20 +19,17 @@
     <div id="dadosConfirmacao" class="card"></div>
     <div id="jogosConfirmacao" class="card"></div>
 
-    <hr>
-
     <section class="observacao">
-      <h3>Informação Importante do Bolão</h3>
+      <h3>Informação Importante</h3>
       <p>
-        Este bolão <b>NÃO é realizado pela CAIXA</b>. É organizado de forma independente — 
-        em caso de premiação, o valor será rateado entre os participantes e repassado pelo organizador.
-        O site registra todos os jogos e participantes para validação pública. Após o sorteio,
-        será divulgado o número sorteado e eventuais prêmios.
+        Este bolão <b>não é realizado pela CAIXA</b>. É organizado de forma independente —
+        em caso de premiação, o valor será dividido entre os participantes e repassado
+        pelo organizador. O site registra todos os jogos e participantes para validação pública.
       </p>
     </section>
 
     <div class="termos">
-      <label>
+      <label for="aceitoTermos">
         <input type="checkbox" id="aceitoTermos" required>
         Confirmo que li a <b>Informação Importante</b> acima e aceito os termos do bolão.
       </label>
@@ -49,6 +44,5 @@
   </main>
 
   <script src="js/confirmacao.js"></script>
-  <link rel="stylesheet" href="css/confirmacao.js">
 </body>
 </html>
