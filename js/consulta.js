@@ -56,6 +56,22 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="jogo-sorte-numeros">${sorteHtml}</div>
           </div>
         `;
+      } else {
+        // Lógica para quando não há jogo da sorte cadastrado
+        const totalBolinhas = 9;
+        const bolinhasVazias = Array(totalBolinhas)
+          .fill(`<span class="empty">-</span>`)
+          .join("");
+
+        html += `
+          <div class="jogo-sorte-container">
+            <h3>Jogo da Sorte (9 Números)</h3>
+            <p style="color:#e94a4a; font-weight:600; font-size:0.95rem; margin: 0 0 10px 0;">
+                O jogo de 9 números ainda não foi cadastrado. Será cadastrado dia 29/12 quando o bolão fechar.
+            </p>
+            <div class="jogo-sorte-numeros">${bolinhasVazias}</div>
+          </div>
+        `;
       }
 
       /* ======= DADOS DO PARTICIPANTE ======= */
