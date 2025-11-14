@@ -265,6 +265,14 @@ button.primary:hover {
   transform: scale(0.97);
 }
 
+/* Estilo para bolinhas vazias (hífen) */
+.jogo-sorte-numeros .empty {
+    background-color: #e5e7eb; /* Fundo cinza claro */
+    color: #6b7280; /* Cor do hífen cinza */
+    border: 1px dashed #d1d5db; /* Borda tracejada */
+    font-weight: normal;
+}
+
 /* --- RESPONSIVIDADE --- */
 @media (max-width: 600px) {
   .container {
