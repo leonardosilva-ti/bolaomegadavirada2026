@@ -1,4 +1,4 @@
-// === /js/admin.js - ADMIN COMPLETO (corrigido) ===
+// === /js/admin.js - ADMIN COMPLETO (CORREÇÃO JOGO DA SORTE) ===
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
 const el = id => document.getElementById(id);
@@ -126,15 +126,14 @@ async function carregarParticipantes() {
             jogoSorteAtual = [];
         }
         renderizarJogoSorte();
-        renderizarInputsJogoSorte();
+        renderizarInputsJogoSorte(); // Chamar aqui garante que os inputs estejam vazios
 
-        // ==== Jogos Excedentes (Carrega do servidor para USO INTERNO/CONFERÊNCIA) ====
+        // ==== Jogos Excedentes ====
         let rawExcedentes = data.jogosExcedentes || data.jogosAdm || [];
         if (!Array.isArray(rawExcedentes)) rawExcedentes = [];
 
         // Popula o array de CONFERÊNCIA
         jogosExcedentes = rawExcedentes.map(item => {
-            // Normaliza para array de strings ['01','02',...]
             if (Array.isArray(item)) {
                 return item.map(n => String(n).padStart(2,'0'));
             }
@@ -142,12 +141,11 @@ async function carregarParticipantes() {
                 return item.split(/\s+/).filter(Boolean).map(n => String(n).padStart(2,'0'));
             }
             return [];
-        }).filter(arr => arr.length === 6); // keep only valid games
+        }).filter(arr => arr.length === 6);
 
         // O array de EDIÇÃO deve ser zerado (começar vazio)
-        // Isso garante que o campo "Jogos excedentes" venha em branco ao acessar.
         jogosExcedentesEmEdicao = [];
-        renderizarTodosExcedentes(); // Redesenha a lista de inputs vazia.
+        renderizarTodosExcedentes();
 
         // ==== Conferência ====
         renderizarConferencia();
@@ -218,20 +216,20 @@ async function postAction(action, params) {
     }
 }
 
-// ================== JOGO DA SORTE ==================
+// ================== JOGO DA SORTE CORRIGIDO ==================
 function renderizarJogoSorte() {
     jogoSorteContainer.innerHTML = "";
-    if(jogoSorteAtual.length===0){
-        jogoSorteContainer.innerHTML=`<p style="color:#999;">Nenhum jogo da sorte cadastrado.</p>`;
-        return;
-    }
     jogoSorteContainer.style.display = "flex";
     jogoSorteContainer.style.justifyContent = "center";
     jogoSorteContainer.style.gap = "10px";
+    
+    // Se não houver jogo cadastrado, mostra 9 hífens
+    const numerosParaMostrar = jogoSorteAtual.length === 9 ? jogoSorteAtual : Array(9).fill("-");
 
-    jogoSorteAtual.forEach(num=>{
+    numerosParaMostrar.forEach(num=>{
         const div=document.createElement("div");
-        div.className="jogo-numero";
+        // Adiciona classe 'empty' se for o hífen
+        div.className="jogo-numero" + (num === "-" ? " empty" : ""); 
         div.textContent=num;
         jogoSorteContainer.appendChild(div);
     });
@@ -249,7 +247,8 @@ function renderizarInputsJogoSorte(){
         input.min=1;
         input.max=60;
         input.className="input-numero";
-        input.value=jogoSorteAtual[i]||"";
+        // CORREÇÃO: Input sempre começa vazio ("")
+        input.value = ""; 
         jogoSorteInputs.appendChild(input);
     }
 }
@@ -272,7 +271,7 @@ btnApagarJogoSorte?.addEventListener("click", async()=>{
     await postAction("salvarJogoSorte",{ jogo:"" });
 });
 
-// ================== JOGOS EXCEDENTES (CORRIGIDO PARA APENAS ADICIONAR) ==================
+// ================== JOGOS EXCEDENTES ==================
 function renderizarExcedente(index){
     const div=document.createElement("div");
     div.className="flex gap-2 mb-2";
@@ -355,7 +354,7 @@ btnSalvarExcedentes?.addEventListener("click", async()=>{
     // Transforma em array de strings "01 02 03 04 05 06"
     const jogosStrings = dados.map(arr => arr.join(" "));
 
-    // Envia como "jogo1|jogo2|..." (O backend corrigido sabe lidar com este formato e irá adicionar os novos)
+    // Envia como "jogo1|jogo2|..."
     const payloadStr = jogosStrings.join("|");
 
     await postAction("salvarJogosAdm",{ jogos: payloadStr });
