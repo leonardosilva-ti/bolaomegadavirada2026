@@ -284,3 +284,45 @@ button.muted {
 .admin-card .pix-box p {
     text-align: center !important;
 }
+
+/* ===== Botões inferiores estilizados ===== */
+
+.bottom-buttons button {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 350px;
+}
+
+/* Botão CONSULTAR JOGOS */
+.bottom-buttons button:nth-child(1) {
+    background-color: #065f46; /* Verde escuro elegante */
+    color: #fff;
+}
+
+/* Adiciona lupa antes e depois do texto */
+.bottom-buttons button:nth-child(1)::before,
+.bottom-buttons button:nth-child(1)::after {
+    content: "🔍";
+    margin: 0 6px;
+}
+
+/* Hover do verde */
+.bottom-buttons button:nth-child(1):hover {
+    background-color: #064e3b;
+}
+
+/* Botão ÁREA ADMINISTRATIVA */
+.bottom-buttons button:nth-child(2) {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Hover preto */
+.bottom-buttons button:nth-child(2):hover {
+    background-color: #111;
+}
