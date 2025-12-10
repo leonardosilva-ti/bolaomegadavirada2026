@@ -1,0 +1,344 @@
+2025-12-10 16:50:44,628 - INFO - Página da Mega Sena acessada.
+2025-12-10 16:51:17,645 - INFO - Iniciando Jogo 1: [18, 20, 21, 26, 50, 55]
+2025-12-10 16:51:17,990 - INFO - Jogo 1: Número 18 clicado (JS Click).
+2025-12-10 16:51:18,331 - INFO - Jogo 1: Número 20 clicado (JS Click).
+2025-12-10 16:51:18,692 - INFO - Jogo 1: Número 21 clicado (JS Click).
+2025-12-10 16:51:19,053 - INFO - Jogo 1: Número 26 clicado (JS Click).
+2025-12-10 16:51:19,409 - INFO - Jogo 1: Número 50 clicado (JS Click).
+2025-12-10 16:51:19,770 - INFO - Jogo 1: Número 55 clicado (JS Click).
+2025-12-10 16:51:20,847 - INFO - Jogo 1: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 16:51:22,964 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 16:51:25,992 - INFO - Iniciando Jogo 2: [9, 10, 13, 14, 29, 38]
+2025-12-10 16:51:26,329 - INFO - Jogo 2: Número 9 clicado (JS Click).
+2025-12-10 16:51:26,656 - INFO - Jogo 2: Número 10 clicado (JS Click).
+2025-12-10 16:51:27,016 - INFO - Jogo 2: Número 13 clicado (JS Click).
+2025-12-10 16:51:27,373 - INFO - Jogo 2: Número 14 clicado (JS Click).
+2025-12-10 16:51:27,692 - INFO - Jogo 2: Número 29 clicado (JS Click).
+2025-12-10 16:51:28,014 - INFO - Jogo 2: Número 38 clicado (JS Click).
+2025-12-10 16:51:29,092 - INFO - Jogo 2: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 16:51:31,174 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 16:59:04,994 - INFO - Página da Mega Sena acessada.
+2025-12-10 16:59:20,416 - INFO - Iniciando Jogo 1: [3, 9, 15, 18, 27, 49]
+2025-12-10 16:59:58,542 - INFO - Jogo 1: Número 3 clicado (JS Click).
+2025-12-10 16:59:58,908 - INFO - Jogo 1: Número 9 clicado (JS Click).
+2025-12-10 16:59:59,269 - INFO - Jogo 1: Número 15 clicado (JS Click).
+2025-12-10 16:59:59,632 - INFO - Jogo 1: Número 18 clicado (JS Click).
+2025-12-10 16:59:59,987 - INFO - Jogo 1: Número 27 clicado (JS Click).
+2025-12-10 17:00:00,339 - INFO - Jogo 1: Número 49 clicado (JS Click).
+2025-12-10 17:00:01,446 - INFO - Jogo 1: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:00:03,556 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:00:06,558 - INFO - Iniciando Jogo 2: [18, 20, 21, 26, 50, 55]
+2025-12-10 17:00:06,908 - INFO - Jogo 2: Número 18 clicado (JS Click).
+2025-12-10 17:00:07,270 - INFO - Jogo 2: Número 20 clicado (JS Click).
+2025-12-10 17:00:07,627 - INFO - Jogo 2: Número 21 clicado (JS Click).
+2025-12-10 17:00:07,989 - INFO - Jogo 2: Número 26 clicado (JS Click).
+2025-12-10 17:00:08,343 - INFO - Jogo 2: Número 50 clicado (JS Click).
+2025-12-10 17:00:08,700 - INFO - Jogo 2: Número 55 clicado (JS Click).
+2025-12-10 17:00:09,797 - INFO - Jogo 2: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:00:11,887 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:00:14,889 - INFO - Iniciando Jogo 3: [9, 10, 13, 14, 29, 38]
+2025-12-10 17:00:15,238 - INFO - Jogo 3: Número 9 clicado (JS Click).
+2025-12-10 17:00:15,598 - INFO - Jogo 3: Número 10 clicado (JS Click).
+2025-12-10 17:00:15,923 - INFO - Jogo 3: Número 13 clicado (JS Click).
+2025-12-10 17:00:16,265 - INFO - Jogo 3: Número 14 clicado (JS Click).
+2025-12-10 17:00:16,611 - INFO - Jogo 3: Número 29 clicado (JS Click).
+2025-12-10 17:00:16,934 - INFO - Jogo 3: Número 38 clicado (JS Click).
+2025-12-10 17:00:18,002 - INFO - Jogo 3: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:00:20,073 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:00:23,074 - INFO - Iniciando Jogo 4: [4, 16, 24, 25, 46, 55]
+2025-12-10 17:00:23,437 - INFO - Jogo 4: Número 4 clicado (JS Click).
+2025-12-10 17:00:23,790 - INFO - Jogo 4: Número 16 clicado (JS Click).
+2025-12-10 17:00:24,151 - INFO - Jogo 4: Número 24 clicado (JS Click).
+2025-12-10 17:00:24,512 - INFO - Jogo 4: Número 25 clicado (JS Click).
+2025-12-10 17:00:24,875 - INFO - Jogo 4: Número 46 clicado (JS Click).
+2025-12-10 17:00:25,228 - INFO - Jogo 4: Número 55 clicado (JS Click).
+2025-12-10 17:00:26,313 - INFO - Jogo 4: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:00:28,414 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:00:31,415 - INFO - Iniciando Jogo 5: [9, 13, 37, 38, 52, 53]
+2025-12-10 17:00:31,765 - INFO - Jogo 5: Número 9 clicado (JS Click).
+2025-12-10 17:00:32,126 - INFO - Jogo 5: Número 13 clicado (JS Click).
+2025-12-10 17:00:32,490 - INFO - Jogo 5: Número 37 clicado (JS Click).
+2025-12-10 17:00:32,849 - INFO - Jogo 5: Número 38 clicado (JS Click).
+2025-12-10 17:00:33,211 - INFO - Jogo 5: Número 52 clicado (JS Click).
+2025-12-10 17:00:33,569 - INFO - Jogo 5: Número 53 clicado (JS Click).
+2025-12-10 17:00:34,661 - INFO - Jogo 5: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:00:36,710 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:00:39,711 - INFO - Iniciando Jogo 6: [4, 14, 18, 28, 29, 33]
+2025-12-10 17:00:40,063 - INFO - Jogo 6: Número 4 clicado (JS Click).
+2025-12-10 17:00:40,421 - INFO - Jogo 6: Número 14 clicado (JS Click).
+2025-12-10 17:00:40,776 - INFO - Jogo 6: Número 18 clicado (JS Click).
+2025-12-10 17:00:41,138 - INFO - Jogo 6: Número 28 clicado (JS Click).
+2025-12-10 17:00:41,498 - INFO - Jogo 6: Número 29 clicado (JS Click).
+2025-12-10 17:00:41,860 - INFO - Jogo 6: Número 33 clicado (JS Click).
+2025-12-10 17:00:42,974 - INFO - Jogo 6: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:00:45,072 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:00:48,073 - INFO - Iniciando Jogo 7: [2, 26, 40, 47, 50, 59]
+2025-12-10 17:00:48,403 - INFO - Jogo 7: Número 2 clicado (JS Click).
+2025-12-10 17:00:48,725 - INFO - Jogo 7: Número 26 clicado (JS Click).
+2025-12-10 17:00:49,048 - INFO - Jogo 7: Número 40 clicado (JS Click).
+2025-12-10 17:00:49,375 - INFO - Jogo 7: Número 47 clicado (JS Click).
+2025-12-10 17:00:49,719 - INFO - Jogo 7: Número 50 clicado (JS Click).
+2025-12-10 17:00:50,067 - INFO - Jogo 7: Número 59 clicado (JS Click).
+2025-12-10 17:00:51,158 - INFO - Jogo 7: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:00:53,248 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:00:56,249 - INFO - Iniciando Jogo 8: [9, 19, 23, 31, 39, 42]
+2025-12-10 17:00:56,608 - INFO - Jogo 8: Número 9 clicado (JS Click).
+2025-12-10 17:00:56,963 - INFO - Jogo 8: Número 19 clicado (JS Click).
+2025-12-10 17:00:57,308 - INFO - Jogo 8: Número 23 clicado (JS Click).
+2025-12-10 17:00:57,652 - INFO - Jogo 8: Número 31 clicado (JS Click).
+2025-12-10 17:00:58,011 - INFO - Jogo 8: Número 39 clicado (JS Click).
+2025-12-10 17:00:58,341 - INFO - Jogo 8: Número 42 clicado (JS Click).
+2025-12-10 17:00:59,437 - INFO - Jogo 8: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:01:01,521 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:01:04,523 - INFO - Iniciando Jogo 9: [6, 10, 18, 20, 45, 56]
+2025-12-10 17:01:04,885 - INFO - Jogo 9: Número 6 clicado (JS Click).
+2025-12-10 17:01:05,224 - INFO - Jogo 9: Número 10 clicado (JS Click).
+2025-12-10 17:01:05,584 - INFO - Jogo 9: Número 18 clicado (JS Click).
+2025-12-10 17:01:05,948 - INFO - Jogo 9: Número 20 clicado (JS Click).
+2025-12-10 17:01:06,304 - INFO - Jogo 9: Número 45 clicado (JS Click).
+2025-12-10 17:01:06,664 - INFO - Jogo 9: Número 56 clicado (JS Click).
+2025-12-10 17:01:07,714 - INFO - Jogo 9: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:01:09,786 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:01:12,787 - INFO - Iniciando Jogo 10: [10, 14, 24, 26, 27, 57]
+2025-12-10 17:01:13,133 - INFO - Jogo 10: Número 10 clicado (JS Click).
+2025-12-10 17:01:13,491 - INFO - Jogo 10: Número 14 clicado (JS Click).
+2025-12-10 17:01:13,852 - INFO - Jogo 10: Número 24 clicado (JS Click).
+2025-12-10 17:01:14,211 - INFO - Jogo 10: Número 26 clicado (JS Click).
+2025-12-10 17:01:14,573 - INFO - Jogo 10: Número 27 clicado (JS Click).
+2025-12-10 17:01:14,935 - INFO - Jogo 10: Número 57 clicado (JS Click).
+2025-12-10 17:01:15,987 - INFO - Jogo 10: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:01:18,033 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:01:21,035 - INFO - Iniciando Jogo 11: [10, 15, 33, 40, 44, 58]
+2025-12-10 17:01:21,385 - INFO - Jogo 11: Número 10 clicado (JS Click).
+2025-12-10 17:01:21,742 - INFO - Jogo 11: Número 15 clicado (JS Click).
+2025-12-10 17:01:22,102 - INFO - Jogo 11: Número 33 clicado (JS Click).
+2025-12-10 17:01:22,463 - INFO - Jogo 11: Número 40 clicado (JS Click).
+2025-12-10 17:01:22,825 - INFO - Jogo 11: Número 44 clicado (JS Click).
+2025-12-10 17:01:23,187 - INFO - Jogo 11: Número 58 clicado (JS Click).
+2025-12-10 17:01:24,276 - INFO - Jogo 11: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:01:26,348 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:01:29,350 - INFO - Iniciando Jogo 12: [6, 19, 20, 29, 35, 49]
+2025-12-10 17:01:29,674 - INFO - Jogo 12: Número 6 clicado (JS Click).
+2025-12-10 17:01:30,034 - INFO - Jogo 12: Número 19 clicado (JS Click).
+2025-12-10 17:01:30,395 - INFO - Jogo 12: Número 20 clicado (JS Click).
+2025-12-10 17:01:30,756 - INFO - Jogo 12: Número 29 clicado (JS Click).
+2025-12-10 17:01:31,118 - INFO - Jogo 12: Número 35 clicado (JS Click).
+2025-12-10 17:01:31,479 - INFO - Jogo 12: Número 49 clicado (JS Click).
+2025-12-10 17:01:32,564 - INFO - Jogo 12: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:01:34,666 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:01:37,669 - INFO - Iniciando Jogo 13: [6, 9, 23, 27, 30, 50]
+2025-12-10 17:01:38,010 - INFO - Jogo 13: Número 6 clicado (JS Click).
+2025-12-10 17:01:38,365 - INFO - Jogo 13: Número 9 clicado (JS Click).
+2025-12-10 17:01:38,705 - INFO - Jogo 13: Número 23 clicado (JS Click).
+2025-12-10 17:01:39,066 - INFO - Jogo 13: Número 27 clicado (JS Click).
+2025-12-10 17:01:39,427 - INFO - Jogo 13: Número 30 clicado (JS Click).
+2025-12-10 17:01:39,785 - INFO - Jogo 13: Número 50 clicado (JS Click).
+2025-12-10 17:01:40,877 - INFO - Jogo 13: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:01:42,968 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:01:45,970 - INFO - Iniciando Jogo 14: [3, 4, 13, 24, 25, 51]
+2025-12-10 17:01:46,308 - INFO - Jogo 14: Número 3 clicado (JS Click).
+2025-12-10 17:01:46,627 - INFO - Jogo 14: Número 4 clicado (JS Click).
+2025-12-10 17:01:46,946 - INFO - Jogo 14: Número 13 clicado (JS Click).
+2025-12-10 17:01:47,289 - INFO - Jogo 14: Número 24 clicado (JS Click).
+2025-12-10 17:01:47,631 - INFO - Jogo 14: Número 25 clicado (JS Click).
+2025-12-10 17:01:47,966 - INFO - Jogo 14: Número 51 clicado (JS Click).
+2025-12-10 17:01:49,018 - INFO - Jogo 14: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:01:51,080 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:01:54,083 - INFO - Iniciando Jogo 15: [5, 11, 23, 32, 34, 48]
+2025-12-10 17:01:54,435 - INFO - Jogo 15: Número 5 clicado (JS Click).
+2025-12-10 17:01:54,785 - INFO - Jogo 15: Número 11 clicado (JS Click).
+2025-12-10 17:01:55,141 - INFO - Jogo 15: Número 23 clicado (JS Click).
+2025-12-10 17:01:55,501 - INFO - Jogo 15: Número 32 clicado (JS Click).
+2025-12-10 17:01:55,853 - INFO - Jogo 15: Número 34 clicado (JS Click).
+2025-12-10 17:01:56,196 - INFO - Jogo 15: Número 48 clicado (JS Click).
+2025-12-10 17:01:57,294 - INFO - Jogo 15: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:01:59,366 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:02:02,367 - INFO - Iniciando Jogo 16: [5, 7, 11, 25, 27, 39]
+2025-12-10 17:02:02,709 - INFO - Jogo 16: Número 5 clicado (JS Click).
+2025-12-10 17:02:03,069 - INFO - Jogo 16: Número 7 clicado (JS Click).
+2025-12-10 17:02:03,424 - INFO - Jogo 16: Número 11 clicado (JS Click).
+2025-12-10 17:02:03,784 - INFO - Jogo 16: Número 25 clicado (JS Click).
+2025-12-10 17:02:04,148 - INFO - Jogo 16: Número 27 clicado (JS Click).
+2025-12-10 17:02:04,507 - INFO - Jogo 16: Número 39 clicado (JS Click).
+2025-12-10 17:02:05,595 - INFO - Jogo 16: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:02:07,650 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:02:10,652 - INFO - Iniciando Jogo 17: [6, 7, 16, 31, 51, 57]
+2025-12-10 17:02:10,994 - INFO - Jogo 17: Número 6 clicado (JS Click).
+2025-12-10 17:02:11,354 - INFO - Jogo 17: Número 7 clicado (JS Click).
+2025-12-10 17:02:11,709 - INFO - Jogo 17: Número 16 clicado (JS Click).
+2025-12-10 17:02:12,069 - INFO - Jogo 17: Número 31 clicado (JS Click).
+2025-12-10 17:02:12,431 - INFO - Jogo 17: Número 51 clicado (JS Click).
+2025-12-10 17:02:12,790 - INFO - Jogo 17: Número 57 clicado (JS Click).
+2025-12-10 17:02:13,879 - INFO - Jogo 17: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:02:15,962 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:02:18,963 - INFO - Iniciando Jogo 18: [2, 10, 17, 27, 29, 47]
+2025-12-10 17:02:19,285 - INFO - Jogo 18: Número 2 clicado (JS Click).
+2025-12-10 17:02:19,603 - INFO - Jogo 18: Número 10 clicado (JS Click).
+2025-12-10 17:02:19,923 - INFO - Jogo 18: Número 17 clicado (JS Click).
+2025-12-10 17:02:20,259 - INFO - Jogo 18: Número 27 clicado (JS Click).
+2025-12-10 17:02:20,604 - INFO - Jogo 18: Número 29 clicado (JS Click).
+2025-12-10 17:02:20,950 - INFO - Jogo 18: Número 47 clicado (JS Click).
+2025-12-10 17:02:22,044 - INFO - Jogo 18: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:02:24,103 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:02:27,105 - INFO - Iniciando Jogo 19: [14, 29, 33, 34, 44, 48]
+2025-12-10 17:02:27,467 - INFO - Jogo 19: Número 14 clicado (JS Click).
+2025-12-10 17:02:27,826 - INFO - Jogo 19: Número 29 clicado (JS Click).
+2025-12-10 17:02:28,146 - INFO - Jogo 19: Número 33 clicado (JS Click).
+2025-12-10 17:02:28,467 - INFO - Jogo 19: Número 34 clicado (JS Click).
+2025-12-10 17:02:28,812 - INFO - Jogo 19: Número 44 clicado (JS Click).
+2025-12-10 17:02:29,157 - INFO - Jogo 19: Número 48 clicado (JS Click).
+2025-12-10 17:02:30,248 - INFO - Jogo 19: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:02:32,327 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:02:35,329 - INFO - Iniciando Jogo 20: [5, 7, 17, 21, 39, 58]
+2025-12-10 17:02:35,682 - INFO - Jogo 20: Número 5 clicado (JS Click).
+2025-12-10 17:02:36,043 - INFO - Jogo 20: Número 7 clicado (JS Click).
+2025-12-10 17:02:36,402 - INFO - Jogo 20: Número 17 clicado (JS Click).
+2025-12-10 17:02:36,762 - INFO - Jogo 20: Número 21 clicado (JS Click).
+2025-12-10 17:02:37,124 - INFO - Jogo 20: Número 39 clicado (JS Click).
+2025-12-10 17:02:37,449 - INFO - Jogo 20: Número 58 clicado (JS Click).
+2025-12-10 17:02:38,523 - INFO - Jogo 20: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:02:40,614 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:02:43,616 - INFO - Iniciando Jogo 21: [5, 10, 16, 17, 33, 34]
+2025-12-10 17:02:43,944 - INFO - Jogo 21: Número 5 clicado (JS Click).
+2025-12-10 17:02:44,304 - INFO - Jogo 21: Número 10 clicado (JS Click).
+2025-12-10 17:02:44,663 - INFO - Jogo 21: Número 16 clicado (JS Click).
+2025-12-10 17:02:45,021 - INFO - Jogo 21: Número 17 clicado (JS Click).
+2025-12-10 17:02:45,380 - INFO - Jogo 21: Número 33 clicado (JS Click).
+2025-12-10 17:02:45,742 - INFO - Jogo 21: Número 34 clicado (JS Click).
+2025-12-10 17:02:46,787 - INFO - Jogo 21: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:02:48,834 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:02:51,835 - INFO - Iniciando Jogo 22: [10, 17, 33, 34, 35, 41]
+2025-12-10 17:02:52,169 - INFO - Jogo 22: Número 10 clicado (JS Click).
+2025-12-10 17:02:52,508 - INFO - Jogo 22: Número 17 clicado (JS Click).
+2025-12-10 17:02:52,845 - INFO - Jogo 22: Número 33 clicado (JS Click).
+2025-12-10 17:02:53,183 - INFO - Jogo 22: Número 34 clicado (JS Click).
+2025-12-10 17:02:53,516 - INFO - Jogo 22: Número 35 clicado (JS Click).
+2025-12-10 17:02:53,873 - INFO - Jogo 22: Número 41 clicado (JS Click).
+2025-12-10 17:02:54,971 - INFO - Jogo 22: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:02:57,050 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:03:00,052 - INFO - Iniciando Jogo 23: [17, 33, 34, 41, 56, 58]
+2025-12-10 17:03:00,401 - INFO - Jogo 23: Número 17 clicado (JS Click).
+2025-12-10 17:03:00,758 - INFO - Jogo 23: Número 33 clicado (JS Click).
+2025-12-10 17:03:01,119 - INFO - Jogo 23: Número 34 clicado (JS Click).
+2025-12-10 17:03:01,477 - INFO - Jogo 23: Número 41 clicado (JS Click).
+2025-12-10 17:03:01,831 - INFO - Jogo 23: Número 56 clicado (JS Click).
+2025-12-10 17:03:02,192 - INFO - Jogo 23: Número 58 clicado (JS Click).
+2025-12-10 17:03:03,277 - INFO - Jogo 23: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:03:05,374 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:03:08,375 - INFO - Iniciando Jogo 24: [1, 10, 30, 41, 56, 58]
+2025-12-10 17:03:08,708 - INFO - Jogo 24: Número 1 clicado (JS Click).
+2025-12-10 17:03:09,031 - INFO - Jogo 24: Número 10 clicado (JS Click).
+2025-12-10 17:03:09,369 - INFO - Jogo 24: Número 30 clicado (JS Click).
+2025-12-10 17:03:09,706 - INFO - Jogo 24: Número 41 clicado (JS Click).
+2025-12-10 17:03:10,064 - INFO - Jogo 24: Número 56 clicado (JS Click).
+2025-12-10 17:03:10,389 - INFO - Jogo 24: Número 58 clicado (JS Click).
+2025-12-10 17:03:11,462 - INFO - Jogo 24: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:03:13,553 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:03:16,554 - INFO - Iniciando Jogo 25: [5, 16, 17, 34, 41, 58]
+2025-12-10 17:03:16,875 - INFO - Jogo 25: Número 5 clicado (JS Click).
+2025-12-10 17:03:17,193 - INFO - Jogo 25: Número 16 clicado (JS Click).
+2025-12-10 17:03:17,525 - INFO - Jogo 25: Número 17 clicado (JS Click).
+2025-12-10 17:03:17,860 - INFO - Jogo 25: Número 34 clicado (JS Click).
+2025-12-10 17:03:18,188 - INFO - Jogo 25: Número 41 clicado (JS Click).
+2025-12-10 17:03:18,522 - INFO - Jogo 25: Número 58 clicado (JS Click).
+2025-12-10 17:03:19,591 - INFO - Jogo 25: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:03:21,668 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:03:24,669 - INFO - Iniciando Jogo 26: [2, 13, 22, 38, 48, 57]
+2025-12-10 17:03:25,016 - INFO - Jogo 26: Número 2 clicado (JS Click).
+2025-12-10 17:03:25,375 - INFO - Jogo 26: Número 13 clicado (JS Click).
+2025-12-10 17:03:25,732 - INFO - Jogo 26: Número 22 clicado (JS Click).
+2025-12-10 17:03:26,091 - INFO - Jogo 26: Número 38 clicado (JS Click).
+2025-12-10 17:03:26,450 - INFO - Jogo 26: Número 48 clicado (JS Click).
+2025-12-10 17:03:26,804 - INFO - Jogo 26: Número 57 clicado (JS Click).
+2025-12-10 17:03:27,850 - INFO - Jogo 26: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:03:29,934 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:03:32,935 - INFO - Iniciando Jogo 27: [7, 16, 30, 38, 48, 56]
+2025-12-10 17:03:33,291 - INFO - Jogo 27: Número 7 clicado (JS Click).
+2025-12-10 17:03:33,652 - INFO - Jogo 27: Número 16 clicado (JS Click).
+2025-12-10 17:03:34,015 - INFO - Jogo 27: Número 30 clicado (JS Click).
+2025-12-10 17:03:34,370 - INFO - Jogo 27: Número 38 clicado (JS Click).
+2025-12-10 17:03:34,732 - INFO - Jogo 27: Número 48 clicado (JS Click).
+2025-12-10 17:03:35,091 - INFO - Jogo 27: Número 56 clicado (JS Click).
+2025-12-10 17:03:36,181 - INFO - Jogo 27: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:03:38,278 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:03:41,279 - INFO - Iniciando Jogo 28: [5, 13, 27, 41, 43, 53]
+2025-12-10 17:03:41,610 - INFO - Jogo 28: Número 5 clicado (JS Click).
+2025-12-10 17:03:41,975 - INFO - Jogo 28: Número 13 clicado (JS Click).
+2025-12-10 17:03:42,330 - INFO - Jogo 28: Número 27 clicado (JS Click).
+2025-12-10 17:03:42,688 - INFO - Jogo 28: Número 41 clicado (JS Click).
+2025-12-10 17:03:43,046 - INFO - Jogo 28: Número 43 clicado (JS Click).
+2025-12-10 17:03:43,405 - INFO - Jogo 28: Número 53 clicado (JS Click).
+2025-12-10 17:03:44,489 - INFO - Jogo 28: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:03:46,571 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:03:49,573 - INFO - Iniciando Jogo 29: [15, 17, 28, 33, 54, 59]
+2025-12-10 17:03:49,896 - INFO - Jogo 29: Número 15 clicado (JS Click).
+2025-12-10 17:03:50,228 - INFO - Jogo 29: Número 17 clicado (JS Click).
+2025-12-10 17:03:50,564 - INFO - Jogo 29: Número 28 clicado (JS Click).
+2025-12-10 17:03:50,882 - INFO - Jogo 29: Número 33 clicado (JS Click).
+2025-12-10 17:03:51,205 - INFO - Jogo 29: Número 54 clicado (JS Click).
+2025-12-10 17:03:51,548 - INFO - Jogo 29: Número 59 clicado (JS Click).
+2025-12-10 17:03:52,638 - INFO - Jogo 29: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:03:54,735 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:03:57,738 - INFO - Iniciando Jogo 30: [10, 19, 23, 26, 39, 57]
+2025-12-10 17:03:58,092 - INFO - Jogo 30: Número 10 clicado (JS Click).
+2025-12-10 17:03:58,453 - INFO - Jogo 30: Número 19 clicado (JS Click).
+2025-12-10 17:03:58,812 - INFO - Jogo 30: Número 23 clicado (JS Click).
+2025-12-10 17:03:59,175 - INFO - Jogo 30: Número 26 clicado (JS Click).
+2025-12-10 17:03:59,529 - INFO - Jogo 30: Número 39 clicado (JS Click).
+2025-12-10 17:03:59,852 - INFO - Jogo 30: Número 57 clicado (JS Click).
+2025-12-10 17:04:00,913 - INFO - Jogo 30: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:04:02,958 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:04:05,959 - INFO - Iniciando Jogo 31: [10, 11, 14, 22, 31, 50]
+2025-12-10 17:04:06,289 - INFO - Jogo 31: Número 10 clicado (JS Click).
+2025-12-10 17:04:06,607 - INFO - Jogo 31: Número 11 clicado (JS Click).
+2025-12-10 17:04:06,925 - INFO - Jogo 31: Número 14 clicado (JS Click).
+2025-12-10 17:04:07,273 - INFO - Jogo 31: Número 22 clicado (JS Click).
+2025-12-10 17:04:07,620 - INFO - Jogo 31: Número 31 clicado (JS Click).
+2025-12-10 17:04:07,960 - INFO - Jogo 31: Número 50 clicado (JS Click).
+2025-12-10 17:04:09,037 - INFO - Jogo 31: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:04:11,129 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:04:14,131 - INFO - Iniciando Jogo 32: [8, 17, 22, 34, 45, 51]
+2025-12-10 17:04:14,469 - INFO - Jogo 32: Número 8 clicado (JS Click).
+2025-12-10 17:04:14,830 - INFO - Jogo 32: Número 17 clicado (JS Click).
+2025-12-10 17:04:15,189 - INFO - Jogo 32: Número 22 clicado (JS Click).
+2025-12-10 17:04:15,549 - INFO - Jogo 32: Número 34 clicado (JS Click).
+2025-12-10 17:04:15,908 - INFO - Jogo 32: Número 45 clicado (JS Click).
+2025-12-10 17:04:16,240 - INFO - Jogo 32: Número 51 clicado (JS Click).
+2025-12-10 17:04:17,289 - INFO - Jogo 32: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:04:19,337 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:04:22,338 - INFO - Iniciando Jogo 33: [12, 23, 26, 32, 44, 51]
+2025-12-10 17:04:22,695 - INFO - Jogo 33: Número 12 clicado (JS Click).
+2025-12-10 17:04:23,035 - INFO - Jogo 33: Número 23 clicado (JS Click).
+2025-12-10 17:04:23,395 - INFO - Jogo 33: Número 26 clicado (JS Click).
+2025-12-10 17:04:23,754 - INFO - Jogo 33: Número 32 clicado (JS Click).
+2025-12-10 17:04:24,116 - INFO - Jogo 33: Número 44 clicado (JS Click).
+2025-12-10 17:04:24,470 - INFO - Jogo 33: Número 51 clicado (JS Click).
+2025-12-10 17:04:25,564 - INFO - Jogo 33: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:04:27,626 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:04:30,628 - INFO - Iniciando Jogo 34: [1, 8, 26, 39, 53, 60]
+2025-12-10 17:04:30,989 - INFO - Jogo 34: Número 1 clicado (JS Click).
+2025-12-10 17:04:31,341 - INFO - Jogo 34: Número 8 clicado (JS Click).
+2025-12-10 17:04:31,682 - INFO - Jogo 34: Número 26 clicado (JS Click).
+2025-12-10 17:04:32,038 - INFO - Jogo 34: Número 39 clicado (JS Click).
+2025-12-10 17:04:32,396 - INFO - Jogo 34: Número 53 clicado (JS Click).
+2025-12-10 17:04:32,756 - INFO - Jogo 34: Número 60 clicado (JS Click).
+2025-12-10 17:04:33,847 - INFO - Jogo 34: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:04:35,942 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:04:38,943 - INFO - Iniciando Jogo 35: [1, 9, 18, 24, 33, 46]
+2025-12-10 17:04:39,298 - INFO - Jogo 35: Número 1 clicado (JS Click).
+2025-12-10 17:04:39,659 - INFO - Jogo 35: Número 9 clicado (JS Click).
+2025-12-10 17:04:40,016 - INFO - Jogo 35: Número 18 clicado (JS Click).
+2025-12-10 17:04:40,377 - INFO - Jogo 35: Número 24 clicado (JS Click).
+2025-12-10 17:04:40,717 - INFO - Jogo 35: Número 33 clicado (JS Click).
+2025-12-10 17:04:41,062 - INFO - Jogo 35: Número 46 clicado (JS Click).
+2025-12-10 17:04:42,157 - INFO - Jogo 35: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:04:44,249 - INFO - Volante limpo explicitamente (ID: limparvolante).
+2025-12-10 17:04:47,250 - INFO - Iniciando Jogo 36: [1, 2, 3, 4, 5, 6]
+2025-12-10 17:04:47,586 - INFO - Jogo 36: Número 1 clicado (JS Click).
+2025-12-10 17:04:47,912 - INFO - Jogo 36: Número 2 clicado (JS Click).
+2025-12-10 17:04:48,242 - INFO - Jogo 36: Número 3 clicado (JS Click).
+2025-12-10 17:04:48,569 - INFO - Jogo 36: Número 4 clicado (JS Click).
+2025-12-10 17:04:48,892 - INFO - Jogo 36: Número 5 clicado (JS Click).
+2025-12-10 17:04:49,215 - INFO - Jogo 36: Número 6 clicado (JS Click).
+2025-12-10 17:04:50,282 - INFO - Jogo 36: Adicionado ao carrinho com sucesso (JS Click).
+2025-12-10 17:04:52,380 - INFO - Volante limpo explicitamente (ID: limparvolante).
