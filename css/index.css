@@ -1,328 +1,412 @@
-/* ======= INDEX OTIMIZADO PARA MOBILE ======= */
+/* ===========================================================
+   ESTILO GERAL
+   =========================================================== */
 
-/* --- BASE --- */
-body {
-  background-color: #f5f7fb;
-  color: #1f2937;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  margin: 0;
-  padding: 0.6rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  overflow-x: hidden;
+html, body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
 }
 
-/* --- HEADER --- */
-header.site-header {
-  background: #0072e3;
-  color: white;
-  text-align: center;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 1.6rem;
-  font-weight: 700;
-  width: 100%;
-  max-width: 900px;
+* {
+    box-sizing: border-box;
 }
 
-/* --- CONTAINER GERAL --- */
-.container {
-  width: 100%;
-  max-width: 900px;
-  background: #fff;
-  margin-top: 0.9rem;
-  padding: 1rem 1.2rem;
-  border-radius: 12px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-  overflow-x: hidden;
+header {
+    background-color: #008000;
+    color: white;
+    padding: 20px;
+    text-align: center;
 }
 
-/* ===== ADMIN CARD ===== */
-.admin-card {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 10px;
-  margin-bottom: 0.8rem;
-  line-height: 1.45;
-  font-size: 1rem;
+main {
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 100%;
+    overflow-x: hidden;
 }
 
-.admin-card h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
-  color: #1e3a8a;
+/* ===========================================================
+   INFORMAÇÕES DO BOLÃO
+   =========================================================== */
+
+#info-bolao {
+    background-color: #e8f5e9;
+    border-left: 5px solid #008000;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
 }
 
-.admin-card p {
-  margin: 0.45rem 0;
-  text-align: justify;
+#info-bolao h3 {
+    margin: 0 0 10px 0;
+    color: #005f00;
+    font-size: 1.3em;
 }
 
-/* Links */
-.whatsapp-link {
-  color: #16a34a;
-  font-weight: 600;
-  text-decoration: none;
-}
-.whatsapp-link:hover {
-  text-decoration: underline;
-  color: #128c7e;
+#info-bolao p {
+    margin-bottom: 10px;
+    line-height: 1.5;
 }
 
-/* ===== PIX ===== */
-.pix-box {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 0.9rem;
-  text-align: center;
-  margin: 1rem 0;
+.aviso-particular {
+    font-weight: bold;
+    color: #d32f2f;
+    border-top: 1px dashed #ccc;
+    padding-top: 10px;
 }
 
-.pix-line {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 0.4rem;
+/* ===========================================================
+   FORMULÁRIO
+   =========================================================== */
+
+.separator-info-form {
+    border: 0;
+    height: 1px;
+    background-color: #ddd;
+    margin: 20px 0;
 }
 
-#pix-chave {
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-family: monospace;
-  font-size: 0.95rem;
-  color: #2563eb;
-  overflow-wrap: anywhere;
+.form-group {
+    margin-bottom: 15px;
 }
 
-#btnCopiarPix {
-  background: #0072e3;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 7px 12px;
-  font-size: 0.9rem;
-  cursor: pointer;
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
 }
 
-/* ===== FORMULÁRIO ===== */
-.form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 0.9rem;
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-label {
-  font-weight: 600;
+/* ===========================================================
+   PIX
+   =========================================================== */
+
+.pix-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #eee;
+    padding: 10px;
+    border-radius: 4px;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
-input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 1rem;
+#chave-pix-display {
+    flex-grow: 1;
+    font-family: monospace;
+    font-weight: bold;
+    overflow-wrap: break-word;
 }
 
-/* ===== STATUS DOS JOGOS ===== */
-.status-jogos-grid {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 14px 0;
-  flex-wrap: wrap;
+#copiar-pix-btn {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.status-jogo-btn {
-  background: #6c757d;
-  color: #fff;
-  padding: 7px 16px;
-  border-radius: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  font-size: 0.92rem;
+#copiar-pix-btn:hover {
+    background-color: #004494;
 }
 
-.status-jogo-btn.ativo {
-  background: #ff9800;
-}
-.status-jogo-btn.preenchido {
-  background: #28a745;
+/* ===========================================================
+   SELEÇÃO DOS JOGOS
+   =========================================================== */
+
+#container-displays-jogos {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    margin: 10px 0 25px 0;
 }
 
-/* ===== GRADE DE NÚMEROS ===== */
-.numeros-grid {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 6px;
-  margin: 1rem 0;
+.titulo-jogos {
+    text-align: center;
+    width: 100%;
+    display: block;
+    margin-bottom: 15px;
 }
 
-.numeros-grid button {
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 9px 0;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.9rem;
+
+.jogo-display {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 3px solid #ccc;
+    background-color: #f0f0f0;
+    transition: all 0.25s ease;
+    cursor: pointer;
 }
 
-.numeros-grid button.selected {
-  background: #0072e3;
-  color: #fff;
+.jogo-display.ativo {
+    border-color: #ffcc00;
+    transform: scale(1.15);
+    box-shadow: 0 0 10px rgba(255,204,0,0.7);
 }
 
-/* ===== CONTROLES ===== */
-.controles {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 8px;
+.jogo-display[data-status="vazio"] {
+    background-color: #dedede;
+    border-color: #b5b5b5;
 }
 
-button.primary,
-button.muted {
-  border: none;
-  border-radius: 8px;
-  padding: 9px 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 1rem;
+.jogo-display[data-status="incompleto"] {
+    background-color: #ffe680;
+    border-color: #ffcc00;
 }
 
-button.primary {
-  background: #0072e3;
-  color: #fff;
-}
-button.muted {
-  background: #f3f4f6;
-  color: #333;
+.jogo-display[data-status="completo"] {
+    background-color: #7ed957;
+    border-color: #4caf50;
 }
 
-/* ===== BOTÕES INFERIORES ===== */
-.bottom-buttons {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0 10px 0;
+/* ===========================================================
+   NÚMEROS 1–60
+   =========================================================== */
+
+#container-jogos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 15px;
+    padding: 0 5px;
+    width: 100%;
+    max-width: 100%;
 }
 
-.bottom-buttons button {
-  background-color: #0072e3;
-  color: #fff;
-  font-weight: 600;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  width: 100%;
-  max-width: 350px;
+.numero-btn {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    border-radius: 50%;
+    border: 2px solid #008000;
+    background-color: white;
+    color: #008000;
+    font-weight: bold;
+    font-size: 0.95em;
+    cursor: pointer;
+    user-select: none;
+    transition: 0.2s;
 }
 
-/* ============================
-   RESPONSIVO
-   ============================ */
+.numero-btn:hover:not(.selecionado) {
+    background-color: #e6ffe6;
+}
+
+.numero-btn.selecionado {
+    background-color: #008000;
+    color: white;
+    border-color: #005f00;
+}
+
+/* ===========================================================
+   BOTÕES DE CONTROLE DO JOGO
+   =========================================================== */
+
+.controles-jogo {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    width: 100%;
+}
+
+.controles-jogo button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#limpar-jogo-btn {
+    background-color: #f44336;
+    color: white;
+}
+#limpar-jogo-btn:hover {
+    background-color: #d32f2f;
+}
+
+#preencher-aleatoriamente-btn {
+    background-color: #2196f3;
+    color: white;
+}
+#preencher-aleatoriamente-btn:hover {
+    background-color: #1976d2;
+}
+
+#proximo-jogo-btn {
+    background-color: #4caf50;
+    color: white;
+}
+#proximo-jogo-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#confirmar-aposta-btn {
+    background-color: #ff9800;
+    color: white;
+    font-weight: bold;
+}
+#confirmar-aposta-btn:hover {
+    background-color: #e68900;
+}
+
+/* ===========================================================
+   SEÇÃO DE DÚVIDAS
+   =========================================================== */
+
+#contato-duvidas {
+    text-align: center;
+    padding: 15px;
+    border: 1px dashed #28a745;
+    border-radius: 5px;
+    margin-top: 30px;
+}
+
+.whatsapp-link-final {
+    background-color: #28a745;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+}
+.whatsapp-link-final:hover {
+    background-color: #1e7e34;
+}
+
+/* ===========================================================
+   ACESSOS RÁPIDOS
+   =========================================================== */
+
+#acessos-rapidos {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    max-width: 800px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.btn-acesso {
+    flex: 1;
+    padding: 12px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-acesso:not(.admin-btn) {
+    background-color: #007bff;
+}
+
+.admin-btn {
+    background-color: #6c757d;
+}
+
+/* ===========================================================
+   FOOTER
+   =========================================================== */
+
+footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 0.9em;
+    color: #777;
+}
+
+/* ===========================================================
+   RESPONSIVIDADE — MOBILE
+   =========================================================== */
 
 @media (max-width: 600px) {
 
-  header.site-header {
-    font-size: 1.35rem;
-  }
+    main {
+        box-shadow: none;
+        padding: 15px;
+        margin: 10px auto;
+    }
 
-  .container {
-    padding: 0.8rem;
-  }
+    #container-displays-jogos {
+        gap: 12px;
+    }
 
-  /* Grade fica 6 colunas (melhor toque) */
-  .numeros-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
+    .jogo-display {
+        width: 32px;
+        height: 32px;
+    }
 
-  .numeros-grid button {
-    padding: 10px 0;
-    font-size: 1rem;
-  }
+    .numero-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9em;
+    }
 
-  .status-jogo-btn {
-    padding: 8px 16px;
-    font-size: 1rem;
-  }
+    .controles-jogo {
+        flex-direction: column;
+    }
 
-  .bottom-buttons button {
-    width: 100%;
-  }
+    .controles-jogo button,
+    .btn-acesso {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    #acessos-rapidos {
+        flex-direction: column;
+    }
+	
+	/* Centraliza APENAS o texto “Chave PIX para Pagamento” */
+	.form-group label + .pix-info {
+		margin-top: 0;
+	}
+
+	.form-group label:has(+ .pix-info) {
+		text-align: center;
+		width: 100%;
+		display: block;
 }
 
-/* CELULARES MUITO PEQUENOS */
-@media (max-width: 380px) {
-  .numeros-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
+	
+	/* Centraliza o texto da chave PIX */
+    #chave-pix-display {
+        text-align: center;
+        width: 100%;
+    }
 
-/* Corrige alinhamento da área PIX */
-.pix-box p,
-.pix-box strong,
-.pix-info {
-    text-align: center !important;
-}
-
-.admin-card .pix-box p {
-    text-align: center !important;
-}
-
-/* ===== Botões inferiores estilizados ===== */
-
-.bottom-buttons button {
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 1rem;
-    width: 100%;
-    max-width: 350px;
-}
-
-/* Botão CONSULTAR JOGOS */
-.bottom-buttons button:nth-child(1) {
-    background-color: #065f46; /* Verde escuro elegante */
-    color: #fff;
-}
-
-/* Adiciona lupa antes e depois do texto */
-.bottom-buttons button:nth-child(1)::before,
-.bottom-buttons button:nth-child(1)::after {
-    content: "🔍";
-    margin: 0 6px;
-}
-
-/* Hover do verde */
-.bottom-buttons button:nth-child(1):hover {
-    background-color: #064e3b;
-}
-
-/* Botão ÁREA ADMINISTRATIVA */
-.bottom-buttons button:nth-child(2) {
-    background-color: #000;
-    color: #fff;
-}
-
-/* Hover preto */
-.bottom-buttons button:nth-child(2):hover {
-    background-color: #111;
+    /* Também centraliza o container para garantir alinhamento */
+    .pix-info {
+        flex-direction: column;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
 }

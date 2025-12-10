@@ -1,140 +1,296 @@
-/* ======= CONFIRMAÇÃO - Supercompacta ======= */
+/*
+* ======================================
+* ARQUIVO: css/confirmacao.css
+* Estilos específicos da página de revisão e confirmação.
+* Totalmente revisado e otimizado.
+* ======================================
+*/
 
+/* Estrutura Principal */
 .container {
-  background: #fff;
-  padding: 1rem 1.2rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  margin-top: 0.8rem;
-  max-width: 850px;
+    background: #fff;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin: 0.8rem auto;
+    max-width: 850px;
+    width: 100%;
 }
 
 h2 {
-  color: #0072e3;
-  text-align: center;
-  margin: 0 0 0.8rem;
-  font-size: 1.3rem;
+    color: #0072e3;
+    text-align: center;
+    margin: 0 0 1rem;
+    font-size: 1.4rem;
 }
 
-.card {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-  margin-bottom: 0.6rem;
-  font-size: 0.93rem;
-  line-height: 1.4;
+/* ===========================================================
+   CONTÊINER DE RESUMO
+   =========================================================== */
+
+.resumo-container {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+    line-height: 1.55;
 }
 
-.card h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1rem;
-  color: #1e3a8a;
+.resumo-container h3 {
+    margin: 0 0 0.6rem;
+    font-size: 1.1rem;
+    color: #1e3a8a;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #e5e7eb;
 }
+
+.resumo-container p {
+    margin: 0.4rem 0;
+    word-wrap: break-word;
+}
+
+/* ===========================================================
+   ALINHAMENTO DOS JOGOS + BOLINHAS (ATUALIZADO)
+   =========================================================== */
+
+.jogo-item-confirmacao {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.jogo-item-confirmacao:last-child {
+    border-bottom: none;
+}
+
+/* Texto "Jogo 1:" */
+.jogo-item-confirmacao p {
+    margin: 0;
+    min-width: 70px;
+    font-weight: bold;
+}
+
+/* Bolinhas */
+.numeros-bolinhas-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+}
+
+.bolinha {
+    width: 30px;
+    height: 30px;
+    background-color: #008000;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* ===========================================================
+   PIX – CHAVE E BOTÃO COPIAR
+   =========================================================== */
+
+.pix-box {
+    text-align: center;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background: none;
+    padding-top: 0;
+}
+
+.pix-box h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0;
+    color: #1e3a8a;
+}
+
+.pix-box p {
+    margin: 0.3rem 0;
+    font-size: 0.95rem;
+}
+
+.pix-key {
+    font-weight: bold;
+    color: #008000;
+    background: #e6ffe6;
+    border: 1px solid #008000;
+    padding: 10px 12px;
+    border-radius: 6px;
+    word-break: break-all;
+    font-family: monospace;
+    display: block;
+    font-size: 1rem;
+    margin: 0.5rem auto;
+    max-width: 90%;
+}
+
+#copiarPixBtn {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+    max-width: 280px;
+    align-self: center;
+}
+
+#copiarPixBtn:hover {
+    background-color: #e0e0e0;
+}
+
+#copiarPixBtn.copied-success {
+    background-color: #16a34a !important;
+    color: white !important;
+    border-color: #16a34a !important;
+}
+
+/* ===========================================================
+   OBSERVAÇÃO, TERMOS E BOTÕES
+   =========================================================== */
 
 .observacao {
-  background: #fff8e1;
-  border: 1px solid #ffe69c;
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-  font-size: 0.9rem;
-  margin: 0.8rem 0 0.6rem;
-  line-height: 1.4;
+    background: #fff8e1;
+    border: 1px solid #ffe69c;
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.95rem;
+    margin: 18px 0 12px;
 }
 
 .observacao h3 {
-  margin: 0 0 0.4rem;
-  color: #a47d00;
-  font-size: 0.95rem;
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+    color: #a47d00;
 }
 
 .termos {
-  background: #f3f4f6;
-  border-radius: 6px;
-  padding: 0.5rem 0.8rem;
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  gap: 6px;
-  margin-bottom: 0.5rem;
+    background: #f3f4f6;
+    border-radius: 6px;
+    padding: 0.7rem 0.9rem;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.95rem;
 }
 
 .termos input {
-  transform: scale(1.1);
-  cursor: pointer;
+    transform: scale(1.2);
+    cursor: pointer;
 }
 
+/* Botões */
 .controles {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 0.6rem;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
 }
 
-button.primary,
-button.muted {
-  border-radius: 8px;
-  padding: 7px 14px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border: none;
-  font-weight: 600;
-  transition: background 0.2s;
+.primary-btn {
+    background-color: #ff9800;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    max-width: 260px;
+    transition: 0.3s;
 }
 
-button.primary {
-  background: #0072e3;
-  color: white;
+.primary-btn:hover {
+    background-color: #e68900;
 }
 
-button.primary:hover {
-  background: #005ec0;
+.primary-btn:disabled {
+    background-color: #ffd29c;
+    cursor: not-allowed;
 }
 
-button.muted {
-  background: #f3f4f6;
+.secondary-btn {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 12px 20px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    max-width: 260px;
+    transition: 0.3s;
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.secondary-btn:hover {
+    background-color: #e0e0e0;
 }
 
 .mensagem {
-  margin-top: 0.7rem;
-  text-align: center;
-  font-weight: 600;
-  font-size: 0.9rem;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
-/* ======= Compact Mode Class ======= */
-.compact p,
-.compact label,
-.compact h3 {
-  margin: 0.2rem 0;
-}
+/* ===========================================================
+   MOBILE — RESPONSIVIDADE
+   =========================================================== */
 
-/* ======= Responsivo ======= */
 @media (max-width: 600px) {
-  .container {
-    padding: 0.8rem;
-  }
 
-  h2 {
-    font-size: 1.15rem;
-  }
+    .container {
+        padding: 0.8rem;
+        margin: 10px auto;
+        box-shadow: none;
+    }
 
-  .card {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.6rem;
-  }
+    .jogo-item-confirmacao {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
 
-  .controles {
-    flex-direction: column;
-  }
+    .jogo-item-confirmacao p {
+        min-width: 100px;
+    }
 
-  .controles button {
-    width: 100%;
-  }
+    .bolinha {
+        width: 26px;
+        height: 26px;
+        font-size: 0.8rem;
+    }
+
+    .controles {
+        flex-direction: column;
+    }
+
+    .controles button {
+        max-width: none;
+        width: 100%;
+    }
+	
+	/* Centralizar apenas o título "Jogos Selecionados (5)" no mobile */
+	#jogosConfirmacao > h3 {
+		text-align: center;
+	}
+
 }
+

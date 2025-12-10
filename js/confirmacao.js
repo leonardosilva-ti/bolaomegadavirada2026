@@ -1,110 +1,180 @@
-// js/confirmacao.js
+// ===============================================
+// ARQUIVO: js/confirmacao.js — Versão Revisada
+// ===============================================
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec"; // Certifique-se de que esta URL está atualizada
+// URL de implantação do Apps Script
+const SCRIPT_URL =
+    'https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec';
 
-const aposta = JSON.parse(localStorage.getItem("pendingAposta"));
+// Recupera dados armazenados
+const aposta = JSON.parse(localStorage.getItem("dadosBolao"));
+
+// Elementos do DOM
 const dadosDiv = document.getElementById("dadosConfirmacao");
 const jogosDiv = document.getElementById("jogosConfirmacao");
 const mensagem = document.getElementById("mensagem");
 const termosCheckbox = document.getElementById("aceitoTermos");
 const btnConfirmar = document.getElementById("btnConfirmar");
+const btnVoltar = document.getElementById("btnVoltar");
 
-if (!aposta) {
-  dadosDiv.innerHTML = "<p style='color:red'>Nenhuma aposta pendente encontrada. Retorne à página principal.</p>";
-  btnConfirmar.disabled = true;
+// --------------------------------------------
+// Utilidades
+// --------------------------------------------
+
+/**
+ * Formata telefone para (DD) 9XXXX-XXXX.
+ */
+const formatarTelefone = (telefone) => {
+    if (!telefone) return 'Não Informado';
+    const digitos = telefone.replace(/\D/g, "");
+    return digitos.length === 11
+        ? `(${digitos.slice(0, 2)}) ${digitos.slice(2, 7)}-${digitos.slice(7)}`
+        : digitos;
+};
+
+/**
+ * Gera protocolo único baseado em timestamp + código aleatório.
+ */
+const gerarProtocoloUnico = () => {
+    const d = new Date();
+    const pad = (n) => n.toString().padStart(2, "0");
+    const timestamp = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const nums = '0123456789';
+    const rnd = (set) => set[Math.floor(Math.random() * set.length)];
+    const codigo = `${rnd(chars)}${rnd(chars)}${rnd(nums)}${rnd(nums)}${rnd(chars)}${rnd(nums)}`;
+    return `${timestamp}-${codigo}`;
+};
+
+// --------------------------------------------
+// Validação inicial
+// --------------------------------------------
+if (!aposta || !Array.isArray(aposta.jogos) || aposta.jogos.length !== 5) {
+    dadosDiv.innerHTML = `<p style="color:red">Nenhuma aposta válida encontrada. Retorne à página principal.</p>`;
+    btnConfirmar.disabled = true;
 } else {
-  dadosDiv.innerHTML = `
-    <p><b>Nome Completo:</b> ${aposta.nome}</p>
-    <p><b>Telefone (WhatsApp):</b> ${aposta.telefone}</p>
-  `;
-  jogosDiv.innerHTML = `
-    <h3>Jogos Selecionados</h3>
-    ${aposta.jogos.map((jogo, i) => `<p><b>Jogo ${i + 1}:</b> ${jogo}</p>`).join("")}
-  `;
+
+    // --------------------------------------------
+    // Exibir Dados
+    // --------------------------------------------
+    dadosDiv.innerHTML = `
+        <h3>Seus Dados</h3>
+        <p><b>Nome Completo:</b> ${aposta.nome || 'Não Informado'}</p>
+        <p><b>Telefone (WhatsApp):</b> ${formatarTelefone(aposta.telefone)}</p>
+    `;
+
+    // --------------------------------------------
+    // Exibir Jogos
+    // --------------------------------------------
+    jogosDiv.innerHTML = `
+        <h3>Jogos Selecionados (5)</h3>
+        ${aposta.jogos.map((jogo, i) => {
+            const numeros = jogo
+                .slice()
+                .sort((a, b) => a - b)
+                .map(n => `<span class="bolinha">${String(n).padStart(2, '0')}</span>`)
+                .join("");
+
+            return `
+                <div class="jogo-item-confirmacao">
+                    <p><b>Jogo ${i + 1}:</b></p>
+                    <div class="numeros-bolinhas-container">${numeros}</div>
+                </div>
+            `;
+        }).join("")}
+    `;
 }
 
+
+// --------------------------------------------
+// Eventos
+// --------------------------------------------
+
 termosCheckbox.addEventListener("change", () => {
-  btnConfirmar.disabled = !termosCheckbox.checked;
+    btnConfirmar.disabled = !termosCheckbox.checked;
 });
 
-document.getElementById("btnVoltar").addEventListener("click", () => {
-  window.location.href = "index.html";
+btnVoltar.addEventListener("click", () => {
+    window.location.href = "index.html";
 });
 
 btnConfirmar.addEventListener("click", async () => {
-  if (!termosCheckbox.checked) {
-    mensagem.textContent = "Você deve aceitar os termos antes de confirmar.";
-    mensagem.style.color = "red";
-    return;
-  }
 
-  mensagem.textContent = "Enviando e registrando aposta...";
-  mensagem.style.color = "blue";
-  btnConfirmar.disabled = true;
+    if (!termosCheckbox.checked) {
+        mensagem.textContent = "Você deve aceitar os termos antes de confirmar.";
+        mensagem.style.color = "red";
+        return;
+    }
 
-  const protocolo = gerarProtocolo();
-  const dataHora = new Date().toLocaleString("pt-BR");
+    mensagem.textContent = "Enviando e registrando aposta...";
+    mensagem.style.color = "blue";
 
-  const apostaCompleta = {
-    ...aposta,
-    dataHora,
-    protocolo,
-    status: "AGUARDANDO PAGAMENTO"
-  };
+    btnConfirmar.disabled = true;
+    btnVoltar.disabled = true;
 
-  try {
-    const formData = new FormData();
-    formData.append("action", "registrarAposta");
-    formData.append("nome", apostaCompleta.nome);
-    formData.append("telefone", (apostaCompleta.telefone || "").replace(/\D/g, ""));
-    formData.append("protocolo", apostaCompleta.protocolo);
-    formData.append("dataHora", apostaCompleta.dataHora);
-    formData.append("status", apostaCompleta.status);
-    apostaCompleta.jogos.forEach((jogo, i) => formData.append(`jogo${i + 1}`, jogo));
+    const apostaCompleta = {
+        ...aposta,
+        dataHora: new Date().toLocaleString("pt-BR"),
+        protocolo: gerarProtocoloUnico(),
+        status: "AGUARDANDO PAGAMENTO"
+    };
 
-    const response = await fetch(SCRIPT_URL, { method: "POST", body: formData });
-    const texto = await response.text();
+    try {
+        const formData = new FormData();
 
-    // ✅ CORREÇÃO: A linha de redirecionamento está correta.
-    if (response.ok && texto.includes("Sucesso")) {
-      localStorage.setItem("lastAposta", JSON.stringify(apostaCompleta));
-      localStorage.removeItem("pendingAposta");
-      
-      // Redireciona para o comprovante, enviando o protocolo na URL
-      window.location.href = `comprovante.html?protocolo=${protocolo}`; 
+        formData.append("action", "registrarAposta");
+        formData.append("dataHora", apostaCompleta.dataHora);
+        formData.append("protocolo", apostaCompleta.protocolo);
+        formData.append("nome", apostaCompleta.nome);
+        formData.append("telefone", (apostaCompleta.telefone || "").replace(/\D/g, ""));
 
-    } else {
-      mensagem.textContent = `Erro ao enviar. Resposta do servidor: ${texto}`;
-      mensagem.style.color = "red";
-      btnConfirmar.disabled = false;
-    }
-  } catch (err) {
-    mensagem.textContent = "Falha na conexão com o Apps Script. A aposta não foi registrada.";
-    mensagem.style.color = "red";
-    btnConfirmar.disabled = false;
-  }
+        // Jogos (E → I)
+        apostaCompleta.jogos.forEach((jogo, idx) => {
+            const numeros = jogo
+                .slice()
+                .sort((a, b) => a - b)
+                .map(n => String(n).padStart(2, "0"))
+                .join(" ");
+            formData.append(`jogo${idx + 1}`, numeros);
+        });
+
+        // Status e DataPago
+        formData.append("status", apostaCompleta.status);
+        formData.append("dataPago", "-");
+
+        // Envio
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: formData,
+        });
+
+        const resultText = await response.text();
+
+        if (resultText.toLowerCase().includes("sucesso")) {
+
+            // Salva a última aposta e limpa a corrente
+            localStorage.setItem("lastAposta", JSON.stringify(apostaCompleta));
+            localStorage.removeItem("dadosBolao");
+
+            mensagem.style.color = "green";
+            mensagem.textContent = "Aposta confirmada! Redirecionando para o comprovante...";
+
+            setTimeout(() => {
+                window.location.href = `comprovante.html?protocolo=${apostaCompleta.protocolo}`;
+            }, 1500);
+
+        } else {
+            mensagem.textContent = `Erro ao enviar. Resposta do servidor: ${resultText}`;
+            mensagem.style.color = "red";
+            btnConfirmar.disabled = false;
+            btnVoltar.disabled = false;
+        }
+
+    } catch (err) {
+        console.error("Erro:", err);
+        mensagem.textContent = "Falha na conexão com o servidor. A aposta não foi registrada.";
+        mensagem.style.color = "red";
+        btnConfirmar.disabled = false;
+        btnVoltar.disabled = false;
+    }
 });
-
-function gerarProtocolo() {
-  const now = new Date();
-  const pad = n => n.toString().padStart(2, '0');
-
-  const ano = now.getFullYear();
-  const mes = pad(now.getMonth() + 1);
-  const dia = pad(now.getDate());
-  const hora = pad(now.getHours());
-  const min = pad(now.getMinutes());
-  const seg = pad(now.getSeconds());
-
-  // Funções auxiliares
-  const letra = () => String.fromCharCode(65 + Math.floor(Math.random() * 26)); // A–Z
-  const numero = () => Math.floor(Math.random() * 10); // 0–9
-
-  // Parte aleatória EXATA: XX00X0 (dois zeros fixos)
-  const parteRandom = `${letra()}${letra()}00${letra()}${numero()}`;
-
-  // Retorna o formato: AAAAMMDDHHMMSS-XX00X0
-  const protocolo = `${ano}${mes}${dia}${hora}${min}${seg}-${parteRandom}`;
-  console.log("Protocolo gerado:", protocolo); 
-  return protocolo;
-}
