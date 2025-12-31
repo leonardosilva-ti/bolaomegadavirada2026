@@ -57,6 +57,32 @@ main {
     line-height: 1.5;
 }
 
+/* Mensagem de Bolão Encerrado */
+#mensagem-bolao-fechado {
+    background-color: #fff;
+    border: 2px solid var(--red-status);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+#mensagem-bolao-fechado h2 {
+    color: #d32f2f;
+    margin-bottom: 15px;
+}
+
+#mensagem-bolao-fechado p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Garante que o container aberto suma completamente */
+.hidden {
+    display: none !important;
+}
+
 .aviso-particular {
     font-weight: bold;
     color: #d32f2f;

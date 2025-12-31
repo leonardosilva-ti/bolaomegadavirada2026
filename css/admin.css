@@ -165,6 +165,68 @@ button:disabled { opacity: 0.6; cursor: not-allowed; background: #ddd !important
 /* Regras antigas movidas do <style> inline */
 .resultado-premio p { margin: 5px 0; }
 
+/* --------------------------------- */
+/* Estilo para o Card de Fechamento de Bolão */
+/* --------------------------------- */
+
+.status-vendas-card {
+    border-left: 5px solid var(--danger) !important;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid var(--border);
+}
+
+.toggle-status {
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar em telas muito pequenas */
+    align-items: center; /* Alinha verticalmente no centro */
+    justify-content: center; /* Centraliza o conjunto */
+    gap: 20px;
+    padding: 15px;
+    background: #fff5f5; /* Fundo levemente avermelhado para indicar atenção */
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+/* Alinhamento específico do Label com o Checkbox */
+.toggle-status label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 0; /* Remove margens padrão que desalinhariam */
+}
+
+/* Checkbox padronizado */
+#checkFecharBolao {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Ajuste do botão de salvar dentro do card de fechamento */
+.status-vendas-card button.primary {
+    margin-top: 0; /* Remove margens que empurram o botão para baixo */
+    white-space: nowrap; /* Evita que o texto do botão quebre */
+}
+
+/* Responsividade para o card de fechamento */
+@media (max-width: 600px) {
+    .toggle-status {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .status-vendas-card button.primary {
+        width: 100%;
+    }
+}
 
 /* --- Resumo do Bolão (Card de Destaque) --- */
 .resumo-card {
