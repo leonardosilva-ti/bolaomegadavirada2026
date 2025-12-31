@@ -38,17 +38,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const dadosGerais = resGeral || {};
             const todosJogos = dadosGerais.todosJogos || [];
             const jogosAdm = resJogosAdm?.jogosAdm || [];
+			const totalJogosGeral = (dadosGerais.totalJogos || 0) + jogosAdm.length;
 
             let html = ``;
 
             /* ======= ESTATÍSTICAS ======= */
             html += `
-                <h3 class="section-title">Estatísticas do Bolão</h3>
-                <div class="resumo-container">
-                    <p><strong>Participantes:</strong> ${dadosGerais.totalParticipantes || "-"}</p>
-                    <p><strong>Total de Jogos:</strong> ${dadosGerais.totalJogos || "-"}</p>
-                </div>
-            `;
+				<h3 class="section-title">Estatísticas do Bolão</h3>
+				<div class="resumo-container">
+					<p><strong>Participantes:</strong> ${dadosGerais.totalParticipantes || "-"}</p>
+					<p><strong>Total de Jogos:</strong> ${totalJogosGeral || "-"}</p> 
+				</div>
+			`;	
 
             /* ======= JOGO DA SORTE ======= */
             if (dadosGerais.jogoDaSorte?.trim()) {
