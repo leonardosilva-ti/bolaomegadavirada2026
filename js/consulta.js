@@ -1,19 +1,37 @@
-// js/consulta.js
+// js/consulta.js - VERSÃO FINAL CORRIGIDA
 
 document.addEventListener("DOMContentLoaded", () => {
-    const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
-    const chavePix = "88f77025-40bc-4364-9b64-02ad88443cc4";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylsOPklfzElA8ZYF7wYneORp5nWymkrnDzXhVK-onsnb9PXze16S50yVbu059g_w4tLA/exec";
 
     const btnConsultar = document.getElementById("btnConsultar");
     const resultadoDiv = document.getElementById("resultado");
+    const conferenciaConsulta = document.getElementById("conferenciaConsulta");
+    const listaConferencia = document.getElementById("listaConferencia");
+    const btnConferirSorteio = document.getElementById("btnConferirSorteio");
 
     const COR_SUCESSO = "#008000"; 
     const COR_STATUS_RED = "#d32f2f"; 
 
+    // Variável global para conferência
+    let dadosGlobaisParaConferir = {
+        jogoPrincipal: "", 
+        jogosParticipante: [],
+        jogosAdicionais: []
+    };
+
+    // Função auxiliar para transformar string de jogo em array de números limpos
+    const formatarJogoParaArray = (str) => {
+        if (!str) return [];
+        // Regex /[,\s]+/ divide por vírgula OU espaço (trata "01, 02" ou "01 02")
+        return str.split(/[,\s]+/).filter(Boolean).map(n => n.padStart(2, '0'));
+    };
+
     btnConsultar.addEventListener("click", async () => {
         const protocolo = document.getElementById("protocoloInput").value.trim();
         resultadoDiv.innerHTML = `<p class="center" style="color:#555">Buscando...</p>`;
+        
+        conferenciaConsulta.classList.add("hidden");
+        listaConferencia.innerHTML = "";
 
         if (!protocolo) {
             resultadoDiv.innerHTML = `<p class="center" style="color:${COR_STATUS_RED}">Preencha o número de Protocolo.</p>`;
@@ -28,130 +46,64 @@ document.addEventListener("DOMContentLoaded", () => {
             ]);
 
             if (!resParticipante.success) {
-                resultadoDiv.innerHTML = `<p class="center" style="color:${COR_STATUS_RED}">${
-                    resParticipante.message || "Protocolo não encontrado."
-                }</p>`;
+                resultadoDiv.innerHTML = `<p class="center" style="color:${COR_STATUS_RED}">${resParticipante.message || "Protocolo não encontrado."}</p>`;
                 return;
             }
 
             const participante = resParticipante.participante;
             const dadosGerais = resGeral || {};
-            const todosJogos = dadosGerais.todosJogos || [];
-            const jogosAdm = resJogosAdm?.jogosAdm || [];
-			const totalJogosGeral = (dadosGerais.totalJogos || 0) + jogosAdm.length;
+            const todosJogos = dadosGerais.todosJogos || []; // Da aba Apostas
+            const jogosAdm = resJogosAdm?.jogosAdm || [];    // Da aba Jogos-adm
+            
+            // --- ARMAZENAR DADOS ---
+            dadosGlobaisParaConferir.jogoPrincipal = (dadosGerais.jogoDaSorte || "").trim();
+            dadosGlobaisParaConferir.jogosParticipante = participante.Jogos ? participante.Jogos.split("|").filter(Boolean) : [];
+            // Unifica todos os jogos que não são do participante específico
+            dadosGlobaisParaConferir.jogosAdicionais = [...todosJogos, ...jogosAdm].filter(Boolean);
 
+            conferenciaConsulta.classList.remove("hidden");
+
+            /* ======= HTML ======= */
             let html = ``;
 
-            /* ======= ESTATÍSTICAS ======= */
-            html += `
-				<h3 class="section-title">Estatísticas do Bolão</h3>
-				<div class="resumo-container">
-					<p><strong>Participantes:</strong> ${dadosGerais.totalParticipantes || "-"}</p>
-					<p><strong>Total de Jogos:</strong> ${totalJogosGeral || "-"}</p> 
-				</div>
-			`;	
-
-            /* ======= JOGO DA SORTE ======= */
-            if (dadosGerais.jogoDaSorte?.trim()) {
-                const sorteHtml = dadosGerais.jogoDaSorte
-                    .split(" ")
-                    .map((n) => `<span>${n.padStart(2, '0')}</span>`) 
-                    .join("");
-
+            // 1. Jogo Principal (9 números)
+            if (dadosGlobaisParaConferir.jogoPrincipal) {
+                const nums = formatarJogoParaArray(dadosGlobaisParaConferir.jogoPrincipal);
                 html += `
                     <div class="jogo-sorte-container">
-                        <h3>Jogo da Sorte (9 Números)</h3>
-                        <div class="jogo-sorte-numeros">${sorteHtml}</div>
-                    </div>
-                `;
-            } else {
-                const totalBolinhas = 9;
-                const bolinhasVazias = Array(totalBolinhas)
-                    .fill(`<span class="empty">-</span>`)
-                    .join("");
-
-                html += `
-                    <div class="jogo-sorte-container">
-                        <h3>Jogo da Sorte (9 Números)</h3>
-                        <p style="color:#e94a4a; font-weight:600; font-size:0.95rem; margin: 0 0 10px 0; text-align:center;">
-                            O jogo de 9 números ainda não foi cadastrado. Será cadastrado dia 29/12 quando o bolão fechar.
-                        </p>
-                        <div class="jogo-sorte-numeros">${bolinhasVazias}</div>
+                        <h3>Jogo Principal do Bolão (9 números)</h3>
+                        <div class="jogo-sorte-numeros">
+                            ${nums.map(n => `<span>${n}</span>`).join("")}
+                        </div>
                     </div>
                 `;
             }
 
-            /* ======= DADOS DO PARTICIPANTE ======= */
-
-            const statusPago = participante.Status === "PAGO";
-            const statusCor = statusPago ? COR_SUCESSO : COR_STATUS_RED;
-            const statusTxt = statusPago ? "Pago" : "Aguardando Pagamento";
-
+            // 2. Dados do Participante
             html += `
                 <div class="resumo-container">
-                    <h3>Dados da Aposta</h3>
-
-                    <p><strong>Nome:</strong> ${participante.Nome}</p>
-                    <p><strong>Telefone:</strong> ${participante.Telefone}</p>
-                    <p><strong>Protocolo:</strong> ${participante.Protocolo}</p>
-                    <p><strong>Status:</strong> <span style="color:${statusCor}; font-weight:700;">${statusTxt}</span></p>
-
-                    ${
-                        !statusPago
-                            ? `
-                            <div class="pix-box">
-                                <label style="font-weight:600;">Chave PIX para pagamento:</label>
-                                <div id="pix-chave">${chavePix}</div>
-                                <button id="btnCopiarPix" class="btn-copiar">Copiar</button>
-                                <p class="pix-info">Use esta chave para realizar o pagamento da sua aposta.</p>
-                            </div>`
-                            : ""
-                    }
-
-                    <hr style="margin:10px 0; border: 0; border-top: 1px dashed #ccc;">
-
-                    <h3>Seus Jogos</h3>
-                    ${participante.Jogos.split("|")
-                        .filter(Boolean)
-                        .map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`)
-                        .join("")}
-
-                    <div class="bottom-buttons">
-                        <button onclick="window.location.href='comprovante.html?protocolo=${protocolo}'">
-                            Baixar Comprovante
-                        </button>
-                    </div>
+                    <h3>Sua Aposta</h3>
+                    <p><strong>Participante:</strong> ${participante.Nome}</p>
+                    <p><strong>Status:</strong> <span style="color:${participante.Status === 'PAGO' ? COR_SUCESSO : COR_STATUS_RED}; font-weight:700;">${participante.Status}</span></p>
+                    <hr style="margin:10px 0; border:0; border-top:1px dashed #eee;">
+                    <h4>Meus Jogos:</h4>
+                    ${dadosGlobaisParaConferir.jogosParticipante.map((j, i) => `<p><b>Jogo ${i + 1}:</b> ${j}</p>`).join("")}
                 </div>
             `;
 
-            /* ======= TODOS OS JOGOS DO BOLÃO ======= */
-
-            const jogosCompletos = [...todosJogos, ...jogosAdm].filter(Boolean);
-
-            if (jogosCompletos.length > 0) {
+            // 3. Exibição de TODOS os jogos do Bolão
+            if (dadosGlobaisParaConferir.jogosAdicionais.length > 0) {
                 html += `
                     <div class="jogos-bolao-container">
-                        <div class="aviso-bolao">
-                            ⚠️ Os jogos abaixo são de todos os participantes cadastrados. Caso algum participante não realize o pagamento,
-                            seus jogos serão excluídos no dia <strong>28/12/2025</strong>.<br><br>
-                            A partir do dia <strong>29/12/2025</strong>, todos os jogos exibidos abaixo serão os que serão cadastrados nas
-                            lotéricas para a <strong>Mega Sena da Virada</strong>.
-                        </div>
-
                         <h3 class="section-title">Todos os Jogos do Bolão</h3>
-
                         <div class="jogos-grid">
-                            ${jogosCompletos
-                                .map(
-                                    (j) => `
+                            ${dadosGlobaisParaConferir.jogosAdicionais.map((jogoStr) => {
+                                const nums = formatarJogoParaArray(jogoStr);
+                                return `
                                     <div class="jogo-card">
-                                        ${j
-                                            .split(" ")
-                                            .map((num) => `<span>${num.padStart(2, '0')}</span>`)
-                                            .join("")}
-                                    </div>`
-                                )
-                                .join("")}
+                                        ${nums.map(n => `<span>${n}</span>`).join("")}
+                                    </div>`;
+                            }).join("")}
                         </div>
                     </div>
                 `;
@@ -159,26 +111,59 @@ document.addEventListener("DOMContentLoaded", () => {
 
             resultadoDiv.innerHTML = html;
 
-            /* ======= BOTÃO COPIAR PIX ======= */
-            const btnPix = document.getElementById("btnCopiarPix");
-            if (btnPix) {
-                btnPix.onclick = () => {
-                    const chave = document.getElementById("pix-chave").textContent.trim();
-                    navigator.clipboard.writeText(chave).then(() => {
-                        btnPix.textContent = "Copiado!";
-                        btnPix.style.backgroundColor = COR_SUCESSO;
-                        btnPix.style.color = "white";
-                        setTimeout(() => {
-                            btnPix.textContent = "Copiar";
-                            btnPix.style.backgroundColor = "";
-                            btnPix.style.color = "";
-                        }, 2000);
-                    });
-                };
-            }
         } catch (err) {
             console.error(err);
-            resultadoDiv.innerHTML = `<p class="center" style="color:${COR_STATUS_RED}">Erro: Falha na comunicação com o servidor.</p>`;
+            resultadoDiv.innerHTML = `<p class="center">Erro ao carregar dados.</p>`;
         }
+    });
+
+    // --- LÓGICA DE CONFERÊNCIA ---
+    btnConferirSorteio.addEventListener("click", () => {
+        const inputs = document.querySelectorAll(".conf-input");
+        const sorteados = Array.from(inputs)
+            .map(i => i.value.trim().padStart(2, '0'))
+            .filter(v => v !== "00" && v !== "");
+
+        if (sorteados.length !== 6) {
+            alert("Preencha os 6 números sorteados.");
+            return;
+        }
+
+        let totalResultados = [];
+        let chavesProcessadas = new Set(); 
+
+        // Função interna para conferir e evitar duplicados
+        const conferir = (jogoStr, label) => {
+            const nums = formatarJogoParaArray(jogoStr);
+            const key = [...nums].sort().join("|");
+            if (chavesProcessadas.has(key)) return;
+
+            const acertos = nums.filter(n => sorteados.includes(n));
+            if (acertos.length >= 4) {
+                totalResultados.push({ label, acertos });
+            }
+            chavesProcessadas.add(key);
+        };
+
+        // Executa conferência na ordem de importância
+        if (dadosGlobaisParaConferir.jogoPrincipal) conferir(dadosGlobaisParaConferir.jogoPrincipal, "JOGO PRINCIPAL");
+        dadosGlobaisParaConferir.jogosParticipante.forEach(j => conferir(j, "SEU JOGO"));
+        dadosGlobaisParaConferir.jogosAdicionais.forEach(j => conferir(j, "JOGO DO BOLÃO"));
+
+        // Exibir Resultados
+        if (totalResultados.length === 0) {
+            listaConferencia.innerHTML = "<p class='center' style='color:red; font-weight:bold; margin-top:10px;'>Nenhum prêmio encontrado.</p>";
+            return;
+        }
+
+        listaConferencia.innerHTML = totalResultados.map(r => {
+            let medalha = r.acertos.length === 6 ? "SENA" : (r.acertos.length === 5 ? "QUINA" : "QUADRA");
+            return `
+                <div class="premio-item">
+                    <strong style="color:var(--mega-green)">🏆 ${medalha}! (${r.acertos.length} Acertos)</strong><br>
+                    <small>${r.label}</small><br>
+                    <span>Números: ${r.acertos.join(" - ")}</span>
+                </div>`;
+        }).join("");
     });
 });

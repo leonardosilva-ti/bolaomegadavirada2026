@@ -1,29 +1,69 @@
 <!DOCTYPE html>
-<html lang="pt-BBR">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
     <title>Consulta - Bolão da Sorte</title>
 
-    <!-- CSS Atualizado -->
     <link rel="stylesheet" href="css/consulta.css" />
+    <style>
+        /* Estilos específicos para os inputs de conferência */
+        .inputs-conferencia {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .conf-input {
+            width: 45px;
+            height: 45px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+        }
+        .conf-input:focus {
+            border-color: var(--mega-green);
+            outline: none;
+        }
+        .btn-conferir {
+            background-color: var(--action-orange);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            display: block;
+            margin: 0 auto;
+        }
+        .premio-item {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            background: #fdfdfd;
+            border-left: 5px solid var(--mega-green);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .hidden { display: none; }
+    </style>
 </head>
 
 <body>
 
-    <!-- Cabeçalho -->
     <header class="site-header">
         <h1>Consulta de Jogos</h1>
     </header>
 
-    <!-- Conteúdo principal -->
     <main class="container">
 
-        <!-- Caixa de Consulta -->
         <section class="resumo-container consulta-box">
             <h2>Consultar por Protocolo</h2>
-
             <p>Informe o seu <strong>Número de Protocolo</strong> para consultar seus dados e jogos.</p>
 
             <div class="form-row">
@@ -31,24 +71,34 @@
                 <button id="btnConsultar" class="primary">Consultar</button>
             </div>
         </section>
+        
+        <div id="conferenciaConsulta" class="resumo-container hidden">
+            <h3 class="section-title" style="text-align: center; color: var(--mega-green);">🔍 Simulador de Conferência</h3>
+            <p style="text-align: center; font-size: 0.9rem;">Insira os 6 números sorteados para verificar prêmios em todos os jogos.</p>
+            
+            <div class="inputs-conferencia">
+                <input type="number" min="1" max="60" class="conf-input" placeholder="00">
+                <input type="number" min="1" max="60" class="conf-input" placeholder="00">
+                <input type="number" min="1" max="60" class="conf-input" placeholder="00">
+                <input type="number" min="1" max="60" class="conf-input" placeholder="00">
+                <input type="number" min="1" max="60" class="conf-input" placeholder="00">
+                <input type="number" min="1" max="60" class="conf-input" placeholder="00">
+            </div>
 
-        <!-- Resultados serão inseridos dinamicamente -->
+            <button id="btnConferirSorteio" class="btn-conferir">Conferir Resultados</button>
+
+            <div id="listaConferencia" style="margin-top: 20px;">
+                </div>
+        </div>
+
         <div id="resultado" class="resultado"></div>
 
     </main>
 
-    <!-- Botões Inferiores -->
     <button class="btn-flutuante-voltar" onclick="window.location.href='index.html'">
-		⮌ Voltar
-	</button>
+        ⮌ Voltar
+    </button>
 
-
-    <!-- Script da Página -->
     <script src="js/consulta.js"></script>
-	<button class="btn-flutuante-voltar" onclick="window.location.href='index.html'">⮌ Voltar</button>
-</body>
-</html>
-
-
 </body>
 </html>
